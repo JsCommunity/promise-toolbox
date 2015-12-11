@@ -68,7 +68,6 @@ function getDataFor (input, callback) {
 ```js
 import { cancellable } from 'promise-utils'
 
-@cancellable
 const asyncFunction = cancellable(async function (cancellation, a, b) {
   cancellation.catch(() => {
     // do stuff regarding the cancellation request.
