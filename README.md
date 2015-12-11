@@ -22,7 +22,7 @@ Installation of the [npm package](https://npmjs.org/package/promise-utils):
 > with objects.
 
 ```js
-import { all }
+import { all } from 'promise-utils'
 
 console.log(all({
   foo: Promise.resolve('foo'),
@@ -49,7 +49,7 @@ console.log({
 > Register a node-style callback on this promise.
 
 ```js
-import { asCallback }
+import { asCallback } from 'promise-utils'
 
 // This function can be used either with node-style callbacks or with
 // promises.
@@ -78,7 +78,7 @@ console.log(await delay('500ms passed', 500))
 > promises.
 
 ```js
-import { join }
+import { join } from 'promise-utils'
 
 join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => {
   console.log(`in total: ${pictures.length + comments.length + tweets.length}`)
@@ -94,7 +94,7 @@ join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => 
 > forwarded.
 
 ```js
-import { lastly }
+import { lastly } from 'promise-utils'
 
 function ajaxGetAsync (url) {
   return new Promise((resolve, reject) => {
@@ -116,7 +116,7 @@ function ajaxGetAsync (url) {
 
 ```js
 import fs from 'fs'
-import { promisify, promisifyAll }
+import { promisify, promisifyAll } from 'promise-utils'
 
 // Promisify a single function.
 const readFile = promisify(fs.readFile)
@@ -139,7 +139,7 @@ fsPromise.readFileAsync(__filename).then(content => console.log(content))
 > resolution of this promise.
 
 ```js
-import { reflect }
+import { reflect } from 'promise-utils'
 
 const inspection = await reflect(reflect)
 
@@ -158,7 +158,7 @@ if (inspection.isFulfilled()) {
 > Waits for `count` promises in a collection to be resolved.
 
 ```js
-import { some }
+import { some } from 'promise-utils'
 
 const [ first, seconds ] = await some([
   ping('ns1.example.org'),
