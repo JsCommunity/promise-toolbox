@@ -61,6 +61,42 @@ function getDataFor (input, callback) {
 }
 ```
 
+#### cancellable
+
+> Make your async functions cancellable.
+
+```js
+import { cancellable } from 'promise-utils'
+
+@cancellable
+const asyncFunction = cancellable(async function (cancellation, a, b) {
+  cancellation.catch(() => {
+    // do stuff regarding the cancellation request.
+  })
+
+  // do other stuff.
+})
+
+const promise = asyncFunction('foo', 'bar')
+promise.cancel()
+```
+
+If the function is a method of a class or an object, you can use
+`cancellable` as a decorator:
+
+```js
+class MyClass {
+  @cancellable
+  async asyncMethod (cancellation, a, b) {
+  cancellation.catch(() => {
+    // do stuff regarding the cancellation request.
+  })
+
+  // do other stuff.
+  }
+}
+```
+
 #### delay([ value ], ms)
 
 > Returns a promise that will be resolved in `ms` milliseconds.

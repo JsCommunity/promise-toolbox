@@ -124,6 +124,42 @@ export { asCallback as nodeify }
 
 // -------------------------------------------------------------------
 
+// Usage:
+//
+//     @cancellable
+//     async fn (cancellation, other, args) {
+//       cancellation.catch(() => {
+//         // do stuff regarding the cancellation request.
+//       })
+//
+//       // do other stuff.
+//     }
+export const cancellable = (target, name, descriptor) => {
+  const fn = descriptor
+    ? descriptor.value
+    : target
+
+  function newFn (...args) {
+    let reject
+    const cancellation = new Promise((_, reject_) => {
+      reject = reject_
+    })
+    cancellation.catch(noop)
+
+    const promise = fn.call(this, cancellation, ...args)
+
+    promise.cancel = reject
+
+    return promise
+  }
+
+  return descriptor
+    ? { ...descriptor, value: newFn }
+    : newFn
+}
+
+// -------------------------------------------------------------------
+
 // Usage: delay([ value ], ms) or value::delay(ms)
 export function delay (value, ms) {
   if (this) {
