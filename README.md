@@ -109,7 +109,7 @@ console.log(await delay('500ms passed', 500))
 
 #### fromCallback(cb => fn(arg1, ..., argn, cb))
 
-> Easier and most efficient way to promisify a function call.
+> Easiest and most efficient way to promisify a function call.
 
 ```js
 import { fromCallback } from 'promise-utils'
