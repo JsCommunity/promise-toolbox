@@ -2,7 +2,11 @@
 
 > Essential utils for promises.
 
-Some of Bluebird's goodies for all promises!
+Features:
+
+- small (< 150K with all dependencies)
+- works with any promise implementation (even native)
+- nice with ES2015 / ES2016 syntax
 
 ## Install
 
