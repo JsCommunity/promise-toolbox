@@ -10,7 +10,7 @@ const endsWith = (str, suffix, pos = str.length) => {
 
 const isLength = value => (
   typeof value === 'number' &&
-  0 < value && value < Infinity &&
+  value >= 0 && value < Infinity &&
   Math.floor(value) === value
 )
 
@@ -166,7 +166,7 @@ export function delay (value, ms) {
     ms = value
     value = this
   } else if (arguments.length < 2) {
-    mv = value
+    ms = value
   }
 
   return AnyPromise.resolve(value).then(value => new AnyPromise(resolve => {
@@ -240,7 +240,7 @@ export function promisify (fn) {
   return function () {
     const { length } = arguments
     const args = new Array(length + 1)
-    for (let i = 0; i < n; ++i) {
+    for (let i = 0; i < length; ++i) {
       args[i] = arguments[i]
     }
 
@@ -364,7 +364,7 @@ const _some = (promises, count) => new AnyPromise((resolve, reject) => {
       return
     }
 
-    errors.push(value)
+    errors.push(reason)
     if (--acceptableErrors) {
       reject(errors)
       values = errors = null
@@ -406,6 +406,6 @@ export function timeout (promise, ms) {
   return new AnyPromise((resolve, reject) => {
     promise.then(resolve, reject)
 
-    setTimeout(() => reject(new TimeoutError))
+    setTimeout(() => reject(new TimeoutError()))
   })
 }
