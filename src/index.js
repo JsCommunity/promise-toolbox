@@ -3,10 +3,16 @@ import { BaseError } from 'make-error'
 
 // ===================================================================
 
+const { toString } = Object.prototype
+
 const endsWith = (str, suffix, pos = str.length) => {
   pos -= suffix.length
   return str.indexOf(suffix, pos) === pos
 }
+
+const isFunction = (tag =>
+  value => toString.call(value) === tag
+)(toString(toString))
 
 const isLength = value => (
   typeof value === 'number' &&
@@ -424,6 +430,12 @@ export function timeout (promise, ms) {
   return new AnyPromise((resolve, reject) => {
     promise.then(resolve, reject)
 
-    setTimeout(() => reject(new TimeoutError()))
+    setTimeout(() => {
+      reject(new TimeoutError())
+
+      if (isFunction(promise.cancel)) {
+        promise.cancel()
+      }
+    })
   })
 }
