@@ -160,6 +160,23 @@ export const cancellable = (target, name, descriptor) => {
 
 // -------------------------------------------------------------------
 
+// Discouraged but sometimes necessary way to create a promise.
+export const defer = () => {
+  let resolve, reject
+  const promise = new AnyPromise((resolve_, reject_) => {
+    resolve = resolve_
+    reject = reject_
+  })
+
+  return {
+    promise,
+    reject,
+    resolve
+  }
+}
+
+// -------------------------------------------------------------------
+
 // Usage: delay([ value ], ms) or value::delay(ms)
 export function delay (value, ms) {
   if (this) {
