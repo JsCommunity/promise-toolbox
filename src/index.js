@@ -346,7 +346,7 @@ const _some = (promises, count) => new AnyPromise((resolve, reject) => {
   let values = []
   let errors = []
 
-  function onFulfillment (value) {
+  const onFulfillment = value => {
     if (!values) {
       return
     }
@@ -359,7 +359,7 @@ const _some = (promises, count) => new AnyPromise((resolve, reject) => {
   }
 
   let acceptableErrors = -count
-  function onRejection (reason) {
+  const onRejection = reason => {
     if (!values) {
       return
     }
