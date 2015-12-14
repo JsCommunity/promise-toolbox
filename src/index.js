@@ -69,7 +69,7 @@ const _all = (promises, mapFn) => {
   // mapFn may be undefined but it's okay :)
   const results = map(promises, mapFn)
 
-  forEach(promises, (promise, key) => {
+  forEach(results, (promise, key) => {
     mainPromise = mainPromise
 
       // Waits the current promise.
