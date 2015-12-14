@@ -194,6 +194,7 @@ export function delay (value, ms) {
 // -------------------------------------------------------------------
 
 // Usage:
+//
 //     fromCallback(cb => fs.readFile('foo.txt', cb))
 //       .then(content => {
 //         console.log(content)

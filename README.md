@@ -18,6 +18,74 @@ Installation of the [npm package](https://npmjs.org/package/promise-utils):
 
 ## Usage
 
+### Functions
+
+#### cancellable
+
+> Make your async functions cancellable.
+
+```js
+import { cancellable } from 'promise-utils'
+
+const asyncFunction = cancellable(async function (cancellation, a, b) {
+  cancellation.catch(() => {
+    // do stuff regarding the cancellation request.
+  })
+
+  // do other stuff.
+})
+
+const promise = asyncFunction('foo', 'bar')
+promise.cancel()
+```
+
+If the function is a method of a class or an object, you can use
+`cancellable` as a decorator:
+
+```js
+class MyClass {
+  @cancellable
+  async asyncMethod (cancellation, a, b) {
+  cancellation.catch(() => {
+    // do stuff regarding the cancellation request.
+  })
+
+  // do other stuff.
+  }
+}
+```
+
+#### defer()
+
+> Discouraged but sometimes necessary way to create a promise.
+
+```js
+import { defer } from 'promise-utils'
+
+const { promise, resolve } = defer()
+
+promise.then(value => {
+  console.log(value)
+})
+
+resolve(3)
+```
+
+#### join(p1, ..., pn, cb)
+
+> Easiest and most efficient way to wait for a fixed amount of
+> promises.
+
+```js
+import { join } from 'promise-utils'
+
+join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => {
+  console.log(`in total: ${pictures.length + comments.length + tweets.length}`)
+})
+```
+
+### Pseudo methods
+
 #### all(promises, [ mapper ])
 
 > Waits for all promises of a collection to be resolved.
@@ -65,41 +133,6 @@ function getDataFor (input, callback) {
 }
 ```
 
-#### cancellable
-
-> Make your async functions cancellable.
-
-```js
-import { cancellable } from 'promise-utils'
-
-const asyncFunction = cancellable(async function (cancellation, a, b) {
-  cancellation.catch(() => {
-    // do stuff regarding the cancellation request.
-  })
-
-  // do other stuff.
-})
-
-const promise = asyncFunction('foo', 'bar')
-promise.cancel()
-```
-
-If the function is a method of a class or an object, you can use
-`cancellable` as a decorator:
-
-```js
-class MyClass {
-  @cancellable
-  async asyncMethod (cancellation, a, b) {
-  cancellation.catch(() => {
-    // do stuff regarding the cancellation request.
-  })
-
-  // do other stuff.
-  }
-}
-```
-
 #### delay([ value ], ms)
 
 > Returns a promise that will be resolved in `ms` milliseconds.
@@ -122,19 +155,6 @@ fromCallback(cb => fs.readFile('foo.txt', cb))
   .then(content => {
     console.log(content)
   })
-```
-
-#### join(p1, ..., pn, cb)
-
-> Easiest and most efficient way to wait for a fixed amount of
-> promises.
-
-```js
-import { join } from 'promise-utils'
-
-join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => {
-  console.log(`in total: ${pictures.length + comments.length + tweets.length}`)
-})
 ```
 
 #### lastly(promise, cb)
