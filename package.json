@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "any-promise": "^0.1.0",
-    "babel-runtime": "^5.8.34",
     "make-error": "^1.0.4"
   },
   "devDependencies": {

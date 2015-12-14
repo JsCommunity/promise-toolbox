@@ -5,7 +5,6 @@
     "es7.asyncFunctions",
     "es7.decorators",
     "es7.exportExtensions",
-    "es7.functionBind",
-    "runtime"
+    "es7.functionBind"
   ]
 }
