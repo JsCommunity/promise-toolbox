@@ -154,7 +154,7 @@ export const cancellable = (target, name, descriptor) => {
   }
 
   return descriptor
-    ? { ...descriptor, value: newFn }
+    ? (descriptor.value = newFn, descriptor)
     : newFn
 }
 
