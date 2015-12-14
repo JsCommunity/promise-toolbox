@@ -385,7 +385,7 @@ export function some (promises, count) {
   }
 
   return AnyPromise.resolve(promises)
-    .then(promises, _some(promises, count))
+    .then(promises => _some(promises, count))
 }
 
 // -------------------------------------------------------------------
