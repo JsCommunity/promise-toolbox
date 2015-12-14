@@ -233,7 +233,9 @@ export { lastly as finally }
 
 // Usage: promisify(fn) or fn::promisify()
 export function promisify (fn) {
-  this && (fn = this)
+  if (this) {
+    fn = this
+  }
 
   return function () {
     const { length } = arguments
