@@ -193,8 +193,8 @@ export const fromCallback = fn => new AnyPromise((resolve, reject) => {
 // Usage: join(p1, p..., pn, cb)
 export function join () {
   const n = arguments.length - 1
-  const args = new Array(n)
 
+  const args = new Array(n)
   let mainPromise = AnyPromise.resolve()
   for (let i = 0; i < n; ++i) {
     mainPromise = mainPromise
@@ -202,8 +202,10 @@ export function join () {
       .then(value => { args[i] = value })
   }
 
+  const cb = arguments[n]
+
   return new AnyPromise(resolve => {
-    resolve(arguments[n].apply(null, args))
+    resolve(cb.apply(null, args))
   })
 }
 
