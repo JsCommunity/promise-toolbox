@@ -176,6 +176,20 @@ export function delay (value, ms) {
 
 // -------------------------------------------------------------------
 
+// Usage:
+//     fromCallback(cb => fs.readFile('foo.txt', cb))
+//       .then(content => {
+//         console.log(content)
+//       })
+export const fromCallback = fn => new AnyPromise((resolve, reject) => {
+  fn((error, result) => error
+    ? reject(error)
+    : resolve(result)
+  )
+})
+
+// -------------------------------------------------------------------
+
 // Usage: join(p1, p..., pn, cb)
 export function join () {
   const n = arguments.length - 1

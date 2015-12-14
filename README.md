@@ -107,6 +107,19 @@ console.log(await delay('500ms passed', 500))
 // → 500 ms passed
 ```
 
+#### fromCallback(cb => fn(arg1, ..., argn, cb))
+
+> Easier and most efficient way to promisify a function call.
+
+```js
+import { fromCallback } from 'promise-utils'
+
+fromCallback(cb => fs.readFile('foo.txt', cb))
+  .then(content => {
+    console.log(content)
+  })
+```
+
 #### join(p1, ..., pn, cb)
 
 > Easiest and most efficient way to wait for a fixed amount of
