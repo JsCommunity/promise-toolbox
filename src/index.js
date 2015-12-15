@@ -428,14 +428,23 @@ export function timeout (promise, ms) {
   }
 
   return new AnyPromise((resolve, reject) => {
-    promise.then(resolve, reject)
-
-    setTimeout(() => {
+    const handle = setTimeout(() => {
       reject(new TimeoutError())
 
       if (isFunction(promise.cancel)) {
         promise.cancel()
       }
-    })
+    }, ms)
+
+    AnyPromise.resolve(promise).then(
+      value => {
+        clearTimeout(handle)
+        resolve(value)
+      },
+      reason => {
+        clearTimeout(handle)
+        reject(reason)
+      }
+    )
   })
 }
