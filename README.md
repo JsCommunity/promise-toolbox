@@ -4,8 +4,8 @@
 
 Features:
 
+- use the promise implementation you want (thanks to [any-promise](https://www.npmjs.com/package/any-promise))
 - small (< 150K with all dependencies)
-- works with any promise implementation (even native)
 - nice with ES2015 / ES2016 syntax
 
 ## Install
