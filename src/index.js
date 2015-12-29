@@ -67,25 +67,33 @@ const _map = (collection, iteratee) => {
   return result
 }
 
-// ===================================================================
+// -------------------------------------------------------------------
 
-const _all = (promises, mapFn) => {
+const _forEachAsync = (promises, cb) => {
   let mainPromise = AnyPromise.resolve()
 
-  // mapFn may be undefined but it's okay :)
-  const results = map(promises, mapFn)
-
-  forEach(results, (promise, key) => {
+  _forEach(promises, (promise, key) => {
     mainPromise = mainPromise
 
       // Waits the current promise.
       .then(() => promise)
 
-      // Saves the result.
-      .then(value => { results[key] = value })
+      // Executes the callback.
+      .then(value => cb(value, key))
   })
 
-  return mainPromise.then(() => results)
+  return mainPromise
+}
+
+// ===================================================================
+
+const _all = (promises, mapFn) => {
+  // mapFn may be undefined but it's okay :)
+  const results = _map(promises, mapFn)
+
+  return _forEachAsync(results, (value, key) => {
+    results[key] = value
+  }).then(() => results)
 }
 
 // Returns a promise which resolves when all the promises in a
@@ -195,6 +203,19 @@ export function delay (value, ms) {
   return AnyPromise.resolve(value).then(value => new AnyPromise(resolve => {
     setTimeout(() => resolve(value), ms)
   }))
+}
+
+// -------------------------------------------------------------------
+
+// Usage: forEach(promises, cb) or promises::forEach(cb)
+export function forEach (promises, cb) {
+  if (this) {
+    cb = promises
+    promises = this
+  }
+
+  return AnyPromise.resolve(promises)
+    .then(promises => _forEachAsync(promises, cb))
 }
 
 // -------------------------------------------------------------------
