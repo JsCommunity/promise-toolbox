@@ -216,6 +216,7 @@ export function forEach (promises, cb) {
 
   return AnyPromise.resolve(promises)
     .then(promises => _forEachAsync(promises, cb))
+    .then(_noop) // Resolves to undefined
 }
 
 // -------------------------------------------------------------------
