@@ -242,8 +242,10 @@ export function join () {
   const args = new Array(n)
   let mainPromise = AnyPromise.resolve()
   for (let i = 0; i < n; ++i) {
+    const promise = arguments[i]
+
     mainPromise = mainPromise
-      .then(() => arguments[i])
+      .then(() => promise)
       .then(value => { args[i] = value })
   }
 
