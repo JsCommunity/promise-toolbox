@@ -183,6 +183,23 @@ console.log(await delay('500ms passed', 500))
 // → 500 ms passed
 ```
 
+#### promises::forEach(cb)
+
+> Iterates in order over a collection of promises waiting for each of
+> them to be resolved.
+
+```js
+[
+  Promise.resolve('foo'),
+  Promise.resolve('bar'),
+]::forEach(value => {
+  console.log(value)
+})
+// →
+// foo
+// bar
+```
+
 #### promise::lastly(cb)
 
 > Execute a handler regardless of the promise fate. Similar to the
