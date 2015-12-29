@@ -3,44 +3,44 @@ import { BaseError } from 'make-error'
 
 // ===================================================================
 
-const { toString } = Object.prototype
+const _toString = Object.prototype.toString
 
-const endsWith = (str, suffix, pos = str.length) => {
+const _endsWith = (str, suffix, pos = str.length) => {
   pos -= suffix.length
   return str.indexOf(suffix, pos) === pos
 }
 
-const isFunction = (tag =>
-  value => toString.call(value) === tag
-)(toString(toString))
+const _isFunction = (tag =>
+  value => _toString.call(value) === tag
+)(_toString(_toString))
 
-const isLength = value => (
+const _isLength = value => (
   typeof value === 'number' &&
   value >= 0 && value < Infinity &&
   Math.floor(value) === value
 )
 
-const isArrayLike = value => value && isLength(value.length)
+const _isArrayLike = value => value && _isLength(value.length)
 
-const noop = () => {}
+const _noop = () => {}
 
 // -------------------------------------------------------------------
 
-const forArray = (array, iteratee) => {
+const _forArray = (array, iteratee) => {
   const { length } = array
   for (let i = 0; i < length; ++i) {
     iteratee(array[i], i, array)
   }
 }
 
-const forIn = (object, iteratee) => {
+const _forIn = (object, iteratee) => {
   for (const key in object) {
     iteratee(object[key], key, object)
   }
 }
 
 const { hasOwnProperty } = Object.prototype
-const forOwn = (object, iteratee) => {
+const _forOwn = (object, iteratee) => {
   for (const key in object) {
     if (hasOwnProperty.call(object, key)) {
       iteratee(object[key], key, object)
@@ -48,18 +48,18 @@ const forOwn = (object, iteratee) => {
   }
 }
 
-const forEach = (collection, iteratee) => isArrayLike(collection)
-  ? forArray(collection, iteratee)
-  : forOwn(collection, iteratee)
+const _forEach = (collection, iteratee) => _isArrayLike(collection)
+  ? _forArray(collection, iteratee)
+  : _forOwn(collection, iteratee)
 
-const map = (collection, iteratee) => {
-  const result = isArrayLike(collection)
+const _map = (collection, iteratee) => {
+  const result = _isArrayLike(collection)
     ? new Array(collection.length)
     : {}
 
   // If iteratee is not a function, simply returns the new container.
   if (iteratee) {
-    forEach(collection, (item, key) => {
+    _forEach(collection, (item, key) => {
       result[key] = iteratee(item, key, collection)
     })
   }
@@ -120,7 +120,7 @@ export function asCallback (promise, cb) {
     promise.then(
       value => cb(null, value),
       error => cb(error)
-    ).catch(noop)
+    ).catch(_noop)
   }
 
   return promise
@@ -150,7 +150,7 @@ export const cancellable = (target, name, descriptor) => {
     const cancellation = new Promise((_, reject_) => {
       reject = reject_
     })
-    cancellation.catch(noop)
+    cancellation.catch(_noop)
 
     const promise = fn.call(this, cancellation, ...args)
 
@@ -280,7 +280,7 @@ export function promisify (fn) {
 
 // Usage: promisifyAll(obj, [ mapper ]) or obj::promisifyAll([ mapper ])
 const DEFAULT_PALL_MAPPER = (name, fn) => (
-  !(endsWith(name, 'Sync') || endsWith(name, 'Async')) &&
+  !(_endsWith(name, 'Sync') || _endsWith(name, 'Async')) &&
   `${name}Async`
 )
 export function promisifyAll (obj, mapper) {
@@ -293,7 +293,7 @@ export function promisifyAll (obj, mapper) {
 
   const result = {}
 
-  forIn(obj, (value, name) => {
+  _forIn(obj, (value, name) => {
     let newName
     if (
       typeof value === 'function' &&
@@ -395,7 +395,7 @@ const _some = (promises, count) => new AnyPromise((resolve, reject) => {
     }
   }
 
-  forEach(promises, promise => {
+  _forEach(promises, promise => {
     ++acceptableErrors
     AnyPromise.resolve(promise).then(onFulfillment, onRejection)
   })
@@ -431,7 +431,7 @@ export function timeout (promise, ms) {
     const handle = setTimeout(() => {
       reject(new TimeoutError())
 
-      if (isFunction(promise.cancel)) {
+      if (_isFunction(promise.cancel)) {
         promise.cancel()
       }
     }, ms)
