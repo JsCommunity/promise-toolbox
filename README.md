@@ -71,6 +71,19 @@ promise.then(value => {
 resolve(3)
 ```
 
+#### fromCallback(cb => fn(arg1, ..., argn, cb))
+
+> Easiest and most efficient way to promisify a function call.
+
+```js
+import { fromCallback } from 'promise-utils'
+
+fromCallback(cb => fs.readFile('foo.txt', cb))
+  .then(content => {
+    console.log(content)
+  })
+```
+
 #### join(p1, ..., pn, cb)
 
 > Easiest and most efficient way to wait for a fixed amount of
@@ -86,7 +99,39 @@ join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => 
 
 ### Pseudo methods
 
-#### all(promises, [ mapper ])
+This function can be used as if they were methods, i.e. by passing the
+promise (or promises) as the context.
+
+This is extremely easy using [ES2016's bind syntax](https://github.com/zenparsing/es-function-bind).
+
+```js
+const promises = [
+  Promise.resolve('foo'),
+  Promise.resolve('bar')
+]
+
+promises::all().then(values => {
+  console.log(values)
+})
+// → [ 'foo', 'bar' ]
+```
+
+If you are still an older version of ECMAScript, fear not: simply pass
+the promise (or promises) as the first argument:
+
+```js
+var promises = [
+  Promise.resolve('foo'),
+  Promise.resolve('bar')
+]
+
+all(promises).then(function (values) {
+  console.log(values)
+})
+// → [ 'foo', 'bar' ]
+```
+
+#### promises:all([ mapper ])
 
 > Waits for all promises of a collection to be resolved.
 >
@@ -96,16 +141,6 @@ join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => 
 ```js
 import { all } from 'promise-utils'
 
-console.log(all({
-  foo: Promise.resolve('foo'),
-  bar: Promise.resolve('bar')
-}))
-// → {
-//   foo: 'foo',
-//   bar: 'bar'
-// }
-
-// ES2016 syntax.
 console.log({
   foo: Promise.resolve('foo'),
   bar: Promise.resolve('bar')
@@ -116,7 +151,7 @@ console.log({
 // }
 ```
 
-#### asCallback(promise, cb)
+#### promise::asCallback(cb)
 
 > Register a node-style callback on this promise.
 
@@ -126,38 +161,29 @@ import { asCallback } from 'promise-utils'
 // This function can be used either with node-style callbacks or with
 // promises.
 function getDataFor (input, callback) {
-  return asCallback(dataFromDataBase(input), callback)
-
-  // ES2016 syntax.
   return dataFromDataBase(input)::asCallback(callback)
 }
 ```
 
-#### delay([ value ], ms)
+#### promise::delay(ms)
 
-> Returns a promise that will be resolved in `ms` milliseconds.
+> Delays the resolution of a promise by `ms` milliseconds.
+>
+> Note: the rejection is not delayed.
 
-`value` may be a promise.
+```js
+console.log(await Promise.resolve('500ms passed')::delay(500))
+// → 500 ms passed
+```
+
+Also works with a value:
 
 ```js
 console.log(await delay('500ms passed', 500))
 // → 500 ms passed
 ```
 
-#### fromCallback(cb => fn(arg1, ..., argn, cb))
-
-> Easiest and most efficient way to promisify a function call.
-
-```js
-import { fromCallback } from 'promise-utils'
-
-fromCallback(cb => fs.readFile('foo.txt', cb))
-  .then(content => {
-    console.log(content)
-  })
-```
-
-#### lastly(promise, cb)
+#### promise::lastly(cb)
 
 > Execute a handler regardless of the promise fate. Similar to the
 > `finally` block in synchronous codes.
@@ -181,9 +207,9 @@ function ajaxGetAsync (url) {
 }
 ```
 
-#### promisify(fn) / promisifyAll(obj)
+#### fn::promisify() / obj::promisifyAll()
 
-> From async functions taking node-style callbacks, create new ones
+> Creates  async functions taking node-style callbacks, create new ones
 > returning promises.
 
 ```js
@@ -191,13 +217,9 @@ import fs from 'fs'
 import { promisify, promisifyAll } from 'promise-utils'
 
 // Promisify a single function.
-const readFile = promisify(fs.readFile)
+const readFile = fs.readFile::promisify()
 
 // Or all functions (own or inherited) exposed on a object.
-const fsPromise = promisifyAll(fs)
-
-// ES2016 syntax.
-const readFile = fs.readFile::promisify()
 const fsPromise = fs::promisifyAll()
 
 readFile(__filename).then(content => console.log(content))
@@ -205,7 +227,7 @@ readFile(__filename).then(content => console.log(content))
 fsPromise.readFileAsync(__filename).then(content => console.log(content))
 ```
 
-#### reflect(promise)
+#### promise::reflect()
 
 > Returns a promise which resolves to an objects which reflects the
 > resolution of this promise.
@@ -213,9 +235,6 @@ fsPromise.readFileAsync(__filename).then(content => console.log(content))
 ```js
 import { reflect } from 'promise-utils'
 
-const inspection = await reflect(reflect)
-
-// ES2016 syntax.
 const inspection = await promise::reflect()
 
 if (inspection.isFulfilled()) {
@@ -225,30 +244,27 @@ if (inspection.isFulfilled()) {
 }
 ```
 
-#### some(promises, count)
+#### promises::some(count)
 
 > Waits for `count` promises in a collection to be resolved.
 
 ```js
 import { some } from 'promise-utils'
 
-const [ first, seconds ] = await some([
+const [ first, seconds ] = await [
   ping('ns1.example.org'),
   ping('ns2.example.org'),
   ping('ns3.example.org'),
   ping('ns4.example.org')
-], 2)
+]::some(2)
 ```
 
-#### timeout(promise, ms)
+#### promise::timeout(ms)
 
 > Automatically rejects a promise if it is still pending after `ms`
 > milliseconds.
 
 ```js
-await timeout(doLongOperation(), 100)
-
-// ES2016 syntax.
 await doLongOperation()::timeout(100)
 ```
 
