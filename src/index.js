@@ -329,7 +329,7 @@ export function promisify (fn, thisArg) {
     return new AnyPromise((resolve, reject) => {
       args[length] = (error, result) => error
         ? reject(error)
-        : resolve(error)
+        : resolve(result)
 
       fn.apply(thisArg || this, args)
     })
