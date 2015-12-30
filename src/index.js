@@ -10,6 +10,10 @@ const _endsWith = (str, suffix, pos = str.length) => {
   return str.indexOf(suffix, pos) === pos
 }
 
+const _isArray = Array.isArray || (tag =>
+  value => _toString.call(value) === tag
+)([])
+
 const _isFunction = (tag =>
   value => _toString.call(value) === tag
 )(_toString(_toString))
@@ -21,6 +25,10 @@ const _isLength = value => (
 )
 
 const _isArrayLike = value => value && _isLength(value.length)
+
+const _isIterable = typeof Symbol === 'function'
+  ? value => value && _isFunction(value[Symbol.iterator])
+  : () => false
 
 const _noop = () => {}
 
@@ -39,6 +47,15 @@ const _forIn = (object, iteratee) => {
   }
 }
 
+const _forIterable = (iterable, iteratee) => {
+  const iterator = iterable[Symbol.iterator]()
+
+  let current
+  while (!(current = iterator.next()).done) {
+    iteratee(current.value, null, iterable)
+  }
+}
+
 const { hasOwnProperty } = Object.prototype
 const _forOwn = (object, iteratee) => {
   for (const key in object) {
@@ -48,9 +65,13 @@ const _forOwn = (object, iteratee) => {
   }
 }
 
-const _forEach = (collection, iteratee) => _isArrayLike(collection)
+const _forEach = (collection, iteratee) => _isArray(collection)
   ? _forArray(collection, iteratee)
-  : _forOwn(collection, iteratee)
+  : _isIterable(collection)
+    ? _forIterable(collection, iteratee)
+    : _isArrayLike(collection)
+      ? _forArray(collection, iteratee)
+      : _forOwn(collection, iteratee)
 
 const _map = (collection, iteratee) => {
   const result = _isArrayLike(collection)
