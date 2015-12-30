@@ -4,4 +4,4 @@ try { require('trace') } catch (_) {}
 try { require('clarify') } catch (_) {}
 try { require('source-map-support/register') } catch (_) {}
 
-require('babel/polyfill')
+require('babel-polyfill')
