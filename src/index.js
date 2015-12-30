@@ -69,10 +69,10 @@ const _map = (collection, iteratee) => {
 
 // -------------------------------------------------------------------
 
-const _forEachAsync = (promises, cb) => {
+const _makeAsyncIterator = iterator => (promises, cb) => {
   let mainPromise = AnyPromise.resolve()
 
-  _forEach(promises, (promise, key) => {
+  iterator(promises, (promise, key) => {
     mainPromise = mainPromise
 
       // Waits the current promise.
@@ -84,6 +84,8 @@ const _forEachAsync = (promises, cb) => {
 
   return mainPromise
 }
+
+const _forEachAsync = _makeAsyncIterator(_forEach)
 
 // ===================================================================
 
@@ -207,17 +209,25 @@ export function delay (value, ms) {
 
 // -------------------------------------------------------------------
 
-// Usage: forEach(promises, cb) or promises::forEach(cb)
-export function forEach (promises, cb) {
-  if (this) {
-    cb = promises
-    promises = this
-  }
+export const makeAsyncIterator = iterator => {
+  const asyncIterator = _makeAsyncIterator(iterator)
 
-  return AnyPromise.resolve(promises)
-    .then(promises => _forEachAsync(promises, cb))
-    .then(_noop) // Resolves to undefined
+  return function (promises, cb) {
+    if (this) {
+      cb = promises
+      promises = this
+    }
+
+    return AnyPromise.resolve(promises)
+      .then(promises => asyncIterator(promises, cb))
+      .then(_noop) // Resolves to undefined
+  }
 }
+
+export const forArray = makeAsyncIterator(_forArray)
+export const forEach = makeAsyncIterator(_forEach)
+export const forIn = makeAsyncIterator(_forIn)
+export const forOwn = makeAsyncIterator(_forOwn)
 
 // -------------------------------------------------------------------
 
