@@ -291,9 +291,10 @@ export { lastly as finally }
 
 // -------------------------------------------------------------------
 
-// Usage: promisify(fn) or fn::promisify()
-export function promisify (fn) {
+// Usage: promisify(fn, [ thisArg ]) or fn::promisify([ thisArg ])
+export function promisify (fn, thisArg) {
   if (this) {
+    thisArg = fn
     fn = this
   }
 
@@ -309,7 +310,7 @@ export function promisify (fn) {
         ? reject(error)
         : resolve(error)
 
-      fn.apply(this, args)
+      fn.apply(thisArg || this, args)
     })
   }
 }
