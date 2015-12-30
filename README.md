@@ -84,7 +84,7 @@ fromCallback(cb => fs.readFile('foo.txt', cb))
   })
 ```
 
-#### join(p1, ..., pn, cb)
+#### join(p1, ..., pn, cb) / join([p1, ..., pn], cb)
 
 > Easiest and most efficient way to wait for a fixed amount of
 > promises.

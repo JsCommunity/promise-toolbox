@@ -236,21 +236,23 @@ export const fromCallback = fn => new AnyPromise((resolve, reject) => {
 
 // -------------------------------------------------------------------
 
-// Usage: join(p1, p..., pn, cb)
+// Usage: join(p1, ..., pn, cb) or join([p1, ..., pn], cb)
 export function join () {
   const n = arguments.length - 1
-
-  const args = new Array(n)
-  let mainPromise = AnyPromise.resolve()
-  for (let i = 0; i < n; ++i) {
-    const promise = arguments[i]
-
-    mainPromise = mainPromise
-      .then(() => promise)
-      .then(value => { args[i] = value })
-  }
-
   const cb = arguments[n]
+
+  let args
+  if (n !== 2 || !_isArrayLike(args = arguments[0])) {
+    args = new Array(n)
+    let mainPromise = AnyPromise.resolve()
+    for (let i = 0; i < n; ++i) {
+      const promise = arguments[i]
+
+      mainPromise = mainPromise
+        .then(() => promise)
+        .then(value => { args[i] = value })
+    }
+  }
 
   return new AnyPromise(resolve => {
     resolve(cb.apply(null, args))
