@@ -46,9 +46,9 @@ If the function is a method of a class or an object, you can use
 class MyClass {
   @cancellable
   async asyncMethod (cancellation, a, b) {
-  cancellation.catch(() => {
-    // do stuff regarding the cancellation request.
-  })
+    cancellation.catch(() => {
+      // do stuff regarding the cancellation request.
+    })
 
   // do other stuff.
   }
@@ -230,7 +230,7 @@ function ajaxGetAsync (url) {
 }
 ```
 
-#### fn::promisify() / obj::promisifyAll()
+#### fn::promisify([ thisArg ]) / obj::promisifyAll()
 
 > Creates  async functions taking node-style callbacks, create new ones
 > returning promises.
