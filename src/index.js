@@ -12,11 +12,11 @@ const _endsWith = (str, suffix, pos = str.length) => {
 
 const _isArray = Array.isArray || (tag =>
   value => _toString.call(value) === tag
-)([])
+)(_toString.call([]))
 
 const _isFunction = (tag =>
   value => _toString.call(value) === tag
-)(_toString(_toString))
+)(_toString.call(_toString))
 
 const _isLength = value => (
   typeof value === 'number' &&
