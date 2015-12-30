@@ -131,7 +131,7 @@ all(promises).then(function (values) {
 // → [ 'foo', 'bar' ]
 ```
 
-#### promises:all([ mapper ])
+#### promises::all([ mapper ])
 
 > Waits for all promises of a collection to be resolved.
 >
@@ -140,6 +140,12 @@ all(promises).then(function (values) {
 
 ```js
 import { all } from 'promise-utils'
+
+console.log([
+  Promise.resolve('foo'),
+  Promise.resolve('bar')
+]::all())
+// → ['foo', 'bar']
 
 console.log({
   foo: Promise.resolve('foo'),
