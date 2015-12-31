@@ -248,6 +248,7 @@ export const makeAsyncIterator = iterator => {
 export const forArray = makeAsyncIterator(_forArray)
 export const forEach = makeAsyncIterator(_forEach)
 export const forIn = makeAsyncIterator(_forIn)
+export const forIterable = makeAsyncIterator(_forIterable)
 export const forOwn = makeAsyncIterator(_forOwn)
 
 // -------------------------------------------------------------------
