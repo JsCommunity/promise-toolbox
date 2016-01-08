@@ -126,35 +126,25 @@ const _all = (promises, mapFn) => {
 // Optionally a function can be provided to map all items in the
 // collection before waiting for completion.
 //
-// Usage: all(promises, [ mapFn ]) or promises::all([ mapFn ])
-export function all (promises, mapFn) {
-  if (this) {
-    mapFn = promises
-    promises = this
-  }
-
-  return AnyPromise.resolve(promises)
+// Usage: promises::all([ mapFn ])
+export function all (mapFn) {
+  return AnyPromise.resolve(this)
     .then(promises => _all(promises, mapFn))
 }
 
 // -------------------------------------------------------------------
 
-// Usage: asCallback(promise, cb) or promise::asCallback(cb)
-export function asCallback (promise, cb) {
-  if (this) {
-    cb = promise
-    promise = this
-  }
-
+// Usage: promise::asCallback(cb)
+export function asCallback (cb) {
   // cb can be undefined.
   if (cb) {
-    promise.then(
+    this.then(
       value => cb(null, value),
       error => cb(error)
     ).catch(_noop)
   }
 
-  return promise
+  return this
 }
 
 export { asCallback as nodeify }
@@ -214,16 +204,9 @@ export const defer = () => {
 
 // -------------------------------------------------------------------
 
-// Usage: delay([ value ], ms) or value::delay(ms)
-export function delay (value, ms) {
-  if (this) {
-    ms = value
-    value = this
-  } else if (arguments.length < 2) {
-    ms = value
-  }
-
-  return AnyPromise.resolve(value).then(value => new AnyPromise(resolve => {
+// Usage: promise::delay(ms)
+export function delay (ms) {
+  return AnyPromise.resolve(this).then(value => new AnyPromise(resolve => {
     setTimeout(() => resolve(value), ms)
   }))
 }
@@ -233,13 +216,8 @@ export function delay (value, ms) {
 export const makeAsyncIterator = iterator => {
   const asyncIterator = _makeAsyncIterator(iterator)
 
-  return function (promises, cb) {
-    if (this) {
-      cb = promises
-      promises = this
-    }
-
-    return AnyPromise.resolve(promises)
+  return function (cb) {
+    return AnyPromise.resolve(this)
       .then(promises => asyncIterator(promises, cb))
       .then(_noop) // Resolves to undefined
   }
@@ -295,14 +273,9 @@ export function join () {
 
 // Ponyfill for Promise.finally(cb)
 //
-// Usage: lastly(promise, cb) or promise::lastly(cb)
-export function lastly (promise, cb) {
-  if (this) {
-    cb = promise
-    promise = this
-  }
-
-  return promise.then(
+// Usage: promise::lastly(cb)
+export function lastly (cb) {
+  return this.then(
     value => AnyPromise.resolve(cb()).then(() => value),
     reason => AnyPromise.resolve(cb()).then(() => {
       throw reason
@@ -339,12 +312,9 @@ const _setFunctionNameAndLength = (() => {
   return fn => fn
 })()
 
-// Usage: promisify(fn, [ thisArg ]) or fn::promisify([ thisArg ])
-export function promisify (fn, thisArg) {
-  if (this) {
-    thisArg = fn
-    fn = this
-  }
+// Usage: fn::promisify([ thisArg ])
+export function promisify (thisArg) {
+  const fn = this
 
   return _setFunctionNameAndLength(function () {
     const { length } = arguments
@@ -363,28 +333,21 @@ export function promisify (fn, thisArg) {
   }, fn.name, fn.length && fn.length - 1)
 }
 
-// Usage: promisifyAll(obj, [ mapper ]) or obj::promisifyAll([ mapper ])
+// Usage: obj::promisifyAll([ mapper ])
 const DEFAULT_PALL_MAPPER = (name, fn) => (
   !(_endsWith(name, 'Sync') || _endsWith(name, 'Async')) &&
   `${name}Async`
 )
-export function promisifyAll (obj, mapper) {
-  if (this) {
-    mapper = obj
-    obj = this
-  }
-
-  mapper || (mapper = DEFAULT_PALL_MAPPER)
-
+export function promisifyAll (mapper = DEFAULT_PALL_MAPPER) {
   const result = {}
 
-  _forIn(obj, (value, name) => {
+  _forIn(this, (value, name) => {
     let newName
     if (
       typeof value === 'function' &&
-      (newName = mapper(name, value, obj))
+      (newName = mapper(name, value, this))
     ) {
-      obj[newName] = promisify(value)
+      this[newName] = promisify(value)
     }
   })
 
@@ -427,9 +390,9 @@ const _reflectRejection = (__proto__ => reason => ({
 // PromiseInspection interface and reflects the resolution this
 // promise.
 //
-// Usage: reflect(promise) or promise::reflect()
-export function reflect (promise) {
-  return AnyPromise.resolve(this || promise).then(
+// Usage: promise::reflect()
+export function reflect () {
+  return AnyPromise.resolve(this).then(
     _reflectResolution,
     _reflectRejection
   )
@@ -444,9 +407,9 @@ export function reflect (promise) {
 // This promise will be fulfilled with a collection (of the same type,
 // array or object) containing promise inspections.
 //
-// Usage: settle(promises) or promises::settle()
-export function settle (promises) {
-  return all(this || promises, reflect)
+// Usage: promises::settle()
+export function settle () {
+  return this::all(x => x::reflect())
 }
 
 // -------------------------------------------------------------------
@@ -486,14 +449,9 @@ const _some = (promises, count) => new AnyPromise((resolve, reject) => {
   })
 })
 
-// Usage: some(promises, count) or promises::some(count)
-export function some (promises, count) {
-  if (this) {
-    count = promises
-    promises = this
-  }
-
-  return AnyPromise.resolve(promises)
+// Usage: promises::some(count)
+export function some (count) {
+  return AnyPromise.resolve(this)
     .then(promises => _some(promises, count))
 }
 
@@ -505,23 +463,18 @@ export class TimeoutError extends BaseError {
   }
 }
 
-// Usage: timeout(promise, ms) or promise::timeout(ms)
-export function timeout (promise, ms) {
-  if (this) {
-    ms = promise
-    promise = this
-  }
-
+// Usage: promise::timeout(ms)
+export function timeout (ms) {
   return new AnyPromise((resolve, reject) => {
     const handle = setTimeout(() => {
       reject(new TimeoutError())
 
-      if (_isFunction(promise.cancel)) {
-        promise.cancel()
+      if (_isFunction(this.cancel)) {
+        this.cancel()
       }
     }, ms)
 
-    AnyPromise.resolve(promise).then(
+    AnyPromise.resolve(this).then(
       value => {
         clearTimeout(handle)
         resolve(value)

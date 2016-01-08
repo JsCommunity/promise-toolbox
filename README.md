@@ -117,7 +117,8 @@ promises::all().then(values => {
 ```
 
 If you are still an older version of ECMAScript, fear not: simply pass
-the promise (or promises) as the first argument:
+the promise (or promises) as the first argument of the `.call()`
+method:
 
 ```js
 var promises = [
@@ -125,7 +126,7 @@ var promises = [
   Promise.resolve('bar')
 ]
 
-all(promises).then(function (values) {
+all.call(promises).then(function (values) {
   console.log(values)
 })
 // → [ 'foo', 'bar' ]
@@ -185,7 +186,7 @@ console.log(await Promise.resolve('500ms passed')::delay(500))
 Also works with a value:
 
 ```js
-console.log(await delay('500ms passed', 500))
+console.log(await delay.call('500ms passed', 500))
 // → 500 ms passed
 ```
 

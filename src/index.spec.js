@@ -43,11 +43,11 @@ describe('lastly()', () => {
 
 describe('settle()', () => {
   it('works with arrays', () => {
-    return settle([
+    return [
       AnyPromise.resolve(42),
       Math.PI,
       AnyPromise.reject('fatality')
-    ]).then(([ status1, status2, status3 ]) => {
+    ]::settle().then(([ status1, status2, status3 ]) => {
       expect(status1.isFulfilled()).to.equal(true)
       expect(status2.isFulfilled()).to.equal(true)
       expect(status3.isFulfilled()).to.equal(false)
@@ -72,11 +72,11 @@ describe('settle()', () => {
   })
 
   it('works with objects', () => {
-    return settle({
+    return {
       a: AnyPromise.resolve(42),
       b: Math.PI,
       c: AnyPromise.reject('fatality')
-    }).then(({
+    }::settle().then(({
       a: status1,
       b: status2,
       c: status3
