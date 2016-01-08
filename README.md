@@ -240,6 +240,8 @@ import fs from 'fs'
 import { promisify, promisifyAll } from 'promise-utils'
 
 // Promisify a single function.
+//
+// If possible, the function name is kept and the new length is set.
 const readFile = fs.readFile::promisify()
 
 // Or all functions (own or inherited) exposed on a object.

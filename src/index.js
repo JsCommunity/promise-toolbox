@@ -313,6 +313,32 @@ export { lastly as finally }
 
 // -------------------------------------------------------------------
 
+const _setFunctionNameAndLength = (() => {
+  const _defineProperties = Object.defineProperties
+
+  try {
+    const f = _defineProperties(function () {}, {
+      length: { value: 2 },
+      name: { value: 'foo' }
+    })
+
+    if (f.length === 2 && f.name === 'foo') {
+      return (fn, name, length) => _defineProperties(fn, {
+        length: {
+          configurable: true,
+          value: length
+        },
+        name: {
+          configurable: true,
+          value: name
+        }
+      })
+    }
+  } catch (_) {}
+
+  return fn => fn
+})()
+
 // Usage: promisify(fn, [ thisArg ]) or fn::promisify([ thisArg ])
 export function promisify (fn, thisArg) {
   if (this) {
@@ -320,7 +346,7 @@ export function promisify (fn, thisArg) {
     fn = this
   }
 
-  return function () {
+  return _setFunctionNameAndLength(function () {
     const { length } = arguments
     const args = new Array(length + 1)
     for (let i = 0; i < length; ++i) {
@@ -334,7 +360,7 @@ export function promisify (fn, thisArg) {
 
       fn.apply(thisArg || this, args)
     })
-  }
+  }, fn.name, fn.length && fn.length - 1)
 }
 
 // Usage: promisifyAll(obj, [ mapper ]) or obj::promisifyAll([ mapper ])
