@@ -5,7 +5,7 @@
 Features:
 
 - use the promise implementation you want (thanks to [any-promise](https://www.npmjs.com/package/any-promise))
-- small (< 150K with all dependencies)
+- small (< 150 KB with all dependencies, < 5 KB with gzip)
 - nice with ES2015 / ES2016 syntax
 
 ## Install
