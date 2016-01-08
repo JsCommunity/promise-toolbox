@@ -347,7 +347,7 @@ export function promisifyAll (mapper = DEFAULT_PALL_MAPPER) {
       typeof value === 'function' &&
       (newName = mapper(name, value, this))
     ) {
-      this[newName] = promisify(value)
+      result[newName] = promisify(value)
     }
   })
 
