@@ -88,6 +88,13 @@ const _map = (collection, iteratee) => {
   return result
 }
 
+// ===================================================================
+
+export const isPromise = value => (
+  value != null &&
+  typeof value.then === 'function'
+)
+
 // -------------------------------------------------------------------
 
 const _makeAsyncIterator = iterator => (promises, cb) => {
@@ -107,6 +114,10 @@ const _makeAsyncIterator = iterator => (promises, cb) => {
 }
 
 const _forEachAsync = _makeAsyncIterator(_forEach)
+
+const _wrap = value => isPromise(value)
+  ? value
+  : AnyPromise.resolve(value)
 
 // ===================================================================
 
@@ -128,8 +139,7 @@ const _all = (promises, mapFn) => {
 //
 // Usage: promises::all([ mapFn ])
 export function all (mapFn) {
-  return AnyPromise.resolve(this)
-    .then(promises => _all(promises, mapFn))
+  return _wrap(this).then(promises => _all(promises, mapFn))
 }
 
 // -------------------------------------------------------------------
@@ -206,7 +216,7 @@ export const defer = () => {
 
 // Usage: promise::delay(ms)
 export function delay (ms) {
-  return AnyPromise.resolve(this).then(value => new AnyPromise(resolve => {
+  return _wrap(this).then(value => new AnyPromise(resolve => {
     setTimeout(() => resolve(value), ms)
   }))
 }
@@ -217,7 +227,7 @@ export const makeAsyncIterator = iterator => {
   const asyncIterator = _makeAsyncIterator(iterator)
 
   return function (cb) {
-    return AnyPromise.resolve(this)
+    return _wrap(this)
       .then(promises => asyncIterator(promises, cb))
       .then(_noop) // Resolves to undefined
   }
@@ -243,13 +253,6 @@ export const fromCallback = fn => new AnyPromise((resolve, reject) => {
     : resolve(result)
   )
 })
-
-// -------------------------------------------------------------------
-
-export const isPromise = value => (
-  value != null &&
-  typeof value.then === 'function'
-)
 
 // -------------------------------------------------------------------
 
@@ -282,9 +285,9 @@ export function join () {
 //
 // Usage: promise::lastly(cb)
 export function lastly (cb) {
-  return this.then(
-    value => AnyPromise.resolve(cb()).then(() => value),
-    reason => AnyPromise.resolve(cb()).then(() => {
+  return _wrap(this).then(
+    value => _wrap(cb()).then(() => value),
+    reason => _wrap(cb()).then(() => {
       throw reason
     })
   )
@@ -399,7 +402,7 @@ const _reflectRejection = (__proto__ => reason => ({
 //
 // Usage: promise::reflect()
 export function reflect () {
-  return AnyPromise.resolve(this).then(
+  return _wrap(this).then(
     _reflectResolution,
     _reflectRejection
   )
@@ -452,14 +455,13 @@ const _some = (promises, count) => new AnyPromise((resolve, reject) => {
 
   _forEach(promises, promise => {
     ++acceptableErrors
-    AnyPromise.resolve(promise).then(onFulfillment, onRejection)
+    _wrap(promise).then(onFulfillment, onRejection)
   })
 })
 
 // Usage: promises::some(count)
 export function some (count) {
-  return AnyPromise.resolve(this)
-    .then(promises => _some(promises, count))
+  return _wrap(this).then(promises => _some(promises, count))
 }
 
 // -------------------------------------------------------------------
@@ -481,7 +483,7 @@ export function timeout (ms) {
       }
     }, ms)
 
-    AnyPromise.resolve(this).then(
+    _wrap(this).then(
       value => {
         clearTimeout(handle)
         resolve(value)
