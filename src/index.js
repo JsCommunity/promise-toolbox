@@ -246,6 +246,13 @@ export const fromCallback = fn => new AnyPromise((resolve, reject) => {
 
 // -------------------------------------------------------------------
 
+export const isPromise = value => (
+  value != null &&
+  typeof value.then === 'function'
+)
+
+// -------------------------------------------------------------------
+
 // Usage: join(p1, ..., pn, cb) or join([p1, ..., pn], cb)
 export function join () {
   const n = arguments.length - 1

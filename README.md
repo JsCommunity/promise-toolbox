@@ -84,6 +84,16 @@ fromCallback(cb => fs.readFile('foo.txt', cb))
   })
 ```
 
+#### isPromise(value)
+
+```js
+import { isPromise } from 'promise-utils'
+
+if (isPromise(foo())) {
+  console.log('foo() returns a promise')
+}
+```
+
 #### join(p1, ..., pn, cb) / join([p1, ..., pn], cb)
 
 > Easiest and most efficient way to wait for a fixed amount of
