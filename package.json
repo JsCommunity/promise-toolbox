@@ -1,6 +1,5 @@
 {
-  "private": true,
-  "name": "promise-utils",
+  "name": "promise-toolbox",
   "version": "0.0.0",
   "license": "ISC",
   "description": "Essential utils for promises",
@@ -12,11 +11,11 @@
     "thenify",
     "thenification"
   ],
-  "homepage": "https://github.com/julien-f/js-promise-utils",
-  "bugs": "https://github.com/julien-f/js-promise-utils/issues",
+  "homepage": "https://github.com/julien-f/js-promise-toolbox",
+  "bugs": "https://github.com/julien-f/js-promise-toolbox/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/julien-f/js-promise-utils"
+    "url": "https://github.com/julien-f/js-promise-toolbox"
   },
   "author": {
     "name": "Julien Fontanet",

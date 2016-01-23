@@ -1,4 +1,4 @@
-# promise-utils [![Build Status](https://travis-ci.org/julien-f/js-promise-utils.png?branch=master)](https://travis-ci.org/julien-f/js-promise-utils)
+# promise-toolbox [![Build Status](https://travis-ci.org/julien-f/js-promise-toolbox.png?branch=master)](https://travis-ci.org/julien-f/js-promise-toolbox)
 
 > Essential utils for promises.
 
@@ -10,10 +10,10 @@ Features:
 
 ## Install
 
-Installation of the [npm package](https://npmjs.org/package/promise-utils):
+Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
 
 ```
-> npm install --save promise-utils
+> npm install --save promise-toolbox
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ Installation of the [npm package](https://npmjs.org/package/promise-utils):
 > Make your async functions cancellable.
 
 ```js
-import { cancellable } from 'promise-utils'
+import { cancellable } from 'promise-toolbox'
 
 const asyncFunction = cancellable(async function (cancellation, a, b) {
   cancellation.catch(() => {
@@ -60,7 +60,7 @@ class MyClass {
 > Discouraged but sometimes necessary way to create a promise.
 
 ```js
-import { defer } from 'promise-utils'
+import { defer } from 'promise-toolbox'
 
 const { promise, resolve } = defer()
 
@@ -76,7 +76,7 @@ resolve(3)
 > Easiest and most efficient way to promisify a function call.
 
 ```js
-import { fromCallback } from 'promise-utils'
+import { fromCallback } from 'promise-toolbox'
 
 fromCallback(cb => fs.readFile('foo.txt', cb))
   .then(content => {
@@ -87,7 +87,7 @@ fromCallback(cb => fs.readFile('foo.txt', cb))
 #### isPromise(value)
 
 ```js
-import { isPromise } from 'promise-utils'
+import { isPromise } from 'promise-toolbox'
 
 if (isPromise(foo())) {
   console.log('foo() returns a promise')
@@ -100,7 +100,7 @@ if (isPromise(foo())) {
 > promises.
 
 ```js
-import { join } from 'promise-utils'
+import { join } from 'promise-toolbox'
 
 join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => {
   console.log(`in total: ${pictures.length + comments.length + tweets.length}`)
@@ -150,7 +150,7 @@ all.call(promises).then(function (values) {
 > with objects.
 
 ```js
-import { all } from 'promise-utils'
+import { all } from 'promise-toolbox'
 
 console.log([
   Promise.resolve('foo'),
@@ -173,7 +173,7 @@ console.log({
 > Register a node-style callback on this promise.
 
 ```js
-import { asCallback } from 'promise-utils'
+import { asCallback } from 'promise-toolbox'
 
 // This function can be used either with node-style callbacks or with
 // promises.
@@ -226,7 +226,7 @@ console.log(await delay.call('500ms passed', 500))
 > forwarded.
 
 ```js
-import { lastly } from 'promise-utils'
+import { lastly } from 'promise-toolbox'
 
 function ajaxGetAsync (url) {
   return new Promise((resolve, reject) => {
@@ -248,7 +248,7 @@ function ajaxGetAsync (url) {
 
 ```js
 import fs from 'fs'
-import { promisify, promisifyAll } from 'promise-utils'
+import { promisify, promisifyAll } from 'promise-toolbox'
 
 // Promisify a single function.
 //
@@ -269,7 +269,7 @@ fsPromise.readFileAsync(__filename).then(content => console.log(content))
 > resolution of this promise.
 
 ```js
-import { reflect } from 'promise-utils'
+import { reflect } from 'promise-toolbox'
 
 const inspection = await promise::reflect()
 
@@ -285,7 +285,7 @@ if (inspection.isFulfilled()) {
 > Waits for `count` promises in a collection to be resolved.
 
 ```js
-import { some } from 'promise-utils'
+import { some } from 'promise-toolbox'
 
 const [ first, seconds ] = await [
   ping('ns1.example.org'),
@@ -333,7 +333,7 @@ the code.
 
 You may:
 
-- report any [issue](https://github.com/julien-f/js-promise-utils/issues)
+- report any [issue](https://github.com/julien-f/js-promise-toolbox/issues)
   you've encountered;
 - fork and create a pull request.
 
