@@ -5,11 +5,40 @@ import expect from 'must'
 import sinon from 'sinon'
 
 import {
+  join,
   lastly,
   settle
 } from './'
 
 // ===================================================================
+
+describe('join()', () => {
+  it('calls the callback once promises are resolved', () => join(
+    AnyPromise.resolve('foo'), AnyPromise.resolve('bar'),
+    (foo, bar) => {
+      expect(foo).to.equal('foo')
+      expect(bar).to.equal('bar')
+    }
+  ))
+
+  it('can takes inputs in an array', () => join(
+    [ AnyPromise.resolve('foo'), AnyPromise.resolve('bar') ],
+    (foo, bar) => {
+      expect(foo).to.equal('foo')
+      expect(bar).to.equal('bar')
+    }
+  ))
+
+  it('rejects if one promise rejects', () => expect(join(
+    AnyPromise.resolve('foo'), AnyPromise.reject('bar'),
+    (foo, bar) => {
+      expect(foo).to.equal('foo')
+      expect(bar).to.equal('bar')
+    }
+  )).to.reject.to.equal('bar'))
+})
+
+// -------------------------------------------------------------------
 
 describe('lastly()', () => {
   it('calls a callback on resolution', () => {

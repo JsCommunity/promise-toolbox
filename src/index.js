@@ -125,7 +125,7 @@ const _all = (promises, mapFn) => {
   // mapFn may be undefined but it's okay :)
   const results = _map(promises, mapFn)
 
-  return _forEachAsync(results, (value, key) => {
+  return _forEachAsync(mapFn ? results : promises, (value, key) => {
     results[key] = value
   }).then(() => results)
 }
@@ -261,22 +261,19 @@ export function join () {
   const n = arguments.length - 1
   const cb = arguments[n]
 
-  let args
-  if (n !== 2 || !_isArrayLike(args = arguments[0])) {
-    args = new Array(n)
-    let mainPromise = AnyPromise.resolve()
+  let promises
+  if (n === 0) {
+    return new AnyPromise(resolve => resolve(cb()))
+  } else if (n !== 1) {
+    promises = new Array(n)
     for (let i = 0; i < n; ++i) {
-      const promise = arguments[i]
-
-      mainPromise = mainPromise
-        .then(() => promise)
-        .then(value => { args[i] = value })
+      promises[i] = arguments[i]
     }
+  } else if (!_isArrayLike(promises = arguments[0])) {
+    return _wrap(promises).then(value => cb(value))
   }
 
-  return new AnyPromise(resolve => {
-    resolve(cb.apply(null, args))
-  })
+  return _all(promises).then(args => cb.apply(null, args))
 }
 
 // -------------------------------------------------------------------
