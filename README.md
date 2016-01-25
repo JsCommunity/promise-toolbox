@@ -18,7 +18,7 @@ Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
 
 ## Usage
 
-### Functions
+### Decorators
 
 #### cancellable
 
@@ -54,6 +54,8 @@ class MyClass {
   }
 }
 ```
+
+### Functions
 
 #### defer()
 
@@ -107,7 +109,7 @@ join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => 
 })
 ```
 
-### Pseudo methods
+### Pseudo-methods
 
 This function can be used as if they were methods, i.e. by passing the
 promise (or promises) as the context.
