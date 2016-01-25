@@ -18,6 +18,17 @@ Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
 
 ## Usage
 
+> The promise implementation used by this library is exposed as
+> `Promise`.
+
+```js
+import { Promise } from 'promise-toolbox'
+
+Promise.resolve('foo').then(value => {
+  console.log(value)
+})
+```
+
 ### Decorators
 
 #### cancellable

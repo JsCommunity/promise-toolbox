@@ -293,6 +293,10 @@ export { lastly as finally }
 
 // -------------------------------------------------------------------
 
+export { AnyPromise as Promise }
+
+// -------------------------------------------------------------------
+
 const _setFunctionNameAndLength = (() => {
   const _defineProperties = Object.defineProperties
 
