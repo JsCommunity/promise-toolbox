@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-import AnyPromise from 'any-promise'
 import expect from 'must'
 import sinon from 'sinon'
 
@@ -27,7 +26,7 @@ describe('fromCallback()', () => {
 
 describe('join()', () => {
   it('calls the callback once promises are resolved', () => join(
-    AnyPromise.resolve('foo'), AnyPromise.resolve('bar'),
+    Promise.resolve('foo'), Promise.resolve('bar'),
     (foo, bar) => {
       expect(foo).to.equal('foo')
       expect(bar).to.equal('bar')
@@ -35,7 +34,7 @@ describe('join()', () => {
   ))
 
   it('can takes inputs in an array', () => join(
-    [ AnyPromise.resolve('foo'), AnyPromise.resolve('bar') ],
+    [ Promise.resolve('foo'), Promise.resolve('bar') ],
     (foo, bar) => {
       expect(foo).to.equal('foo')
       expect(bar).to.equal('bar')
@@ -43,7 +42,7 @@ describe('join()', () => {
   ))
 
   it('rejects if one promise rejects', () => expect(join(
-    AnyPromise.resolve('foo'), AnyPromise.reject('bar'),
+    Promise.resolve('foo'), Promise.reject('bar'),
     (foo, bar) => {
       expect(foo).to.equal('foo')
       expect(bar).to.equal('bar')
@@ -59,7 +58,7 @@ describe('lastly()', () => {
     const spy = sinon.spy()
 
     return expect(
-      AnyPromise.resolve(value)::lastly(spy)
+      Promise.resolve(value)::lastly(spy)
     ).to.resolve.to.equal(
       value
     ).then(() => {
@@ -72,7 +71,7 @@ describe('lastly()', () => {
     const spy = sinon.spy()
 
     return expect(
-      AnyPromise.reject(reason)::lastly(spy)
+      Promise.reject(reason)::lastly(spy)
     ).to.reject.to.equal(
       reason
     ).then(() => {
@@ -86,9 +85,9 @@ describe('lastly()', () => {
 describe('settle()', () => {
   it('works with arrays', () => {
     return [
-      AnyPromise.resolve(42),
+      Promise.resolve(42),
       Math.PI,
-      AnyPromise.reject('fatality')
+      Promise.reject('fatality')
     ]::settle().then(([ status1, status2, status3 ]) => {
       expect(status1.isFulfilled()).to.equal(true)
       expect(status2.isFulfilled()).to.equal(true)
@@ -115,9 +114,9 @@ describe('settle()', () => {
 
   it('works with objects', () => {
     return {
-      a: AnyPromise.resolve(42),
+      a: Promise.resolve(42),
       b: Math.PI,
-      c: AnyPromise.reject('fatality')
+      c: Promise.reject('fatality')
     }::settle().then(({
       a: status1,
       b: status2,

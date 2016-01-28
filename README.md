@@ -4,7 +4,6 @@
 
 Features:
 
-- use the promise implementation you want (thanks to [any-promise](https://www.npmjs.com/package/any-promise))
 - small (< 150 KB with all dependencies, < 5 KB with gzip)
 - nice with ES2015 / ES2016 syntax
 
@@ -18,16 +17,19 @@ Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
 
 ## Usage
 
-> The promise implementation used by this library is exposed as
-> `Promise`.
+If your environment may not natively support promises, you should use a polyfill such as [native-promise-only](https://github.com/getify/native-promise-only).
+
+On Node, if you want to use a specific promise implementation,
+[Bluebird](http://bluebirdjs.com/docs/why-bluebird.html) for instance
+to have better performance, you can override the global Promise
+variable:
 
 ```js
-import { Promise } from 'promise-toolbox'
-
-Promise.resolve('foo').then(value => {
-  console.log(value)
-})
+global.Promise = require('bluebird')
 ```
+
+> Note that it should only be done at the application level, never in
+> a library!
 
 ### Decorators
 

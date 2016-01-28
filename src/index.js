@@ -1,4 +1,3 @@
-import AnyPromise from 'any-promise'
 import { BaseError } from 'make-error'
 
 // ===================================================================
@@ -98,7 +97,7 @@ export const isPromise = value => (
 // -------------------------------------------------------------------
 
 const _makeAsyncIterator = iterator => (promises, cb) => {
-  let mainPromise = AnyPromise.resolve()
+  let mainPromise = Promise.resolve()
 
   iterator(promises, (promise, key) => {
     mainPromise = mainPromise
@@ -117,7 +116,7 @@ const _forEachAsync = _makeAsyncIterator(_forEach)
 
 const _wrap = value => isPromise(value)
   ? value
-  : AnyPromise.resolve(value)
+  : Promise.resolve(value)
 
 // ===================================================================
 
@@ -200,7 +199,7 @@ export const cancellable = (target, name, descriptor) => {
 // Discouraged but sometimes necessary way to create a promise.
 export const defer = () => {
   let resolve, reject
-  const promise = new AnyPromise((resolve_, reject_) => {
+  const promise = new Promise((resolve_, reject_) => {
     resolve = resolve_
     reject = reject_
   })
@@ -216,7 +215,7 @@ export const defer = () => {
 
 // Usage: promise::delay(ms)
 export function delay (ms) {
-  return _wrap(this).then(value => new AnyPromise(resolve => {
+  return _wrap(this).then(value => new Promise(resolve => {
     setTimeout(() => resolve(value), ms)
   }))
 }
@@ -247,7 +246,7 @@ export const forOwn = makeAsyncIterator(_forOwn)
 //       .then(content => {
 //         console.log(content)
 //       })
-export const fromCallback = fn => new AnyPromise((resolve, reject) => {
+export const fromCallback = fn => new Promise((resolve, reject) => {
   fn((error, result) => error
     ? reject(error)
     : resolve(result)
@@ -263,7 +262,7 @@ export function join () {
 
   let promises
   if (n === 0) {
-    return new AnyPromise(resolve => resolve(cb()))
+    return new Promise(resolve => resolve(cb()))
   } else if (n !== 1) {
     promises = new Array(n)
     for (let i = 0; i < n; ++i) {
@@ -290,10 +289,6 @@ export function lastly (cb) {
   )
 }
 export { lastly as finally }
-
-// -------------------------------------------------------------------
-
-export { AnyPromise as Promise }
 
 // -------------------------------------------------------------------
 
@@ -334,7 +329,7 @@ export function promisify (thisArg) {
       args[i] = arguments[i]
     }
 
-    return new AnyPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       args[length] = (error, result) => error
         ? reject(error)
         : resolve(result)
@@ -425,7 +420,7 @@ export function settle () {
 
 // -------------------------------------------------------------------
 
-const _some = (promises, count) => new AnyPromise((resolve, reject) => {
+const _some = (promises, count) => new Promise((resolve, reject) => {
   let values = []
   let errors = []
 
@@ -475,7 +470,7 @@ export class TimeoutError extends BaseError {
 
 // Usage: promise::timeout(ms)
 export function timeout (ms) {
-  return new AnyPromise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const handle = setTimeout(() => {
       reject(new TimeoutError())
 
