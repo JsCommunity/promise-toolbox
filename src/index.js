@@ -6,7 +6,7 @@ const _toString = Object.prototype.toString
 
 const _endsWith = (str, suffix, pos = str.length) => {
   pos -= suffix.length
-  return str.indexOf(suffix, pos) === pos
+  return pos >= 0 && str.indexOf(suffix, pos) === pos
 }
 
 const _isArray = Array.isArray || (tag =>
