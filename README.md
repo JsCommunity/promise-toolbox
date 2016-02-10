@@ -167,20 +167,24 @@ all.call(promises).then(function (values) {
 ```js
 import { all } from 'promise-toolbox'
 
-console.log([
+[
   Promise.resolve('foo'),
   Promise.resolve('bar')
-]::all())
-// → ['foo', 'bar']
+]::all().then(value => {
+  console.log(value)
+  // → ['foo', 'bar']
+})
 
-console.log({
+{
   foo: Promise.resolve('foo'),
   bar: Promise.resolve('bar')
-}::all())
-// → {
-//   foo: 'foo',
-//   bar: 'bar'
-// }
+}::all().then(value => {
+  console.log(value)
+  // → {
+  //   foo: 'foo',
+  //   bar: 'bar'
+  // }
+})
 ```
 
 #### promise::asCallback(cb)
