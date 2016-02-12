@@ -353,7 +353,7 @@ export function promisifyAll (mapper = DEFAULT_PALL_MAPPER) {
       typeof value === 'function' &&
       (newName = mapper(name, value, this))
     ) {
-      result[newName] = value::promisify()
+      result[newName] = value::promisify(this)
     }
   })
 
