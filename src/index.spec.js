@@ -1,9 +1,11 @@
 /* eslint-env mocha */
 
 import expect from 'must'
+import makeError from 'make-error'
 import sinon from 'sinon'
 
 import {
+  catchPlus,
   fromCallback,
   join,
   lastly,
@@ -11,6 +13,65 @@ import {
 } from './'
 
 // ===================================================================
+
+describe('catchPlus', () => {
+  const ident = (value) => value
+
+  it('catches errors matching a predicate', () => {
+    const predicate = (reason) => reason === 'foo'
+
+    return Promise.all([
+      expect(
+        Promise.reject('foo')::catchPlus(predicate, ident)
+      ).to.resolve.to.equal('foo'),
+      expect(
+        Promise.reject('bar')::catchPlus(predicate, ident)
+      ).to.reject.to.equal('bar')
+    ])
+  })
+
+  it('catches errors matching a class', () => {
+    const CustomError1 = makeError('CustomError1')
+    const CustomError2 = makeError('CustomError2')
+
+    const error = new CustomError1()
+
+    return Promise.all([
+      // The class itself.
+      expect(
+        Promise.reject(error)::catchPlus(CustomError1, ident)
+      ).to.resolve.to.equal(error),
+
+      // A parent.
+      expect(
+        Promise.reject(error)::catchPlus(Error, ident)
+      ).to.resolve.to.equal(error),
+
+      // Another class.
+      expect(
+        Promise.reject(error)::catchPlus(CustomError2, ident)
+      ).to.reject.to.equal(error)
+    ])
+  })
+
+  it('does not catch programmer errors', () => {
+    return Promise.all([
+      expect(
+        Promise.reject(new TypeError(''))::catchPlus(ident)
+      ).to.reject.to.error(TypeError),
+      expect(
+        Promise.reject(new SyntaxError(''))::catchPlus(ident)
+      ).to.reject.to.error(SyntaxError),
+
+      // Unless matches by a predicate.
+      expect(
+        Promise.reject(new TypeError(''))::catchPlus(TypeError, ident)
+      ).to.resolve.to.error(TypeError)
+    ])
+  })
+})
+
+// -------------------------------------------------------------------
 
 describe('fromCallback()', () => {
   it('creates a promise which resolves with value passed to the callback', () => expect(fromCallback((cb) => {

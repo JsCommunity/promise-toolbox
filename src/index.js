@@ -196,6 +196,58 @@ export const cancellable = (target, name, descriptor) => {
 
 // -------------------------------------------------------------------
 
+const _isOperationalError = (reason) => reason != null && !(
+  reason instanceof SyntaxError ||
+  reason instanceof TypeError
+)
+
+// Similar to `Promise#catch()`` but:
+// - support predicates
+// - do not catch `TypeError` and `SyntaxError` unless they match a
+//   predicate because they are usually programmer errors and should
+//   be handled separatly.
+export function catchPlus () {
+  const n = arguments.length - 1
+
+  let cb
+  if (
+    n < 0 ||
+    !_isFunction(cb = arguments[n])
+  ) {
+    return this
+  }
+
+  let predicates
+  if (n) {
+    predicates = new Array(n)
+    for (let i = 0; i < n; ++i) {
+      predicates[i] = arguments[i]
+    }
+  }
+
+  return _wrap(this).then(null, (reason) => {
+    if (predicates) {
+      for (let i = 0; i < n; ++i) {
+        const predicate = predicates[i]
+        if (
+          typeof predicate === 'function' && predicate.prototype instanceof Error
+            ? reason instanceof predicate
+            : predicate(reason)
+        ) {
+          return cb(reason)
+        }
+      }
+    } else if (_isOperationalError(reason)) {
+      return cb(reason)
+    }
+
+    // Forward error without throwing (perf).
+    return this
+  })
+}
+
+// -------------------------------------------------------------------
+
 // Discouraged but sometimes necessary way to create a promise.
 export const defer = () => {
   let resolve, reject
