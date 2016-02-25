@@ -1,6 +1,6 @@
 {
   "name": "promise-toolbox",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "license": "ISC",
   "description": "Essential utils for promises",
   "keywords": [
