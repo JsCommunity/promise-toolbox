@@ -201,6 +201,27 @@ function getDataFor (input, callback) {
 }
 ```
 
+#### promise::catchPlus(predicate, cb)
+
+> Similar to `Promise#catch()` but:
+>
+> - support predicates
+> - do not catch `ReferenceError`, `SyntaxError` or `TypeError` unless
+>   they match a predicate because they are usually programmer errors
+>   and should be handled separately.
+
+```js
+somePromise.then(() => {
+  return a.b.c.d()
+})::catchPlus(TypeError, ReferenceError, (reason) => {
+  // Will end up here on programmer error
+})::catchPlus(NetworkError, TimeoutError, (reason) => {
+  // Will end up here on expected everyday network errors
+})::catchPlus((reason) => {
+  // Catch any unexpected errors
+})
+```
+
 #### promise::delay(ms)
 
 > Delays the resolution of a promise by `ms` milliseconds.
