@@ -150,7 +150,7 @@ export function asCallback (cb) {
     this.then(
       value => cb(null, value),
       error => cb(error)
-    ).catch(_noop)
+    ).then(null, _noop)
   }
 
   return this
@@ -180,7 +180,7 @@ export const cancellable = (target, name, descriptor) => {
     const cancellation = new Promise((_, reject_) => {
       reject = reject_
     })
-    cancellation.catch(_noop)
+    cancellation.then(null, _noop)
 
     const promise = fn.call(this, cancellation, ...args)
 
