@@ -13,11 +13,11 @@ import {
 // ===================================================================
 
 describe('fromCallback()', () => {
-  it('creates a promise which resolves with value passed to the callback', () => expect(fromCallback(cb => {
+  it('creates a promise which resolves with value passed to the callback', () => expect(fromCallback((cb) => {
     cb(null, 'foo')
   })).to.resolve.to.equal('foo'))
 
-  it('creates a promise which rejects with reason passed to the callback', () => expect(fromCallback(cb => {
+  it('creates a promise which rejects with reason passed to the callback', () => expect(fromCallback((cb) => {
     cb('bar')
   })).to.reject.to.equal('bar'))
 })
