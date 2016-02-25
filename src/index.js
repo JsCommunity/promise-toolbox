@@ -197,15 +197,16 @@ export const cancellable = (target, name, descriptor) => {
 // -------------------------------------------------------------------
 
 const _isOperationalError = (reason) => reason != null && !(
+  reason instanceof ReferenceError ||
   reason instanceof SyntaxError ||
   reason instanceof TypeError
 )
 
 // Similar to `Promise#catch()`` but:
 // - support predicates
-// - do not catch `TypeError` and `SyntaxError` unless they match a
-//   predicate because they are usually programmer errors and should
-//   be handled separatly.
+// - do not catch `ReferenceError`, `SyntaxError` or `TypeError`
+//   unless they match a predicate because they are usually programmer
+//   errors and should be handled separately.
 export function catchPlus () {
   const n = arguments.length - 1
 
