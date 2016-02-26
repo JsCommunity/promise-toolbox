@@ -341,6 +341,8 @@ const [ first, seconds ] = await [
 > milliseconds.
 
 ```js
+import { timeout } from 'promise-toolbox'
+
 await doLongOperation()::timeout(100)
 ```
 

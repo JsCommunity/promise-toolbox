@@ -516,7 +516,8 @@ export class TimeoutError extends BaseError {
 // Usage: promise::timeout(ms)
 export function timeout (ms) {
   return new Promise((resolve, reject) => {
-    const handle = setTimeout(() => {
+    let handle = setTimeout(() => {
+      handle = null
       reject(new TimeoutError())
 
       if (typeof this.cancel === 'function') {
@@ -526,11 +527,11 @@ export function timeout (ms) {
 
     _wrap(this).then(
       (value) => {
-        clearTimeout(handle)
+        handle !== null && clearTimeout(handle)
         resolve(value)
       },
       (reason) => {
-        clearTimeout(handle)
+        handle !== null && clearTimeout(handle)
         reject(reason)
       }
     )

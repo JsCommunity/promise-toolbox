@@ -9,7 +9,9 @@ import {
   fromCallback,
   join,
   lastly,
-  settle
+  settle,
+  timeout,
+  TimeoutError
 } from './'
 
 // ===================================================================
@@ -205,4 +207,21 @@ describe('settle()', () => {
       expect(status3.reason()).to.equal('fatality')
     })
   })
+})
+
+// -------------------------------------------------------------------
+
+describe('timeout()', () => {
+  it('rejects a promise if not settled after a delay', () => expect(
+    new Promise(() => {})::timeout(10)
+  ).to.reject.to.error(TimeoutError))
+
+  it('forwards the settlement if settled before a delay', () => Promise.all([
+    expect(
+      Promise.resolve('value')::timeout(10)
+    ).to.resolve.to.equal('value'),
+    expect(
+      Promise.reject('reason')::timeout(10)
+    ).to.reject.to.equal('reason')
+  ]))
 })
