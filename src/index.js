@@ -387,7 +387,7 @@ export function promisify (context) {
 // Usage: obj::promisifyAll([ mapper ])
 const DEFAULT_PALL_MAPPER = (name, fn) => (
   !(_endsWith(name, 'Sync') || _endsWith(name, 'Async')) &&
-  `${name}Async`
+  name
 )
 export function promisifyAll (mapper = DEFAULT_PALL_MAPPER) {
   const result = {}

@@ -300,7 +300,7 @@ const fsPromise = fs::promisifyAll()
 
 readFile(__filename).then((content) => console.log(content))
 
-fsPromise.readFileAsync(__filename).then((content) => console.log(content))
+fsPromise.readFile(__filename).then((content) => console.log(content))
 ```
 
 #### promise::reflect()
