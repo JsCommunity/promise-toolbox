@@ -188,7 +188,7 @@ export const cancellable = (target, name, descriptor) => {
 
 // -------------------------------------------------------------------
 
-const _isOperationalError = (reason) => reason != null && !(
+const _isOperationalError = (reason) => !(
   reason instanceof ReferenceError ||
   reason instanceof SyntaxError ||
   reason instanceof TypeError
