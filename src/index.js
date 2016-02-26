@@ -2,20 +2,12 @@ import { BaseError } from 'make-error'
 
 // ===================================================================
 
-const _toString = Object.prototype.toString
-
 const _endsWith = (str, suffix, pos = str.length) => {
   pos -= suffix.length
   return pos >= 0 && str.indexOf(suffix, pos) === pos
 }
 
-const _isArray = Array.isArray || ((tag) =>
-  (value) => _toString.call(value) === tag
-)(_toString.call([]))
-
-const _isFunction = ((tag) =>
-  (value) => _toString.call(value) === tag
-)(_toString.call(_toString))
+const _isArray = Array.isArray || ((value) => value instanceof Array)
 
 const _isLength = (value) => (
   typeof value === 'number' &&
@@ -26,7 +18,7 @@ const _isLength = (value) => (
 const _isArrayLike = (value) => value && _isLength(value.length)
 
 const _isIterable = typeof Symbol === 'function'
-  ? (value) => value && _isFunction(value[Symbol.iterator])
+  ? (value) => value && typeof value[Symbol.iterator] === 'function'
   : () => false
 
 const _noop = () => {}
@@ -213,7 +205,7 @@ export function catchPlus () {
   let cb
   if (
     n < 0 ||
-    !_isFunction(cb = arguments[n])
+    typeof (cb = arguments[n]) !== 'function'
   ) {
     return this
   }
@@ -527,7 +519,7 @@ export function timeout (ms) {
     const handle = setTimeout(() => {
       reject(new TimeoutError())
 
-      if (_isFunction(this.cancel)) {
+      if (typeof this.cancel === 'function') {
         this.cancel()
       }
     }, ms)
