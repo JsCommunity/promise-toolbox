@@ -281,7 +281,7 @@ function ajaxGetAsync (url) {
 }
 ```
 
-#### fn::promisify([ thisArg ]) / obj::promisifyAll()
+#### fn::promisify([ context ]) / obj::promisifyAll()
 
 > Creates  async functions taking node-style callbacks, create new ones
 > returning promises.

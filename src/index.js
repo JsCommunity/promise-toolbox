@@ -363,8 +363,8 @@ const _setFunctionNameAndLength = (() => {
   return (fn) => fn
 })()
 
-// Usage: fn::promisify([ thisArg ])
-export function promisify (thisArg) {
+// Usage: fn::promisify([ context ])
+export function promisify (context) {
   const fn = this
 
   return _setFunctionNameAndLength(function () {
@@ -379,7 +379,7 @@ export function promisify (thisArg) {
         ? reject(error)
         : resolve(result)
 
-      fn.apply(thisArg || this, args)
+      fn.apply(context || this, args)
     })
   }, fn.name, fn.length && fn.length - 1)
 }
