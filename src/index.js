@@ -384,25 +384,28 @@ export function promisify (context) {
   }, fn.name, fn.length && fn.length - 1)
 }
 
-// Usage: obj::promisifyAll([ mapper ])
-const DEFAULT_PALL_MAPPER = (name, fn) => (
+const _DEFAULT_PALL_MAPPER = (name, fn) => (
   !(_endsWith(name, 'Sync') || _endsWith(name, 'Async')) &&
   name
 )
-export function promisifyAll (mapper = DEFAULT_PALL_MAPPER) {
-  const result = {}
 
+// Usage: obj::promisifyAll([ opts ])
+export function promisifyAll ({
+  mapper = _DEFAULT_PALL_MAPPER,
+  target = {},
+  context = target
+} = {}) {
   _forIn(this, (value, name) => {
     let newName
     if (
       typeof value === 'function' &&
       (newName = mapper(name, value, this))
     ) {
-      result[newName] = value::promisify(this)
+      target[newName] = value::promisify(context)
     }
   })
 
-  return result
+  return target
 }
 
 // -------------------------------------------------------------------
