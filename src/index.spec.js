@@ -56,6 +56,22 @@ describe('catchPlus', () => {
     ])
   })
 
+  it('catches errors matching an object pattern', () => {
+    const predicate = { foo: 0 }
+
+    return Promise.all([
+      expect(
+        Promise.reject({ foo: 0 })::catchPlus(predicate, ident)
+      ).to.resolve.to.be.an.object(),
+      expect(
+        Promise.reject({ foo: 1 })::catchPlus(predicate, ident)
+      ).to.reject.to.be.an.object(),
+      expect(
+        Promise.reject({ bar: 0 })::catchPlus(predicate, ident)
+      ).to.reject.to.be.an.object()
+    ])
+  })
+
   it('does not catch programmer errors', () => {
     return Promise.all([
       expect(
