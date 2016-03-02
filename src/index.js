@@ -418,7 +418,7 @@ const _DEFAULT_PALL_MAPPER = (name, fn) => (
 export function promisifyAll ({
   mapper = _DEFAULT_PALL_MAPPER,
   target = {},
-  context = target
+  context = this
 } = {}) {
   _forIn(this, (value, name) => {
     let newName
