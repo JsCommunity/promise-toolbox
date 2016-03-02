@@ -9,6 +9,7 @@ import {
   fromCallback,
   join,
   lastly,
+  promisifyAll,
   settle,
   timeout,
   TimeoutError
@@ -156,6 +157,41 @@ describe('lastly()', () => {
     ).then(() => {
       expect(spy.callCount).to.equal(1)
     })
+  })
+})
+
+// -------------------------------------------------------------------
+
+describe('promisifyAll()', () => {
+  it('returns a new object', () => {
+    const o = {}
+    const r = o::promisifyAll()
+
+    expect(r).to.be.an.object()
+    expect(r).to.not.equal(o)
+  })
+
+  it('creates promisified version of all functions bound to the original object', () => {
+    const o = {
+      foo (cb) {
+        cb(null, this)
+      }
+    }
+    const r = o::promisifyAll()
+
+    return expect(r.foo()).to.resolve.to.equal(o)
+  })
+
+  it('ignores functions ending with Sync or Async', () => {
+    const o = {
+      fooAsync () {},
+      fooSync () {}
+    }
+    const r = o::promisifyAll()
+
+    expect(r).to.not.have.property('foo')
+    expect(r).to.not.have.property('fooASync')
+    expect(r).to.not.have.property('fooSync')
   })
 })
 
