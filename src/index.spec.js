@@ -12,7 +12,8 @@ import {
   promisifyAll,
   settle,
   timeout,
-  TimeoutError
+  TimeoutError,
+  unpromisify
 } from './'
 
 // ===================================================================
@@ -276,4 +277,29 @@ describe('timeout()', () => {
       Promise.reject('reason')::timeout(10)
     ).to.reject.to.equal('reason')
   ]))
+})
+
+// -------------------------------------------------------------------
+
+describe('unpromisify()', () => {
+  it('forwards the result', (done) => {
+    const fn = unpromisify.call(() => Promise.resolve('foo'))
+
+    fn((error, result) => {
+      expect(error).to.not.exist()
+      expect(result).to.equal('foo')
+
+      done()
+    })
+  })
+
+  it('forwards the error', (done) => {
+    const fn = unpromisify.call(() => Promise.reject('foo'))
+
+    fn((error) => {
+      expect(error).to.equal('foo')
+
+      done()
+    })
+  })
 })

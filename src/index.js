@@ -110,6 +110,14 @@ const _wrap = (value) => isPromise(value)
   ? value
   : Promise.resolve(value)
 
+const _wrapCall = (fn, args, thisArg) => {
+  try {
+    return _wrap(fn.apply(thisArg, args))
+  } catch (error) {
+    return Promise.reject(error)
+  }
+}
+
 // ===================================================================
 
 const _all = (promises, mapFn) => {
@@ -564,4 +572,31 @@ export function timeout (ms) {
       }
     )
   })
+}
+
+// -------------------------------------------------------------------
+
+// Usage: fn::unpromisify()
+export function unpromisify () {
+  const fn = this
+  return _setFunctionNameAndLength(function () {
+    const n = arguments.length - 1
+    let cb
+    if (
+      n < 0 ||
+      typeof (cb = arguments[n]) !== 'function'
+    ) {
+      throw new Error('missing callback')
+    }
+
+    const args = new Array(n)
+    for (let i = 0; i < n; ++i) {
+      args[i] = arguments[i]
+    }
+
+    _wrapCall(fn, args, this).then(
+      (result) => cb(null, result),
+      (reason) => cb(reason)
+    )
+  }, fn.name, fn.length + 1)
 }
