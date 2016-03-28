@@ -92,20 +92,13 @@ const _makeAsyncIterator = (iterator) => (promises, cb) => {
   let mainPromise = Promise.resolve()
 
   iterator(promises, (promise, key) => {
-    if (isPromise(promise)) {
-      // Avoid unhandled rejections.
-      promise.then(null, _noop)
-
-      mainPromise = mainPromise.then(() => promise).then((value) => cb(value, key))
-    } else {
-      mainPromise = mainPromise.then(() => cb(promise, key))
-    }
+    mainPromise = isPromise(promise)
+      ? mainPromise.then(() => promise.then((value) => cb(value, key)))
+      : mainPromise.then((value) => cb(value, key))
   })
 
   return mainPromise
 }
-
-const _forEachAsync = _makeAsyncIterator(_forEach)
 
 const _wrap = (value) => isPromise(value)
   ? value
@@ -121,14 +114,51 @@ const _wrapCall = (fn, args, thisArg) => {
 
 // ===================================================================
 
-const _all = (promises, mapFn) => {
+const _all = (promises, mapFn) => new Promise((resolve, reject) => {
   // mapFn may be undefined but it's okay :)
-  const results = _map(promises, mapFn)
+  let result = _map(promises, mapFn)
 
-  return _forEachAsync(mapFn ? results : promises, (value, key) => {
-    results[key] = value
-  }).then(() => results)
-}
+  let count = 1
+  const onFulfillment0 = () => {
+    if (--count === 0) {
+      const tmp = result
+      result = null
+      resolve(tmp)
+    }
+  }
+
+  const onFulfillment = (value, key) => {
+    if (!result) {
+      return
+    }
+
+    result[key] = value
+    onFulfillment0()
+  }
+
+  const onRejection = (reason) => {
+    if (!result) {
+      return
+    }
+
+    result = null
+    reject(reason)
+  }
+
+  _forEach(mapFn ? result : promises, (promise, key) => {
+    ++count
+
+    if (isPromise(promise)) {
+      promise.then(
+        (value) => onFulfillment(value, key),
+        onRejection
+      )
+    } else {
+      onFulfillment(promise, key)
+    }
+  })
+  onFulfillment0()
+})
 
 // Returns a promise which resolves when all the promises in a
 // collection have resolved or rejects with the reason of the first
@@ -512,7 +542,7 @@ const _some = (promises, count) => new Promise((resolve, reject) => {
     }
 
     values.push(value)
-    if (--count) {
+    if (--count === 0) {
       resolve(values)
       values = errors = null
     }
@@ -525,7 +555,7 @@ const _some = (promises, count) => new Promise((resolve, reject) => {
     }
 
     errors.push(reason)
-    if (--acceptableErrors) {
+    if (--acceptableErrors === 0) {
       reject(errors)
       values = errors = null
     }

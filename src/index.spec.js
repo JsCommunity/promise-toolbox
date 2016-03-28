@@ -5,6 +5,7 @@ import makeError from 'make-error'
 import sinon from 'sinon'
 
 import {
+  all,
   catchPlus,
   fromCallback,
   join,
@@ -17,6 +18,38 @@ import {
 } from './'
 
 // ===================================================================
+
+describe('all()', () => {
+  it('with array', () => expect([
+    Promise.resolve('foo'),
+    'bar'
+  ]::all()).to.resolve.to.eql([
+    'foo',
+    'bar'
+  ]))
+
+  it('with object', () => expect({
+    foo: Promise.resolve('foo'),
+    bar: 'bar'
+  }::all()).to.resolve.to.eql({
+    foo: 'foo',
+    bar: 'bar'
+  }))
+
+  it('resolve with empty collection', () => expect([]::all()).to.resolve.to.eql([]))
+
+  it('rejects first rejection', () => expect([
+    'foo',
+    Promise.reject('bar')
+  ]::all()).to.reject.to.equal('bar'))
+
+  it('rejects first rejection (even with pending promises)', () => expect([
+    new Promise(() => {}),
+    Promise.reject('bar')
+  ]::all()).to.reject.to.equal('bar'))
+})
+
+// -------------------------------------------------------------------
 
 describe('catchPlus', () => {
   const ident = (value) => value
