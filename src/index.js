@@ -92,13 +92,14 @@ const _makeAsyncIterator = (iterator) => (promises, cb) => {
   let mainPromise = Promise.resolve()
 
   iterator(promises, (promise, key) => {
-    mainPromise = mainPromise
+    if (isPromise(promise)) {
+      // Avoid unhandled rejections.
+      promise.then(null, _noop)
 
-      // Waits the current promise.
-      .then(() => promise)
-
-      // Executes the callback.
-      .then((value) => cb(value, key))
+      mainPromise = mainPromise.then(() => promise).then((value) => cb(value, key))
+    } else {
+      mainPromise = mainPromise.then(() => cb(promise, key))
+    }
   })
 
   return mainPromise
