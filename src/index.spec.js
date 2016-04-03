@@ -7,6 +7,7 @@ import sinon from 'sinon'
 import {
   all,
   catchPlus,
+  forArray,
   fromCallback,
   join,
   lastly,
@@ -121,6 +122,27 @@ describe('catchPlus', () => {
         Promise.reject(new TypeError(''))::catchPlus(TypeError, ident)
       ).to.resolve.to.error(TypeError)
     ])
+  })
+})
+
+// -------------------------------------------------------------------
+
+describe('forArray()', () => {
+  it('iterates over an array of promises', () => {
+    const spy = sinon.spy()
+
+    const array = [
+      Promise.resolve('foo'),
+      Promise.resolve('bar'),
+      'baz'
+    ]
+    return expect(array::forArray(spy)).to.resolve.to.undefined().then(() => {
+      expect(spy.args).to.eql([
+        [ 'foo', 0 ],
+        [ 'bar', 1 ],
+        [ 'baz', 2 ]
+      ])
+    })
   })
 })
 
