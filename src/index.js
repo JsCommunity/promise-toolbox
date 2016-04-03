@@ -93,8 +93,8 @@ const _makeAsyncIterator = (iterator) => (promises, cb) => {
 
   iterator(promises, (promise, key) => {
     mainPromise = isPromise(promise)
-      ? mainPromise.then(() => promise.then((value) => cb(value, key)))
-      : mainPromise.then(() => cb(promise, key))
+      ? mainPromise.then(() => promise.then((value) => cb(value, key, promises)))
+      : mainPromise.then(() => cb(promise, key, promises))
   })
 
   return mainPromise

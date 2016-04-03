@@ -138,9 +138,9 @@ describe('forArray()', () => {
     ]
     return expect(array::forArray(spy)).to.resolve.to.undefined().then(() => {
       expect(spy.args).to.eql([
-        [ 'foo', 0 ],
-        [ 'bar', 1 ],
-        [ 'baz', 2 ]
+        [ 'foo', 0, array ],
+        [ 'bar', 1, array ],
+        [ 'baz', 2, array ]
       ])
     })
   })
