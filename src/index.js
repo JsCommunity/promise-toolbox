@@ -15,7 +15,11 @@ const _isLength = (value) => (
   Math.floor(value) === value
 )
 
-const _isArrayLike = (value) => value && _isLength(value.length)
+const _isArrayLike = (value) => (
+  value &&
+  typeof value !== 'function' &&
+  _isLength(value.length)
+)
 
 const _isIterable = typeof Symbol === 'function'
   ? (value) => value && typeof value[Symbol.iterator] === 'function'
