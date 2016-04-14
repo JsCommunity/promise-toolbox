@@ -2,6 +2,16 @@ import { BaseError } from 'make-error'
 
 // ===================================================================
 
+if (
+  typeof Promise !== 'function' ||
+  typeof Promise.reject !== 'function' ||
+  typeof Promise.resolve !== 'function'
+) {
+  throw new Error('a standard Promise implementation is required (https://github.com/JsCommunity/promise-toolbox#usage)')
+}
+
+// ===================================================================
+
 const _endsWith = (str, suffix, pos = str.length) => {
   pos -= suffix.length
   return pos >= 0 && str.indexOf(suffix, pos) === pos
