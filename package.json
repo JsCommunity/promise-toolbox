@@ -47,7 +47,7 @@
     "native-promise-only": "^0.8.1",
     "nyc": "^6.1.1",
     "sinon": "^1.17.2",
-    "standard": "^6.0.7",
+    "standard": "^6.0.8",
     "trace": "^2.0.1"
   },
   "scripts": {
