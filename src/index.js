@@ -341,9 +341,13 @@ export const defer = () => {
 
 // Usage: promise::delay(ms)
 export function delay (ms) {
-  return _wrap(this).then((value) => new Promise((resolve) => {
-    setTimeout(() => resolve(value), ms)
-  }))
+  return isPromise(this)
+    ? this.then(value => new Promise(resolve => {
+      setTimeout(() => resolve(value), ms)
+    }))
+    : new Promise(resolve => {
+      setTimeout(() => resolve(this), ms)
+    })
 }
 
 // -------------------------------------------------------------------
