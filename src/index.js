@@ -234,9 +234,12 @@ export const cancellable = (target, name, descriptor) => {
     return promise
   }
 
-  return descriptor
-    ? (descriptor.value = newFn, descriptor)
-    : newFn
+  if (descriptor) {
+    descriptor.value = newFn
+    return descriptor
+  }
+
+  return newFn
 }
 
 // -------------------------------------------------------------------
