@@ -42,7 +42,7 @@
     "clarify": "^1.0.5",
     "dependency-check": "^2.5.1",
     "julien-f-source-map-support": "0.0.0",
-    "mocha": "^2.3.4",
+    "mocha": "^2.5.0",
     "must": "^0.13.1",
     "native-promise-only": "^0.8.1",
     "nyc": "^6.1.1",
