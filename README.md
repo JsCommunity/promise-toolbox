@@ -79,22 +79,22 @@ import { defer } from 'promise-toolbox'
 
 const { promise, resolve } = defer()
 
-promise.then((value) => {
+promise.then(value => {
   console.log(value)
 })
 
 resolve(3)
 ```
 
-#### fromCallback((cb) => fn(arg1, ..., argn, cb))
+#### fromCallback(cb => fn(arg1, ..., argn, cb))
 
 > Easiest and most efficient way to promisify a function call.
 
 ```js
 import { fromCallback } from 'promise-toolbox'
 
-fromCallback((cb) => fs.readFile('foo.txt', cb))
-  .then((content) => {
+fromCallback(cb => fs.readFile('foo.txt', cb))
+  .then(content => {
     console.log(content)
   })
 ```
@@ -135,7 +135,7 @@ const promises = [
   Promise.resolve('bar')
 ]
 
-promises::all().then((values) => {
+promises::all().then(values => {
   console.log(values)
 })
 // → [ 'foo', 'bar' ]
@@ -170,7 +170,7 @@ import { all } from 'promise-toolbox'
 [
   Promise.resolve('foo'),
   Promise.resolve('bar')
-]::all().then((value) => {
+]::all().then(value => {
   console.log(value)
   // → ['foo', 'bar']
 })
@@ -178,7 +178,7 @@ import { all } from 'promise-toolbox'
 {
   foo: Promise.resolve('foo'),
   bar: Promise.resolve('bar')
-}::all().then((value) => {
+}::all().then(value => {
   console.log(value)
   // → {
   //   foo: 'foo',
@@ -213,11 +213,11 @@ function getDataFor (input, callback) {
 ```js
 somePromise.then(() => {
   return a.b.c.d()
-})::catchPlus(TypeError, ReferenceError, (reason) => {
+})::catchPlus(TypeError, ReferenceError, reason => {
   // Will end up here on programmer error
-})::catchPlus(NetworkError, TimeoutError, (reason) => {
+})::catchPlus(NetworkError, TimeoutError, reason => {
   // Will end up here on expected everyday network errors
-})::catchPlus((reason) => {
+})::catchPlus(reason => {
   // Catch any unexpected errors
 })
 ```
@@ -249,7 +249,7 @@ console.log(await delay.call('500ms passed', 500))
 [
   Promise.resolve('foo'),
   Promise.resolve('bar'),
-]::forEach((value) => {
+]::forEach(value => {
   console.log(value)
 })
 // →
@@ -298,9 +298,9 @@ const readFile = fs.readFile::promisify()
 // Or all functions (own or inherited) exposed on a object.
 const fsPromise = fs::promisifyAll()
 
-readFile(__filename).then((content) => console.log(content))
+readFile(__filename).then(content => console.log(content))
 
-fsPromise.readFile(__filename).then((content) => console.log(content))
+fsPromise.readFile(__filename).then(content => console.log(content))
 ```
 
 #### promise::reflect()

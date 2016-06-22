@@ -17,22 +17,22 @@ const _endsWith = (str, suffix, pos = str.length) => {
   return pos >= 0 && str.indexOf(suffix, pos) === pos
 }
 
-const _isArray = Array.isArray || ((value) => value instanceof Array)
+const _isArray = Array.isArray || (value => value instanceof Array)
 
-const _isLength = (value) => (
+const _isLength = value => (
   typeof value === 'number' &&
   value >= 0 && value < Infinity &&
   Math.floor(value) === value
 )
 
-const _isArrayLike = (value) => (
+const _isArrayLike = value => (
   value &&
   typeof value !== 'function' &&
   _isLength(value.length)
 )
 
 const _isIterable = typeof Symbol === 'function'
-  ? (value) => value && typeof value[Symbol.iterator] === 'function'
+  ? value => value && typeof value[Symbol.iterator] === 'function'
   : () => false
 
 const _noop = () => {}
@@ -95,26 +95,26 @@ const _map = (collection, iteratee) => {
 
 // ===================================================================
 
-export const isPromise = (value) => (
+export const isPromise = value => (
   value != null &&
   typeof value.then === 'function'
 )
 
 // -------------------------------------------------------------------
 
-const _makeAsyncIterator = (iterator) => (promises, cb) => {
+const _makeAsyncIterator = iterator => (promises, cb) => {
   let mainPromise = Promise.resolve()
 
   iterator(promises, (promise, key) => {
     mainPromise = isPromise(promise)
-      ? mainPromise.then(() => promise.then((value) => cb(value, key, promises)))
+      ? mainPromise.then(() => promise.then(value => cb(value, key, promises)))
       : mainPromise.then(() => cb(promise, key, promises))
   })
 
   return mainPromise
 }
 
-const _wrap = (value) => isPromise(value)
+const _wrap = value => isPromise(value)
   ? value
   : Promise.resolve(value)
 
@@ -150,7 +150,7 @@ const _all = (promises, mapFn) => new Promise((resolve, reject) => {
     onFulfillment0()
   }
 
-  const onRejection = (reason) => {
+  const onRejection = reason => {
     if (!result) {
       return
     }
@@ -164,7 +164,7 @@ const _all = (promises, mapFn) => new Promise((resolve, reject) => {
 
     if (isPromise(promise)) {
       promise.then(
-        (value) => onFulfillment(value, key),
+        value => onFulfillment(value, key),
         onRejection
       )
     } else {
@@ -183,7 +183,7 @@ const _all = (promises, mapFn) => new Promise((resolve, reject) => {
 //
 // Usage: promises::all([ mapFn ])
 export function all (mapFn) {
-  return _wrap(this).then((promises) => _all(promises, mapFn))
+  return _wrap(this).then(promises => _all(promises, mapFn))
 }
 
 // -------------------------------------------------------------------
@@ -193,8 +193,8 @@ export function asCallback (cb) {
   // cb can be undefined.
   if (cb) {
     this.then(
-      (value) => cb(null, value),
-      (error) => cb(error)
+      value => cb(null, value),
+      error => cb(error)
     ).then(null, _noop)
   }
 
@@ -244,7 +244,7 @@ export const cancellable = (target, name, descriptor) => {
 
 // -------------------------------------------------------------------
 
-const _isOperationalError = (reason) => !(
+const _isOperationalError = reason => !(
   reason instanceof ReferenceError ||
   reason instanceof SyntaxError ||
   reason instanceof TypeError
@@ -252,7 +252,7 @@ const _isOperationalError = (reason) => !(
 
 // See: https://github.com/petkaantonov/bluebird/blob/d8907d15f0a1997a5d3c0526cd4da5ba1b135cfa/src/util.js#L7-L30
 const _errorWrapper = { error: null }
-const _tryCatch = (fn) => {
+const _tryCatch = fn => {
   try {
     return fn()
   } catch (error) {
@@ -304,7 +304,7 @@ export function catchPlus () {
     }
   }
 
-  return _wrap(this).then(null, (reason) => {
+  return _wrap(this).then(null, reason => {
     if (predicates) {
       for (let i = 0; i < n; ++i) {
         if (_matchError(predicates[i], reason)) {
@@ -352,12 +352,12 @@ export function delay (ms) {
 
 // -------------------------------------------------------------------
 
-export const makeAsyncIterator = (iterator) => {
+export const makeAsyncIterator = iterator => {
   const asyncIterator = _makeAsyncIterator(iterator)
 
   return function (cb) {
     return _wrap(this)
-      .then((promises) => asyncIterator(promises, cb))
+      .then(promises => asyncIterator(promises, cb))
       .then(_noop) // Resolves to undefined
   }
 }
@@ -372,11 +372,11 @@ export const forOwn = makeAsyncIterator(_forOwn)
 
 // Usage:
 //
-//     fromCallback((cb) => fs.readFile('foo.txt', cb))
-//       .then((content) => {
+//     fromCallback(cb => fs.readFile('foo.txt', cb))
+//       .then(content => {
 //         console.log(content)
 //       })
-export const fromCallback = (fn) => new Promise((resolve, reject) => {
+export const fromCallback = fn => new Promise((resolve, reject) => {
   fn((error, result) => error
     ? reject(error)
     : resolve(result)
@@ -392,17 +392,17 @@ export function join () {
 
   let promises
   if (n === 0) {
-    return new Promise((resolve) => resolve(cb()))
+    return new Promise(resolve => resolve(cb()))
   } else if (n !== 1) {
     promises = new Array(n)
     for (let i = 0; i < n; ++i) {
       promises[i] = arguments[i]
     }
   } else if (!_isArrayLike(promises = arguments[0])) {
-    return _wrap(promises).then((value) => cb(value))
+    return _wrap(promises).then(value => cb(value))
   }
 
-  return _all(promises).then((args) => cb.apply(null, args))
+  return _all(promises).then(args => cb.apply(null, args))
 }
 
 // -------------------------------------------------------------------
@@ -412,8 +412,8 @@ export function join () {
 // Usage: promise::lastly(cb)
 export function lastly (cb) {
   return _wrap(this).then(
-    (value) => _wrap(cb()).then(() => value),
-    (reason) => _wrap(cb()).then(() => {
+    value => _wrap(cb()).then(() => value),
+    reason => _wrap(cb()).then(() => {
       throw reason
     })
   )
@@ -445,7 +445,7 @@ const _setFunctionNameAndLength = (() => {
     }
   } catch (_) {}
 
-  return (fn) => fn
+  return fn => fn
 })()
 
 // Usage: fn::promisify([ context ])
@@ -498,7 +498,7 @@ export function promisifyAll ({
 const FN_FALSE = () => false
 const FN_TRUE = () => true
 
-const _reflectResolution = ((__proto__) => (value) => ({
+const _reflectResolution = (__proto__ => value => ({
   __proto__,
   value: () => value
 }))({
@@ -511,7 +511,7 @@ const _reflectResolution = ((__proto__) => (value) => ({
   }
 })
 
-const _reflectRejection = ((__proto__) => (reason) => ({
+const _reflectRejection = (__proto__ => reason => ({
   __proto__,
   reason: () => reason
 }))({
@@ -548,7 +548,7 @@ export function reflect () {
 //
 // Usage: promises::settle()
 export function settle () {
-  return this::all((x) => x::reflect())
+  return this::all(x => x::reflect())
 }
 
 // -------------------------------------------------------------------
@@ -557,7 +557,7 @@ const _some = (promises, count) => new Promise((resolve, reject) => {
   let values = []
   let errors = []
 
-  const onFulfillment = (value) => {
+  const onFulfillment = value => {
     if (!values) {
       return
     }
@@ -570,7 +570,7 @@ const _some = (promises, count) => new Promise((resolve, reject) => {
   }
 
   let acceptableErrors = -count
-  const onRejection = (reason) => {
+  const onRejection = reason => {
     if (!values) {
       return
     }
@@ -582,7 +582,7 @@ const _some = (promises, count) => new Promise((resolve, reject) => {
     }
   }
 
-  _forEach(promises, (promise) => {
+  _forEach(promises, promise => {
     ++acceptableErrors
     _wrap(promise).then(onFulfillment, onRejection)
   })
@@ -590,7 +590,7 @@ const _some = (promises, count) => new Promise((resolve, reject) => {
 
 // Usage: promises::some(count)
 export function some (count) {
-  return _wrap(this).then((promises) => _some(promises, count))
+  return _wrap(this).then(promises => _some(promises, count))
 }
 
 // -------------------------------------------------------------------
@@ -599,8 +599,8 @@ export function tap (onResolved, onRejected) {
   const forward = () => this
 
   return _wrap(this).then(
-    onResolved && ((value) => _wrap(onResolved(value)).then(forward)),
-    onRejected && ((reason) => _wrap(onRejected(reason)).then(forward))
+    onResolved && (value => _wrap(onResolved(value)).then(forward)),
+    onRejected && (reason => _wrap(onRejected(reason)).then(forward))
   )
 }
 
@@ -625,11 +625,11 @@ export function timeout (ms) {
     }, ms)
 
     _wrap(this).then(
-      (value) => {
+      value => {
         handle !== null && clearTimeout(handle)
         resolve(value)
       },
-      (reason) => {
+      reason => {
         handle !== null && clearTimeout(handle)
         reject(reason)
       }
@@ -658,8 +658,8 @@ export function unpromisify () {
     }
 
     _wrapCall(fn, args, this).then(
-      (result) => cb(null, result),
-      (reason) => cb(reason)
+      result => cb(null, result),
+      reason => cb(reason)
     )
   }, fn.name, fn.length + 1)
 }

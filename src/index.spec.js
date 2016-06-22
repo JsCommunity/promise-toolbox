@@ -53,10 +53,10 @@ describe('all()', () => {
 // -------------------------------------------------------------------
 
 describe('catchPlus', () => {
-  const ident = (value) => value
+  const ident = value => value
 
   it('catches errors matching a predicate', () => {
-    const predicate = (reason) => reason === 'foo'
+    const predicate = reason => reason === 'foo'
 
     return Promise.all([
       expect(
@@ -149,11 +149,11 @@ describe('forArray()', () => {
 // -------------------------------------------------------------------
 
 describe('fromCallback()', () => {
-  it('creates a promise which resolves with value passed to the callback', () => expect(fromCallback((cb) => {
+  it('creates a promise which resolves with value passed to the callback', () => expect(fromCallback(cb => {
     cb(null, 'foo')
   })).to.resolve.to.equal('foo'))
 
-  it('creates a promise which rejects with reason passed to the callback', () => expect(fromCallback((cb) => {
+  it('creates a promise which rejects with reason passed to the callback', () => expect(fromCallback(cb => {
     cb('bar')
   })).to.reject.to.equal('bar'))
 })
@@ -337,7 +337,7 @@ describe('timeout()', () => {
 // -------------------------------------------------------------------
 
 describe('unpromisify()', () => {
-  it('forwards the result', (done) => {
+  it('forwards the result', done => {
     const fn = unpromisify.call(() => Promise.resolve('foo'))
 
     fn((error, result) => {
@@ -348,10 +348,10 @@ describe('unpromisify()', () => {
     })
   })
 
-  it('forwards the error', (done) => {
+  it('forwards the error', done => {
     const fn = unpromisify.call(() => Promise.reject('foo'))
 
-    fn((error) => {
+    fn(error => {
       expect(error).to.equal('foo')
 
       done()
