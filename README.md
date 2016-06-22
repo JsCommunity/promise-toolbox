@@ -335,12 +335,27 @@ const [ first, seconds ] = await [
 ]::some(2)
 ```
 
-#### promise:tap(onResolved, onRejected)
+#### promise::tap(onResolved, onRejected)
 
 > Like `.then()` but the original resolution/rejection is forwarded.
 >
 > Like `::lastly()`, if the callback rejects, it takes over the
 > original resolution/rejection.
+
+```js
+import { tap } from 'promise-toolbox'
+
+// Contrary to .then(), using ::tap() does not change the resolution
+// value.
+const promise1 = Promise.resolve(42)::tap(value => {
+  console.log(value)
+})
+
+// Like .then, the second param is used in case of rejection.
+const promise2 = Promise.reject(42)::tap(null, reason => {
+  console.error(reason)
+})
+```
 
 #### promise::timeout(ms)
 
