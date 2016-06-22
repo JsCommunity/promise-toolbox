@@ -335,6 +335,13 @@ const [ first, seconds ] = await [
 ]::some(2)
 ```
 
+#### promise:tap(onResolved, onRejected)
+
+> Like `.then()` but the original resolution/rejection is forwarded.
+>
+> Like `::lastly()`, if the callback rejects, it takes over the
+> original resolution/rejection.
+
 #### promise::timeout(ms)
 
 > Automatically rejects a promise if it is still pending after `ms`

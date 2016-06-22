@@ -595,6 +595,17 @@ export function some (count) {
 
 // -------------------------------------------------------------------
 
+export function tap (onResolved, onRejected) {
+  const forward = () => this
+
+  return _wrap(this).then(
+    onResolved && ((value) => _wrap(onResolved(value)).then(forward)),
+    onRejected && ((reason) => _wrap(onRejected(reason)).then(forward))
+  )
+}
+
+// -------------------------------------------------------------------
+
 export class TimeoutError extends BaseError {
   constructor () {
     super('operation timed out')
