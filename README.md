@@ -262,8 +262,8 @@ console.log(await delay.call('500ms passed', 500))
 > Execute a handler regardless of the promise fate. Similar to the
 > `finally` block in synchronous codes.
 >
-> The resolution value or rejection reason of the initial promise if
-> forwarded.
+> The resolution value or rejection reason of the initial promise is
+> forwarded unless the callback rejects.
 
 ```js
 import { lastly } from 'promise-toolbox'
