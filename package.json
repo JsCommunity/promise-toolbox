@@ -45,7 +45,7 @@
     "mocha": "^2.3.4",
     "must": "^0.13.1",
     "native-promise-only": "^0.8.1",
-    "nyc": "^6.1.1",
+    "nyc": "^7.0.0",
     "sinon": "^1.17.2",
     "standard": "^7.0.0",
     "trace": "^2.0.1"
