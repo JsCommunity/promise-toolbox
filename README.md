@@ -1,4 +1,4 @@
-# promise-toolbox [![Build Status](https://travis-ci.org/julien-f/js-promise-toolbox.png?branch=master)](https://travis-ci.org/julien-f/js-promise-toolbox)
+# promise-toolbox [![Build Status](https://travis-ci.org/JsCommunity/promise-toolbox.png?branch=master)](https://travis-ci.org/JsCommunity/promise-toolbox)
 
 > Essential utils for promises.
 
@@ -397,7 +397,7 @@ the code.
 
 You may:
 
-- report any [issue](https://github.com/julien-f/js-promise-toolbox/issues)
+- report any [issue](https://github.com/JsCommunity/promise-toolbox/issues)
   you've encountered;
 - fork and create a pull request.
 
