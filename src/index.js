@@ -412,10 +412,8 @@ export function join () {
 // Usage: promise::lastly(cb)
 export function lastly (cb) {
   return _wrap(this).then(
-    value => _wrap(cb()).then(() => value),
-    reason => _wrap(cb()).then(() => {
-      throw reason
-    })
+    value => _wrap(cb()).then(() => this),
+    reason => _wrap(cb()).then(() => this)
   )
 }
 export { lastly as finally }
@@ -612,15 +610,20 @@ export class TimeoutError extends BaseError {
   }
 }
 
-// Usage: promise::timeout(ms)
-export function timeout (ms) {
+// Usage: promise::timeout(ms, cb)
+export function timeout (ms, cb) {
   return new Promise((resolve, reject) => {
     let handle = setTimeout(() => {
       handle = null
-      reject(new TimeoutError())
 
       if (typeof this.cancel === 'function') {
         this.cancel()
+      }
+
+      if (cb) {
+        resolve(cb())
+      } else {
+        reject(new TimeoutError())
       }
     }, ms)
 

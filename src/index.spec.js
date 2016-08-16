@@ -369,6 +369,10 @@ describe('timeout()', () => {
     new Promise(() => {})::timeout(10)
   ).to.reject.to.error(TimeoutError))
 
+  it('call the callback if not settled after a delay', () => expect(
+    new Promise(() => {})::timeout(10, () => 'bar')
+  ).to.resolve.to.equal('bar'))
+
   it('forwards the settlement if settled before a delay', () => Promise.all([
     expect(
       Promise.resolve('value')::timeout(10)

@@ -357,13 +357,20 @@ const promise2 = Promise.reject(42)::tap(null, reason => {
 })
 ```
 
-#### promise::timeout(ms)
+#### promise::timeout(ms, [cb])
 
-> Automatically rejects a promise if it is still pending after `ms`
-> milliseconds.
+> Call a callback if the promise is still pending after `ms`
+> milliseconds. Its resolution/rejection is forwarded.
+>
+> If the callback is omitted, the returned promise is rejected with a
+> `Timeout` error.
 
 ```js
 import { timeout } from 'promise-toolbox'
+
+await doLongOperation()::timeout(100, () => {
+  return doFallbackOperation()
+})
 
 await doLongOperation()::timeout(100)
 ```
