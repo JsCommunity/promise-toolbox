@@ -13,6 +13,7 @@ import {
   lastly,
   promisifyAll,
   settle,
+  tap,
   timeout,
   TimeoutError,
   unpromisify
@@ -315,6 +316,50 @@ describe('settle()', () => {
       expect(status3.reason()).to.equal('fatality')
     })
   })
+})
+
+// -------------------------------------------------------------------
+
+describe('tap(cb)', () => {
+  it('call cb with the resolved value', () => new Promise(resolve => {
+    Promise.resolve('value')::tap(value => {
+      expect(value).to.equal('value')
+      resolve()
+    })
+  }))
+
+  it('does not call cb if the promise is rejected', () => expect(
+    Promise.reject('reason')::tap(() => Promise.reject('other reason'))
+  ).to.reject.to.equal('reason'))
+
+  it('forwards the resolved value', () => expect(
+    Promise.resolve('value')::tap(() => 'other value')
+  ).to.resolve.to.equal('value'))
+
+  it('rejects if cb rejects', () => expect(
+    Promise.resolve('value')::tap(() => Promise.reject('reason'))
+  ).to.reject.to.equal('reason'))
+})
+
+describe('tap(null, cb)', () => {
+  it('call cb with the rejected reason', () => new Promise(resolve => {
+    Promise.reject('reason')::tap(null, reason => {
+      expect(reason).to.equal('reason')
+      resolve()
+    })
+  }))
+
+  it('does not call cb if the promise is resolved', () => expect(
+    Promise.resolve('value')::tap(null, () => Promise.reject('other reason'))
+  ).to.resolve.to.equal('value'))
+
+  it('forwards the rejected reason', () => expect(
+    Promise.reject('reason')::tap(null, () => 'value')
+  ).to.reject.to.equal('reason'))
+
+  it('rejects if cb rejects', () => expect(
+    Promise.reject('reason')::tap(null, () => Promise.reject('other reason'))
+  ).to.reject.to.equal('other reason'))
 })
 
 // -------------------------------------------------------------------
