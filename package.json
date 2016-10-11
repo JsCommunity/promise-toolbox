@@ -63,6 +63,7 @@
   "babel": {
     "env": {
       "production": {
+        "comments": false,
         "presets": [
           "babili"
         ]
