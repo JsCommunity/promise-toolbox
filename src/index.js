@@ -446,45 +446,41 @@ const _setFunctionNameAndLength = (() => {
   return fn => fn
 })()
 
-// Usage: fn::promisify([ context ])
-export function promisify (context) {
-  const fn = this
+// Usage: promisify(fn, [ context ])
+export const promisify = (fn, context) => _setFunctionNameAndLength(function () {
+  const { length } = arguments
+  const args = new Array(length + 1)
+  for (let i = 0; i < length; ++i) {
+    args[i] = arguments[i]
+  }
 
-  return _setFunctionNameAndLength(function () {
-    const { length } = arguments
-    const args = new Array(length + 1)
-    for (let i = 0; i < length; ++i) {
-      args[i] = arguments[i]
-    }
+  return new Promise((resolve, reject) => {
+    args[length] = (error, result) => error
+      ? reject(error)
+      : resolve(result)
 
-    return new Promise((resolve, reject) => {
-      args[length] = (error, result) => error
-        ? reject(error)
-        : resolve(result)
-
-      fn.apply(context || this, args)
-    })
-  }, fn.name, fn.length && fn.length - 1)
-}
+    fn.apply(context || this, args)
+  })
+}, fn.name, fn.length && fn.length - 1)
 
 const _DEFAULT_PALL_MAPPER = (name, fn) => (
   !(_endsWith(name, 'Sync') || _endsWith(name, 'Async')) &&
   name
 )
 
-// Usage: obj::promisifyAll([ opts ])
-export function promisifyAll ({
+// Usage: promisifyAll(obj, [ opts ])
+export const promisifyAll = (obj, {
   mapper = _DEFAULT_PALL_MAPPER,
   target = {},
-  context = this
-} = {}) {
-  _forIn(this, (value, name) => {
+  context = obj
+} = {}) => {
+  _forIn(obj, (value, name) => {
     let newName
     if (
       typeof value === 'function' &&
-      (newName = mapper(name, value, this))
+      (newName = mapper(name, value, obj))
     ) {
-      target[newName] = value::promisify(context)
+      target[newName] = promisify(value, context)
     }
   })
 

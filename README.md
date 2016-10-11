@@ -122,6 +122,28 @@ join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => 
 })
 ```
 
+#### promisify(fn, [ context ]) / promisifyAll(obj)
+
+> Creates  async functions taking node-style callbacks, create new ones
+> returning promises.
+
+```js
+import fs from 'fs'
+import { promisify, promisifyAll } from 'promise-toolbox'
+
+// Promisify a single function.
+//
+// If possible, the function name is kept and the new length is set.
+const readFile = promisify(fs.readFile)
+
+// Or all functions (own or inherited) exposed on a object.
+const fsPromise = promisifyAll(fs)
+
+readFile(__filename).then(content => console.log(content))
+
+fsPromise.readFile(__filename).then(content => console.log(content))
+```
+
 ### Pseudo-methods
 
 This function can be used as if they were methods, i.e. by passing the
@@ -279,28 +301,6 @@ function ajaxGetAsync (url) {
     $('#ajax-loader-animation').hide()
   })
 }
-```
-
-#### fn::promisify([ context ]) / obj::promisifyAll()
-
-> Creates  async functions taking node-style callbacks, create new ones
-> returning promises.
-
-```js
-import fs from 'fs'
-import { promisify, promisifyAll } from 'promise-toolbox'
-
-// Promisify a single function.
-//
-// If possible, the function name is kept and the new length is set.
-const readFile = fs.readFile::promisify()
-
-// Or all functions (own or inherited) exposed on a object.
-const fsPromise = fs::promisifyAll()
-
-readFile(__filename).then(content => console.log(content))
-
-fsPromise.readFile(__filename).then(content => console.log(content))
 ```
 
 #### promise::reflect()

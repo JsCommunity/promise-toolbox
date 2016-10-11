@@ -222,7 +222,7 @@ describe('lastly()', () => {
 describe('promisifyAll()', () => {
   it('returns a new object', () => {
     const o = {}
-    const r = o::promisifyAll()
+    const r = promisifyAll(o)
 
     expect(r).to.be.an.object()
     expect(r).to.not.equal(o)
@@ -234,7 +234,7 @@ describe('promisifyAll()', () => {
         cb(null, this)
       }
     }
-    const r = o::promisifyAll()
+    const r = promisifyAll(o)
 
     return expect(r.foo()).to.resolve.to.equal(o)
   })
