@@ -463,7 +463,7 @@ export const promisify = (fn, context) => _setFunctionNameAndLength(function () 
   })
 }, fn.name, fn.length && fn.length - 1)
 
-const _DEFAULT_PALL_MAPPER = (name, fn) => (
+const _DEFAULT_PALL_MAPPER = name => (
   !(_endsWith(name, 'Sync') || _endsWith(name, 'Async')) &&
   name
 )
