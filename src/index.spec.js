@@ -346,7 +346,7 @@ describe('tap(null, cb)', () => {
     Promise.reject('reason')::tap(null, reason => {
       expect(reason).to.equal('reason')
       resolve()
-    })
+    }).catch(() => {}) // prevents the unhandled rejection warning
   }))
 
   it('does not call cb if the promise is resolved', () => expect(
