@@ -617,7 +617,11 @@ export function timeout (ms, cb) {
       }
 
       if (cb) {
-        resolve(cb())
+        try {
+          resolve(cb())
+        } catch (error) {
+          reject(error)
+        }
       } else {
         reject(new TimeoutError())
       }

@@ -365,12 +365,14 @@ describe('tap(null, cb)', () => {
 // -------------------------------------------------------------------
 
 describe('timeout()', () => {
+  const neverSettle = new Promise(() => {})
+
   it('rejects a promise if not settled after a delay', () => expect(
-    new Promise(() => {})::timeout(10)
+    neverSettle::timeout(10)
   ).to.reject.to.error(TimeoutError))
 
   it('call the callback if not settled after a delay', () => expect(
-    new Promise(() => {})::timeout(10, () => 'bar')
+    neverSettle::timeout(10, () => 'bar')
   ).to.resolve.to.equal('bar'))
 
   it('forwards the settlement if settled before a delay', () => Promise.all([
@@ -381,6 +383,12 @@ describe('timeout()', () => {
       Promise.reject('reason')::timeout(10)
     ).to.reject.to.equal('reason')
   ]))
+
+  it('rejects if cb throws synchronously', () => expect(
+    neverSettle::timeout(10, () => {
+      throw 'reason' // eslint-disable-line no-throw-literal
+    })
+  ).to.reject.to.equal('reason'))
 })
 
 // -------------------------------------------------------------------
