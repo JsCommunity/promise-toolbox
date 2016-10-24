@@ -31,9 +31,12 @@ const _isArrayLike = value => (
   _isLength(value.length)
 )
 
-const _isIterable = typeof Symbol === 'function'
-  ? value => value && typeof value[Symbol.iterator] === 'function'
-  : () => false
+const _iteratorSymbol = (
+  typeof Symbol === 'function' && Symbol.iterator ||
+  '@@iterator'
+)
+
+const _isIterable = value => value && typeof value[_iteratorSymbol] === 'function'
 
 const _noop = () => {}
 
