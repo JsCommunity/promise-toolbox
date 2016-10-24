@@ -317,6 +317,7 @@ export const cancellable = (target, name, descriptor) => {
 
   return cancellableWrapper
 }
+export { cancellable as cancelable } // alternative US spelling
 
 // -------------------------------------------------------------------
 
