@@ -212,6 +212,10 @@ export class Cancel {
   constructor (message = 'this action has been canceled') {
     this._message = message
   }
+
+  toString () {
+    return `Cancel: ${this._message}`
+  }
 }
 
 // https://github.com/zenparsing/es-cancel-token
