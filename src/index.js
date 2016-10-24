@@ -208,12 +208,92 @@ export { asCallback as nodeify }
 
 // -------------------------------------------------------------------
 
+export class Cancel {
+  constructor (message = 'this action has been canceled') {
+    this._message = message
+  }
+
+  toString () {
+    return `Cancel: ${this._message}`
+  }
+}
+
+const _toStringTagSymbol = typeof Symbol === 'function' && Symbol.toStringTag || '@@toStringTag'
+
+// https://github.com/zenparsing/es-cancel-token
+// https://tc39.github.io/proposal-cancelable-promises/
+export class CancelToken {
+  // https://github.com/zenparsing/es-cancel-token/issues/3#issuecomment-221173214
+  static source () {
+    let cancel
+    const token = new CancelToken(cancel_ => {
+      cancel = cancel_
+    })
+    return { cancel, token }
+  }
+
+  constructor (executor) {
+    this._cancel = null
+    this._promise = null
+    this._resolve = null
+
+    let cancelOnce = message => {
+      cancelOnce = _noop
+      this._cancel = new Cancel(message)
+      const resolve = this._resolve
+      if (resolve) {
+        resolve()
+        this._resolve = null
+      }
+    }
+    const cancel = message => cancelOnce(message)
+    executor(cancel)
+  }
+
+  get promise () {
+    let promise = this._promise
+    if (!promise) {
+      if (this._cancel) {
+        promise = this._promise = Promise.resolve()
+      } else {
+        promise = this._promise = new Promise(resolve => {
+          this._resolve = resolve
+        })
+      }
+    }
+    return promise
+  }
+
+  get requested () {
+    return Boolean(this._cancel)
+  }
+
+  throwIfRequested () {
+    const cancel = this._cancel
+    if (cancel) {
+      throw cancel
+    }
+  }
+
+  [_toStringTagSymbol] () {
+    return 'CancelToken'
+  }
+}
+
 // Usage:
 //
 //     @cancellable
-//     async fn (cancellation, other, args) {
-//       cancellation.catch(() => {
-//         // do stuff regarding the cancellation request.
+//     async fn (cancelToken, other, args) {
+//       if (!cancelToken.requested) {
+//         doStuff()
+//       }
+//
+//       cancelToken.throwIfRequested()
+//
+//       doSomeMoreStuff()
+//
+//       cancelToken.promise.then(() => {
+//         // Do stuff if canceled.
 //       })
 //
 //       // do other stuff.
@@ -223,27 +303,33 @@ export const cancellable = (target, name, descriptor) => {
     ? descriptor.value
     : target
 
-  function newFn (...args) {
-    let reject
-    const cancellation = new Promise((_, reject_) => { // eslint-disable-line promise/param-names
-      reject = reject_
-    })
-    cancellation.then(null, _noop)
+  function cancellableWrapper () {
+    const { length } = arguments
+    if (length && arguments[0] instanceof CancelToken) {
+      return fn.apply(this, args)
+    }
 
-    const promise = fn.call(this, cancellation, ...args)
+    const { cancel, token } = CancelToken.source()
+    const args = new Array(length + 1)
+    args[0] = token
+    for (let i = 0; i < length; ++i) {
+      args[i + 1] = arguments[i]
+    }
 
-    promise.cancel = reject
+    const promise = fn.apply(this, args)
+    promise.cancel = cancel
 
     return promise
   }
 
   if (descriptor) {
-    descriptor.value = newFn
+    descriptor.value = cancellableWrapper
     return descriptor
   }
 
-  return newFn
+  return cancellableWrapper
 }
+export { cancellable as cancelable } // alternative US spelling
 
 // -------------------------------------------------------------------
 
