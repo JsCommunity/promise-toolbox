@@ -37,19 +37,29 @@ global.Promise = require('bluebird')
 
 > Make your async functions cancellable.
 
-```js
-import { cancellable } from 'promise-toolbox'
+If the first argument passed to the cancellable function is not a
+cancel token, a new one is created and injected and the returned
+promise will have a `cancel()` method.
 
-const asyncFunction = cancellable(async function (cancellation, a, b) {
-  cancellation.catch(() => {
+```js
+import { cancellable, CancelToken } from 'promise-toolbox'
+
+const asyncFunction = cancellable(async ($cancelToken, a, b) => {
+  $cancelToken.promise.then(() => {
     // do stuff regarding the cancellation request.
   })
 
   // do other stuff.
 })
 
-const promise = asyncFunction('foo', 'bar')
-promise.cancel()
+// Either a cancel token is passed:
+const source = CancelToken.source()
+const promise1 = asyncFunction(source.token, 'foo', 'bar')
+source.cancel()
+
+// Or the returned promise will have a cancel() method:
+const promise2 = asyncFunction('foo', 'bar')
+promise2.cancel()
 ```
 
 If the function is a method of a class or an object, you can use
