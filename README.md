@@ -317,10 +317,11 @@ console.log(await delay.call('500ms passed', 500))
 // → 500 ms passed
 ```
 
-#### promises::forEach(cb)
+#### collection::forEach(cb)
 
-> Iterates in order over a collection of promises waiting for each of
-> them to be resolved.
+> Iterates in order over a collection, or promise of collection, which
+> contains a mix of promises and values, waiting for each call of cb
+> to be resolved before the next one.
 
 ```js
 [
