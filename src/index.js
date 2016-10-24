@@ -216,6 +216,15 @@ export class CancelError extends BaseError {
 
 // https://github.com/zenparsing/es-cancel-token
 export class CancelToken {
+  // https://github.com/zenparsing/es-cancel-token/issues/3#issuecomment-221173214
+  static source () {
+    let cancel
+    const token = new CancelToken(cancel_ => {
+      cancel = cancel_
+    })
+    return { cancel, token }
+  }
+
   constructor (executor) {
     this._requested = false
     this._promise = null
@@ -259,15 +268,6 @@ export class CancelToken {
   }
 }
 
-// https://github.com/zenparsing/es-cancel-token/issues/3#issuecomment-221173214
-export class CancelSource {
-  constructor () {
-    this.token = new CancelToken(cancel => {
-      this.cancel = cancel
-    })
-  }
-}
-
 // Usage:
 //
 //     @cancellable
@@ -297,15 +297,15 @@ export const cancellable = (target, name, descriptor) => {
       return fn.apply(this, args)
     }
 
-    const cancelSource = new CancelSource()
+    const { cancel, token } = CancelToken.source()
     const args = new Array(length + 1)
-    args[0] = cancelSource.cancel
+    args[0] = token
     for (let i = 0; i < length; ++i) {
       args[i + 1] = arguments[i]
     }
 
     const promise = fn.apply(this, args)
-    promise.cancel = cancelSource.cancel
+    promise.cancel = cancel
 
     return promise
   }
