@@ -209,8 +209,8 @@ export { asCallback as nodeify }
 // -------------------------------------------------------------------
 
 export class Cancel {
-  constructor () {
-    this._message = 'this action has been canceled'
+  constructor (message = 'this action has been canceled') {
+    this._message = message
   }
 }
 
@@ -227,27 +227,27 @@ export class CancelToken {
   }
 
   constructor (executor) {
-    this._requested = false
+    this._cancel = null
     this._promise = null
     this._resolve = null
 
-    let cancelOnce = () => {
+    let cancelOnce = message => {
       cancelOnce = _noop
-      this._requested = true
+      this._cancel = new Cancel(message)
       const resolve = this._resolve
       if (resolve) {
         resolve()
         this._resolve = null
       }
     }
-    const cancel = () => cancelOnce()
+    const cancel = message => cancelOnce(message)
     executor(cancel)
   }
 
   get promise () {
     let promise = this._promise
     if (!promise) {
-      if (this._requested) {
+      if (this._cancel) {
         promise = this._promise = Promise.resolve()
       } else {
         promise = this._promise = new Promise(resolve => {
@@ -259,12 +259,13 @@ export class CancelToken {
   }
 
   get requested () {
-    return this._requested
+    return Boolean(this._cancel)
   }
 
   throwIfRequested () {
-    if (this._requested) {
-      throw new Cancel()
+    const cancel = this._cancel
+    if (cancel) {
+      throw cancel
     }
   }
 }

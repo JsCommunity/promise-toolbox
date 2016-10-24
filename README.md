@@ -55,11 +55,11 @@ const asyncFunction = cancellable(async ($cancelToken, a, b) => {
 // Either a cancel token is passed:
 const source = CancelToken.source()
 const promise1 = asyncFunction(source.token, 'foo', 'bar')
-source.cancel()
+source.cancel('reason')
 
 // Or the returned promise will have a cancel() method:
 const promise2 = asyncFunction('foo', 'bar')
-promise2.cancel()
+promise2.cancel('reason')
 ```
 
 If the function is a method of a class or an object, you can use
