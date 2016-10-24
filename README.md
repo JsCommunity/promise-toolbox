@@ -323,12 +323,18 @@ console.log(await delay.call('500ms passed', 500))
 > contains a mix of promises and values, waiting for each call of cb
 > to be resolved before the next one.
 
+The returned promise will resolve to `undefined` when the iteration is
+complete.
+
 ```js
 [
-  Promise.resolve('foo'),
+  'foo',
   Promise.resolve('bar'),
 ]::forEach(value => {
   console.log(value)
+
+  // Wait for the promise to be resolve before the next item.
+  return new Promise(resolve => setTimeout(resolve, 10))
 })
 // →
 // foo
