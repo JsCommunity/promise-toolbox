@@ -31,9 +31,58 @@ global.Promise = require('bluebird')
 > Note that it should only be done at the application level, never in
 > a library!
 
-### Decorators
+### Cancellation
 
-#### cancellable
+This library provides an implementation of `CancelToken` from the
+[cancelable promises specification](https://tc39.github.io/proposal-cancelable-promises/).
+
+A cancel token is an object which can be passed to asynchronous
+functions to represent cancellation state.
+
+```js
+import { CancelToken } from 'promise-toolbox'
+```
+
+#### Creation
+
+A cancel token is created by the initiator of the async work and its
+cancellation state may be requested at any time.
+
+```js
+// Create a token which requests cancellation when a button is clicked.
+const token = new CancelToken(cancel => {
+  $('#some-button').on('click', () => cancel('button clicked'))
+})
+```
+
+#### Consumption
+
+The receiver of the token (the function doing the async work) can:
+
+1. synchronously check whether cancellation has been requested
+2. synchronously throw if cancellation has been requested
+3. register a callback that will be executed if cancellation is requested
+4. pass the token to subtasks
+
+```js
+// 1.
+if (token.requested) {
+  console.log('cancellation has been requested')
+}
+
+// 2.
+token.throwIfRequested()
+
+// 3.
+token.promise.then(() => {
+  console.log('cancellation has been requested')
+})
+
+// 4.
+subtask(token)
+```
+
+#### @cancellable decorator
 
 > Make your async functions cancellable.
 
@@ -68,12 +117,8 @@ If the function is a method of a class or an object, you can use
 ```js
 class MyClass {
   @cancellable
-  async asyncMethod (cancellation, a, b) {
-    cancellation.catch(() => {
-      // do stuff regarding the cancellation request.
-    })
-
-  // do other stuff.
+  async asyncMethod ($cancelToken, a, b) {
+    // ...
   }
 }
 ```
