@@ -208,13 +208,14 @@ export { asCallback as nodeify }
 
 // -------------------------------------------------------------------
 
-export class CancelError extends BaseError {
+export class Cancel {
   constructor () {
-    super('this action has been canceled')
+    this._message = 'this action has been canceled'
   }
 }
 
 // https://github.com/zenparsing/es-cancel-token
+// https://tc39.github.io/proposal-cancelable-promises/
 export class CancelToken {
   // https://github.com/zenparsing/es-cancel-token/issues/3#issuecomment-221173214
   static source () {
@@ -263,7 +264,7 @@ export class CancelToken {
 
   throwIfRequested () {
     if (this._requested) {
-      throw new CancelError()
+      throw new Cancel()
     }
   }
 }
