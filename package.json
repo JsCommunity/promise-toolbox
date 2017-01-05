@@ -39,26 +39,21 @@
     "babel-preset-babili": "^0.0.9",
     "babel-preset-latest": "^6.16.0",
     "babel-preset-stage-0": "^6.3.13",
-    "clarify": "^2.0.0",
     "dependency-check": "^2.5.1",
     "ghooks": "^1.3.2",
-    "julien-f-source-map-support": "0.0.0",
-    "mocha": "^3.0.0",
-    "must": "^0.13.1",
+    "jest": "^18.1.0",
     "native-promise-only": "^0.8.1",
-    "sinon": "^1.17.2",
-    "standard": "^8.0.0",
-    "trace": "^2.0.1"
+    "standard": "^8.0.0"
   },
   "scripts": {
     "build": "NODE_ENV=production babel --source-maps --out-dir=dist/ src/",
     "depcheck": "dependency-check ./package.json",
     "dev": "NODE_DEV=development babel --watch --source-maps --out-dir=dist/ src/",
-    "dev-test": "mocha --opts .mocha.opts --watch --reporter=min \"dist/**/*.spec.js\"",
+    "dev-test": "jest --bail --watch",
     "lint": "standard",
     "posttest": "npm run lint && npm run depcheck",
     "prepublish": "npm run build",
-    "test": "mocha --opts .mocha.opts \"dist/**/*.spec.js\""
+    "test": "jest"
   },
   "babel": {
     "env": {
@@ -72,6 +67,11 @@
     "presets": [
       "latest",
       "stage-0"
+    ]
+  },
+  "jest": {
+    "testPathDirs": [
+      "<rootDir>/src"
     ]
   },
   "standard": {
