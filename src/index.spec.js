@@ -103,6 +103,32 @@ describe('CancelToken', () => {
       expect(value.message).toBe('foo')
     })
   })
+
+  describe('#requested', () => {
+    it('synchronously returns whether cancellation has been requested', () => {
+      const { cancel, token } = CancelToken.source()
+
+      expect(token.requested).toBe(false)
+      cancel()
+      expect(token.requested).toBe(true)
+    })
+  })
+
+  describe('#throwIfRequested', () => {
+    it('synchronously throws if cancellation has been requested', () => {
+      const { cancel, token } = CancelToken.source()
+
+      token.throwIfRequested()
+      cancel('foo')
+      try {
+        token.throwIfRequested()
+        expect(false).toBe('should have thrown')
+      } catch (error) {
+        expect(error).toBeInstanceOf(Cancel)
+        expect(error.message).toBe('foo')
+      }
+    })
+  })
 })
 
 // -------------------------------------------------------------------
