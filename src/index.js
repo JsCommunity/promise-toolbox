@@ -210,7 +210,10 @@ export { asCallback as nodeify }
 
 export class Cancel {
   constructor (message = 'this action has been canceled') {
-    this._message = message
+    Object.defineProperty(this, 'message', {
+      enumerable: true,
+      value: message
+    })
   }
 
   toString () {
@@ -248,10 +251,10 @@ export class CancelToken {
 
     let cancelOnce = message => {
       cancelOnce = _noop
-      this._cancel = new Cancel(message)
+      const cancel = this._cancel = new Cancel(message)
       const resolve = this._resolve
       if (resolve) {
-        resolve()
+        resolve(cancel)
         this._resolve = null
       }
     }
@@ -262,8 +265,9 @@ export class CancelToken {
   get promise () {
     let promise = this._promise
     if (!promise) {
-      if (this._cancel) {
-        promise = this._promise = Promise.resolve()
+      const cancel = this._cancel
+      if (cancel) {
+        promise = this._promise = Promise.resolve(cancel)
       } else {
         promise = this._promise = new Promise(resolve => {
           this._resolve = resolve

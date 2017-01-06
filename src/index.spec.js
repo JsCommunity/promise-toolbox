@@ -4,6 +4,7 @@ import makeError from 'make-error'
 
 import {
   all,
+  Cancel,
   CancelToken,
   catchPlus,
   forArray,
@@ -87,6 +88,19 @@ describe('CancelToken', () => {
       expect(token.requested).toBe(false)
       cancel()
       expect(token.requested).toBe(true)
+    })
+  })
+
+  describe('#promise', () => {
+    it('returns a promise resolving on cancel', async () => {
+      const { cancel, token } = CancelToken.source()
+
+      const { promise } = token
+      cancel('foo')
+
+      const value = await promise
+      expect(value).toBeInstanceOf(Cancel)
+      expect(value.message).toBe('foo')
     })
   })
 })
