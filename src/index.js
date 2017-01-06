@@ -218,11 +218,20 @@ export class Cancel {
   }
 }
 
+const _cancelTokenTag = 'CancelToken'
 const _toStringTagSymbol = typeof Symbol === 'function' && Symbol.toStringTag || '@@toStringTag'
 
 // https://github.com/zenparsing/es-cancel-token
 // https://tc39.github.io/proposal-cancelable-promises/
 export class CancelToken {
+  static isCancelToken (value) {
+    return (
+      value != null &&
+      typeof value[_toStringTagSymbol] === 'function' &&
+      value[_toStringTagSymbol]() === _cancelTokenTag
+    )
+  }
+
   // https://github.com/zenparsing/es-cancel-token/issues/3#issuecomment-221173214
   static source () {
     let cancel
@@ -276,7 +285,7 @@ export class CancelToken {
   }
 
   [_toStringTagSymbol] () {
-    return 'CancelToken'
+    return _cancelTokenTag
   }
 }
 

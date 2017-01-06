@@ -55,6 +55,10 @@ const token = new CancelToken(cancel => {
 })
 ```
 
+```js
+const { cancel, token } = CancelToken.source()
+```
+
 #### Consumption
 
 The receiver of the token (the function doing the async work) can:
@@ -80,6 +84,14 @@ token.promise.then(() => {
 
 // 4.
 subtask(token)
+```
+
+#### Is cancel token?
+
+```js
+if (CancelToken.isCancelToken(value)) {
+  console.log('value is a cancel token')
+}
 ```
 
 #### @cancellable decorator

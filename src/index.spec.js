@@ -4,6 +4,7 @@ import makeError from 'make-error'
 
 import {
   all,
+  CancelToken,
   catchPlus,
   forArray,
   fromCallback,
@@ -20,6 +21,7 @@ import {
 // ===================================================================
 
 const identity = value => value
+const noop = () => {}
 const throwArg = value => { throw value }
 
 // swap resolution/rejection of a promise to help test rejection
@@ -64,6 +66,28 @@ describe('all()', () => {
       new Promise(() => {}),
       Promise.reject('bar')
     ]::all())).toBe('bar')
+  })
+})
+
+// -------------------------------------------------------------------
+
+describe('CancelToken', () => {
+  describe('.isCancelToken()', () => {
+    it('determines whether the passed value is a CancelToken', () => {
+      expect(CancelToken.isCancelToken(null)).toBe(false)
+      expect(CancelToken.isCancelToken({})).toBe(false)
+      expect(CancelToken.isCancelToken(new CancelToken(noop))).toBe(true)
+    })
+  })
+
+  describe('.source()', () => {
+    it('creates a new token', () => {
+      const { cancel, token } = CancelToken.source()
+
+      expect(token.requested).toBe(false)
+      cancel()
+      expect(token.requested).toBe(true)
+    })
   })
 })
 
