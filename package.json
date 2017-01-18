@@ -28,52 +28,53 @@
     "dist/"
   ],
   "engines": {
-    "node": ">=0.12"
+    "node": ">=4"
   },
   "dependencies": {
-    "make-error": "^1.0.4"
+    "make-error": "^1.2.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.3.17",
-    "babel-eslint": "^7.0.0",
-    "babel-preset-babili": "^0.0.9",
-    "babel-preset-latest": "^6.16.0",
-    "babel-preset-stage-0": "^6.3.13",
-    "dependency-check": "^2.5.1",
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-preset-env": "^1.1.8",
+    "babel-preset-stage-0": "^6.16.0",
+    "cross-env": "^3.1.4",
+    "dependency-check": "^2.7.0",
     "husky": "^0.12.0",
     "jest": "^18.1.0",
-    "native-promise-only": "^0.8.1",
-    "standard": "^8.0.0"
+    "rimraf": "^2.5.4",
+    "standard": "^8.6.0"
   },
   "scripts": {
-    "build": "NODE_ENV=production babel --source-maps --out-dir=dist/ src/",
-    "commit-msg": "npm test",
-    "depcheck": "dependency-check ./package.json",
-    "dev": "NODE_DEV=development babel --watch --source-maps --out-dir=dist/ src/",
+    "build": "cross-env NODE_ENV=production babel --source-maps --out-dir=dist/ src/",
+    "commitmsg": "npm test",
+    "dev": "cross-env NODE_ENV=development babel --watch --source-maps --out-dir=dist/ src/",
     "dev-test": "jest --bail --watch",
-    "lint": "standard",
-    "posttest": "npm run lint && npm run depcheck",
+    "posttest": "standard && dependency-check ./package.json",
+    "prebuild": "rimraf dist/",
+    "predev": "npm run prebuild",
     "prepublish": "npm run build",
     "test": "jest"
   },
   "babel": {
-    "env": {
-      "production": {
-        "comments": false,
-        "presets": [
-          "babili"
-        ]
-      }
-    },
     "presets": [
-      "latest",
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": "> 5%",
+            "node": 4
+          }
+        }
+      ],
       "stage-0"
     ]
   },
   "jest": {
     "testPathDirs": [
       "<rootDir>/src"
-    ]
+    ],
+    "testRegex": "\\.spec\\.js$"
   },
   "standard": {
     "ignore": [

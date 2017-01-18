@@ -595,7 +595,7 @@ const FN_FALSE = () => false
 const FN_TRUE = () => true
 
 const _reflectResolution = (__proto__ => value => ({
-  __proto__,
+  __proto__: __proto__,
   value: () => value
 }))({
   isFulfilled: FN_TRUE,
@@ -608,7 +608,7 @@ const _reflectResolution = (__proto__ => value => ({
 })
 
 const _reflectRejection = (__proto__ => reason => ({
-  __proto__,
+  __proto__: __proto__,
   reason: () => reason
 }))({
   isFulfilled: FN_FALSE,
