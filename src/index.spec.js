@@ -104,6 +104,16 @@ describe('CancelToken', () => {
     })
   })
 
+  describe('#reason', () => {
+    it('synchronously returns the cancellation reason', () => {
+      const { cancel, token } = CancelToken.source()
+
+      expect(token.reason).toBeUndefined()
+      cancel('foo')
+      expect(token.reason.message).toBe('foo')
+    })
+  })
+
   describe('#requested', () => {
     it('synchronously returns whether cancellation has been requested', () => {
       const { cancel, token } = CancelToken.source()

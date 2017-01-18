@@ -245,16 +245,18 @@ export class CancelToken {
   }
 
   constructor (executor) {
-    this._cancel = null
     this._promise = null
+    this._reason = undefined
     this._resolve = null
 
     let cancelOnce = message => {
       cancelOnce = _noop
-      const cancel = this._cancel = new Cancel(message)
+
+      const reason = this._reason = new Cancel(message)
+
       const resolve = this._resolve
       if (resolve) {
-        resolve(cancel)
+        resolve(reason)
         this._resolve = null
       }
     }
@@ -265,9 +267,9 @@ export class CancelToken {
   get promise () {
     let promise = this._promise
     if (!promise) {
-      const cancel = this._cancel
-      promise = this._promise = cancel
-        ? Promise.resolve(cancel)
+      const reason = this._reason
+      promise = this._promise = reason
+        ? Promise.resolve(reason)
         : new Promise(resolve => {
           this._resolve = resolve
         })
@@ -275,12 +277,16 @@ export class CancelToken {
     return promise
   }
 
+  get reason () {
+    return this._reason
+  }
+
   get requested () {
-    return Boolean(this._cancel)
+    return this._reason !== undefined
   }
 
   throwIfRequested () {
-    const cancel = this._cancel
+    const cancel = this._reason
     if (cancel) {
       throw cancel
     }

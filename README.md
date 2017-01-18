@@ -70,16 +70,20 @@ The receiver of the token (the function doing the async work) can:
 
 ```js
 // 1.
-if (token.requested) {
-  console.log('cancellation has been requested')
+if (token.reason) {
+  console.log('cancellation has been requested', token.reason.message)
 }
 
 // 2.
-token.throwIfRequested()
+try {
+  token.throwIfRequested()
+} catch (reason) {
+  console.log('cancellation has been requested', reason.message)
+}
 
 // 3.
-token.promise.then(() => {
-  console.log('cancellation has been requested')
+token.promise.then(reason => {
+  console.log('cancellation has been requested', reason.message)
 })
 
 // 4.
