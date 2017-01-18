@@ -98,6 +98,17 @@ if (CancelToken.isCancelToken(value)) {
 }
 ```
 
+#### Combining cancel tokens
+
+> Create a token which is cancelled as soon as one token amongst many
+> is.
+
+```js
+// `token` will be cancelled (synchronously) as soon as `token1` or
+// `token2` or token3` is, with the same reason.
+const token = CancelToken.race([ token1, token2, token3 ])
+```
+
 #### @cancellable decorator
 
 > Make your async functions cancellable.

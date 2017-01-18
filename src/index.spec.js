@@ -104,6 +104,21 @@ describe('CancelToken', () => {
     })
   })
 
+  describe('#race', () => {
+    it('returns a token which resolve synchronously', () => {
+      const { cancel, token } = CancelToken.source()
+
+      const raceToken = CancelToken.race([
+        new CancelToken(noop),
+        token
+      ])
+
+      expect(raceToken.reason).toBeUndefined()
+      cancel()
+      expect(raceToken.reason).toBe(token.reason)
+    })
+  })
+
   describe('#reason', () => {
     it('synchronously returns the cancellation reason', () => {
       const { cancel, token } = CancelToken.source()

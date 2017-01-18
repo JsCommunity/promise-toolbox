@@ -244,7 +244,22 @@ export class CancelToken {
     return { cancel, token }
   }
 
+  static race (tokens) {
+    const { cancel, token } = CancelToken.source()
+    _forEach(tokens, token => {
+      const { reason } = token
+      if (reason) {
+        cancel(reason)
+        return false
+      }
+
+      (token._listeners || (token._listeners = [])).push(cancel)
+    })
+    return token
+  }
+
   constructor (executor) {
+    this._listeners = null
     this._promise = null
     this._reason = undefined
     this._resolve = null
@@ -252,12 +267,21 @@ export class CancelToken {
     let cancelOnce = message => {
       cancelOnce = _noop
 
-      const reason = this._reason = new Cancel(message)
+      const reason = this._reason = message instanceof Cancel
+        ? message
+        : new Cancel(message)
 
       const resolve = this._resolve
       if (resolve) {
-        resolve(reason)
         this._resolve = null
+        resolve(reason)
+      }
+
+      // notify sync listeners (for race)
+      const listeners = this._listeners
+      if (listeners) {
+        this._listeners = null
+        _forArray(listeners, listener => void listener(reason))
       }
     }
     const cancel = message => cancelOnce(message)
