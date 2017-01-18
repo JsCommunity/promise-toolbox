@@ -266,13 +266,11 @@ export class CancelToken {
     let promise = this._promise
     if (!promise) {
       const cancel = this._cancel
-      if (cancel) {
-        promise = this._promise = Promise.resolve(cancel)
-      } else {
-        promise = this._promise = new Promise(resolve => {
+      promise = this._promise = cancel
+        ? Promise.resolve(cancel)
+        : new Promise(resolve => {
           this._resolve = resolve
         })
-      }
     }
     return promise
   }
