@@ -7,6 +7,7 @@ import {
   Cancel,
   CancelToken,
   catchPlus,
+  disposer,
   forArray,
   fromCallback,
   join,
@@ -16,7 +17,8 @@ import {
   tap,
   timeout,
   TimeoutError,
-  unpromisify
+  unpromisify,
+  using
 } from './'
 
 // ===================================================================
@@ -226,6 +228,51 @@ describe('catchPlus', () => {
       await Promise.reject(new TypeError(''))::catchPlus(TypeError, identity)
     ).toBeInstanceOf(TypeError)
   })
+})
+
+// -------------------------------------------------------------------
+
+describe('disposer()', () => {
+  it('no errors', async () => {
+    const d1 = jest.fn()
+    const p1 = Promise.resolve('foo')::disposer(d1)
+    const d2 = jest.fn()
+    const p2 = Promise.resolve('bar')::disposer(d2)
+    const handler = jest.fn(() => 'baz')
+
+    expect(await using(p1, p2, handler)).toBe('baz')
+    expect(handler.mock.calls).toEqual([ [ 'foo', 'bar' ] ])
+    expect(d1.mock.calls).toEqual([ [ 'foo' ] ])
+    expect(d2.mock.calls).toEqual([ [ 'bar' ] ])
+  })
+
+  it('error in a provider', async () => {
+    const d1 = jest.fn()
+    const p1 = Promise.resolve('foo')::disposer(d1)
+    const d2 = jest.fn()
+    const p2 = Promise.reject('bar')::disposer(d2)
+    const handler = jest.fn()
+
+    expect(await rejectionOf(using(p1, p2, handler))).toBe('bar')
+    expect(handler.mock.calls).toEqual([ ])
+    expect(d1.mock.calls).toEqual([ [ 'foo' ] ])
+    expect(d2.mock.calls).toEqual([ ])
+  })
+
+  it('error in handler', async () => {
+    const d1 = jest.fn()
+    const p1 = Promise.resolve('foo')::disposer(d1)
+    const d2 = jest.fn()
+    const p2 = Promise.resolve('bar')::disposer(d2)
+    const handler = jest.fn(() => Promise.reject('baz'))
+
+    expect(await rejectionOf(using(p1, p2, handler))).toBe('baz')
+    expect(handler.mock.calls).toEqual([ [ 'foo', 'bar' ] ])
+    expect(d1.mock.calls).toEqual([ [ 'foo' ] ])
+    expect(d2.mock.calls).toEqual([ [ 'bar' ] ])
+  })
+
+  it('error in a disposer')
 })
 
 // -------------------------------------------------------------------

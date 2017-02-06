@@ -38,6 +38,17 @@ const _iteratorSymbol = (
 
 const _isIterable = value => value && typeof value[_iteratorSymbol] === 'function'
 
+const _once = fn => {
+  let result
+  return function () {
+    if (fn) {
+      result = fn.apply(this, arguments)
+      fn = null
+    }
+    return result
+  }
+}
+
 const _noop = () => {}
 
 // -------------------------------------------------------------------
@@ -122,6 +133,14 @@ const _wrap = value => isPromise(value)
   : Promise.resolve(value)
 
 const _wrapCall = (fn, args, thisArg) => {
+  try {
+    return _wrap(fn.call(thisArg, args))
+  } catch (error) {
+    return Promise.reject(error)
+  }
+}
+
+const _wrapApply = (fn, args, thisArg) => {
   try {
     return _wrap(fn.apply(thisArg, args))
   } catch (error) {
@@ -482,6 +501,95 @@ export function delay (ms) {
 
 // -------------------------------------------------------------------
 
+function Disposer (promise, disposer) {
+  this.d = disposer
+  this.p = promise
+}
+
+// Usage: promise::disposer(disposer)
+export function disposer (disposer) {
+  return new Disposer(this, disposer)
+}
+
+// Usage: using(disposers…, handler)
+export function using () {
+  const n = arguments.length - 1
+
+  if (n < 1) {
+    throw new TypeError('using expects at least 2 arguments')
+  }
+
+  let disposers = arguments[0]
+  let spread = false
+  if (n > 1 || !_isArray(disposers)) {
+    disposers = new Array(n)
+    spread = true
+    for (let i = 0; i < n; ++i) {
+      disposers[i] = arguments[i]
+    }
+  }
+  const handler = arguments[n]
+
+  const dispose = _once((fn, value) => {
+    let leftToProcess = n
+
+    const onSettle = () => {
+      if (!--leftToProcess) {
+        fn(value)
+      }
+    }
+
+    // like Bluebird, on failure to dispose a resource, throw an async error
+    const onFailure = reason => {
+      setTimeout(() => {
+        throw reason
+      }, 0)
+    }
+
+    _forArray(disposers, disposer => {
+      disposer.p.then(
+        value => _wrapCall(disposer.d, value).then(onSettle, onFailure),
+        onSettle
+      )
+    })
+  })
+
+  return new Promise((resolve, reject) => {
+    const values = new Array(n)
+    let leftToProcess = n
+
+    let onProviderFailure_ = reason => {
+      onProviderFailure_ = onProviderSettle
+      onSettle = () => dispose(reject, reason)
+
+      onProviderSettle()
+    }
+    const onProviderFailure = reason => onProviderFailure_(reason)
+
+    const onProviderSettle = () => {
+      if (!--leftToProcess) {
+        onSettle()
+      }
+    }
+
+    let onSettle = () =>
+      (spread ? _wrapApply : _wrapCall)(handler, values, this).then(
+        value => dispose(resolve, value),
+        reason => dispose(reject, reason)
+      )
+
+    _forArray(disposers, (disposer, i) => {
+      disposer.p.then(value => {
+        values[i] = value
+
+        onProviderSettle()
+      }, onProviderFailure)
+    })
+  })
+}
+
+// -------------------------------------------------------------------
+
 export const makeAsyncIterator = iterator => {
   const asyncIterator = _makeAsyncIterator(iterator)
 
@@ -790,7 +898,7 @@ export function unpromisify () {
       args[i] = arguments[i]
     }
 
-    _wrapCall(fn, args, this).then(
+    _wrapApply(fn, args, this).then(
       result => cb(null, result),
       reason => cb(reason)
     )
