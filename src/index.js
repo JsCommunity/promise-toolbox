@@ -547,10 +547,14 @@ export function using () {
     }
 
     _forArray(disposers, disposer => {
-      disposer.p.then(
-        value => _wrapCall(disposer.d, value).then(onSettle, onFailure),
-        onSettle
-      )
+      if (disposer instanceof Disposer) {
+        disposer.p.then(
+          value => _wrapCall(disposer.d, value).then(onSettle, onFailure),
+          onSettle
+        )
+      } else {
+        --leftToProcess
+      }
     })
   })
 
@@ -579,7 +583,7 @@ export function using () {
       )
 
     _forArray(disposers, (disposer, i) => {
-      disposer.p.then(value => {
+      (disposer instanceof Disposer ? disposer.p : disposer).then(value => {
         values[i] = value
 
         onProviderSettle()
