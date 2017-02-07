@@ -501,39 +501,39 @@ export function delay (ms) {
 
 // -------------------------------------------------------------------
 
-function Disposer (promise, disposer) {
+function Resource (promise, disposer) {
   this.d = disposer
   this.p = promise
 }
 
 // Usage: promise::disposer(disposer)
 export function disposer (disposer) {
-  return new Disposer(this, disposer)
+  return new Resource(this, disposer)
 }
 
 // Usage: using(disposers…, handler)
 export function using () {
-  let nDisposers = arguments.length - 1
+  let nResources = arguments.length - 1
 
-  if (nDisposers < 1) {
+  if (nResources < 1) {
     throw new TypeError('using expects at least 2 arguments')
   }
 
-  const handler = arguments[nDisposers]
+  const handler = arguments[nResources]
 
-  let disposers = arguments[0]
-  const spread = nDisposers > 1 || !_isArray(disposers)
+  let resources = arguments[0]
+  const spread = nResources > 1 || !_isArray(resources)
   if (spread) {
-    disposers = new Array(nDisposers)
-    for (let i = 0; i < nDisposers; ++i) {
-      disposers[i] = arguments[i]
+    resources = new Array(nResources)
+    for (let i = 0; i < nResources; ++i) {
+      resources[i] = arguments[i]
     }
   } else {
-    nDisposers = disposers.length
+    nResources = resources.length
   }
 
   const dispose = _once((fn, value) => {
-    let leftToProcess = nDisposers
+    let leftToProcess = nResources
 
     const onSettle = () => {
       if (!--leftToProcess) {
@@ -548,15 +548,15 @@ export function using () {
       }, 0)
     }
 
-    _forArray(disposers, disposer => {
+    _forArray(resources, resource => {
       let d
-      if (disposer && typeof (d = disposer.d) === 'function') {
-        disposer.p.then(
+      if (resource && typeof (d = resource.d) === 'function') {
+        resource.p.then(
           value => _wrapCall(d, value).then(onSettle, onFailure),
           onSettle
         )
 
-        disposer.p = disposer.d = null
+        resource.p = resource.d = null
       } else {
         --leftToProcess
       }
@@ -564,8 +564,8 @@ export function using () {
   })
 
   return new Promise((resolve, reject) => {
-    const values = new Array(nDisposers)
-    let leftToProcess = nDisposers
+    const values = new Array(nResources)
+    let leftToProcess = nResources
 
     let onProviderFailure_ = reason => {
       onProviderFailure_ = onProviderSettle
@@ -587,8 +587,8 @@ export function using () {
         reason => dispose(reject, reason)
       )
 
-    _forArray(disposers, (disposer, i) => {
-      const p = disposer instanceof Disposer ? disposer.p : disposer
+    _forArray(resources, (resource, i) => {
+      const p = resource instanceof Resource ? resource.p : resource
       if (!p) {
         onProviderFailure(new TypeError('resource has already been disposed of'))
         return
