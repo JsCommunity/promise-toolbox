@@ -513,24 +513,27 @@ export function disposer (disposer) {
 
 // Usage: using(disposers…, handler)
 export function using () {
-  const n = arguments.length - 1
+  let nDisposers = arguments.length - 1
 
-  if (n < 1) {
+  if (nDisposers < 1) {
     throw new TypeError('using expects at least 2 arguments')
   }
 
+  const handler = arguments[nDisposers]
+
   let disposers = arguments[0]
-  const spread = n > 1 || !_isArray(disposers)
+  const spread = nDisposers > 1 || !_isArray(disposers)
   if (spread) {
-    disposers = new Array(n)
-    for (let i = 0; i < n; ++i) {
+    disposers = new Array(nDisposers)
+    for (let i = 0; i < nDisposers; ++i) {
       disposers[i] = arguments[i]
     }
+  } else {
+    nDisposers = disposers.length
   }
-  const handler = arguments[n]
 
   const dispose = _once((fn, value) => {
-    let leftToProcess = n
+    let leftToProcess = nDisposers
 
     const onSettle = () => {
       if (!--leftToProcess) {
@@ -558,8 +561,8 @@ export function using () {
   })
 
   return new Promise((resolve, reject) => {
-    const values = new Array(n)
-    let leftToProcess = n
+    const values = new Array(nDisposers)
+    let leftToProcess = nDisposers
 
     let onProviderFailure_ = reason => {
       onProviderFailure_ = onProviderSettle

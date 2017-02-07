@@ -233,18 +233,26 @@ describe('catchPlus', () => {
 // -------------------------------------------------------------------
 
 describe('disposer()', () => {
-  it('no errors', async () => {
+  it('called with flat params', async () => {
     const d1 = jest.fn()
     const p1 = Promise.resolve('p1')::disposer(d1)
-    const d2 = jest.fn()
-    const p2 = Promise.resolve('p2')::disposer(d2)
-    const p3 = Promise.resolve('p3')
+    const p2 = Promise.resolve('p2')
     const handler = jest.fn(() => 'handler')
 
-    expect(await using(p1, p2, p3, handler)).toBe('handler')
-    expect(handler.mock.calls).toEqual([ [ 'p1', 'p2', 'p3' ] ])
+    expect(await using(p1, p2, handler)).toBe('handler')
+    expect(handler.mock.calls).toEqual([ [ 'p1', 'p2' ] ])
     expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
-    expect(d2.mock.calls).toEqual([ [ 'p2' ] ])
+  })
+
+  it('called with array param', async () => {
+    const d1 = jest.fn()
+    const p1 = Promise.resolve('p1')::disposer(d1)
+    const p2 = Promise.resolve('p2')
+    const handler = jest.fn(() => 'handler')
+
+    expect(await using([ p1, p2 ], handler)).toBe('handler')
+    expect(handler.mock.calls).toEqual([ [ [ 'p1', 'p2' ] ] ])
+    expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
   })
 
   it('error in a provider', async () => {
@@ -256,9 +264,9 @@ describe('disposer()', () => {
     const handler = jest.fn()
 
     expect(await rejectionOf(using(p1, p2, p3, handler))).toBe('p2')
-    expect(handler.mock.calls).toEqual([ ])
+    expect(handler).not.toHaveBeenCalled()
     expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
-    expect(d2.mock.calls).toEqual([ ])
+    expect(d2).not.toHaveBeenCalled()
   })
 
   it('error in handler', async () => {
