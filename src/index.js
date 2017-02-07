@@ -520,10 +520,9 @@ export function using () {
   }
 
   let disposers = arguments[0]
-  let spread = false
-  if (n > 1 || !_isArray(disposers)) {
+  const spread = n > 1 || !_isArray(disposers)
+  if (spread) {
     disposers = new Array(n)
-    spread = true
     for (let i = 0; i < n; ++i) {
       disposers[i] = arguments[i]
     }
