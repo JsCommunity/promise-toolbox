@@ -158,6 +158,28 @@ class MyClass {
 }
 ```
 
+### Resource management
+
+> See [Bluebird documentation](http://bluebirdjs.com/docs/api/resource-management.html) for a good explanation.
+
+```js
+import { disposer, using } from 'promise-toolbox'
+
+const getConnection = () =>
+  // disposer() is used to associate a disposer to a resource
+  //
+  // The returned resource can only be used with using()
+  db.connect()::disposer(connection =>
+    connection.close()
+  )
+
+using(getConnection(), getConnection(), (connection1, connection2) => {
+  // So something with connection1 and connection2
+})).then(() => {
+  // Both connections are now closed
+})
+```
+
 ### Functions
 
 #### defer()
