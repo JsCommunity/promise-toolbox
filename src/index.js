@@ -549,11 +549,14 @@ export function using () {
     }
 
     _forArray(disposers, disposer => {
-      if (disposer instanceof Disposer) {
+      let d
+      if (disposer && typeof (d = disposer.d) === 'function') {
         disposer.p.then(
-          value => _wrapCall(disposer.d, value).then(onSettle, onFailure),
+          value => _wrapCall(d, value).then(onSettle, onFailure),
           onSettle
         )
+
+        disposer.p = disposer.d = null
       } else {
         --leftToProcess
       }
@@ -585,7 +588,13 @@ export function using () {
       )
 
     _forArray(disposers, (disposer, i) => {
-      (disposer instanceof Disposer ? disposer.p : disposer).then(value => {
+      const p = disposer instanceof Disposer ? disposer.p : disposer
+      if (!p) {
+        onProviderFailure(new TypeError('resource has already been disposed of'))
+        return
+      }
+
+      p.then(value => {
         values[i] = value
 
         onProviderSettle()
