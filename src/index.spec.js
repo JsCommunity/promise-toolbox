@@ -30,6 +30,9 @@ const rejectionOf = promise => promise.then(throwArg, identity)
 
 // ===================================================================
 
+// work around prefer-promise-reject-errors
+const reject = value => Promise.reject(value)
+
 describe('all()', () => {
   it('with array', async () => {
     expect(await [
@@ -58,14 +61,14 @@ describe('all()', () => {
   it('rejects first rejection', async () => {
     expect(await rejectionOf([
       'foo',
-      Promise.reject('bar')
+      reject('bar')
     ]::all())).toBe('bar')
   })
 
   it('rejects first rejection (even with pending promises)', async () => {
     expect(await rejectionOf([
       new Promise(() => {}),
-      Promise.reject('bar')
+      reject('bar')
     ]::all())).toBe('bar')
   })
 })
@@ -163,11 +166,11 @@ describe('catchPlus', () => {
     const predicate = reason => reason === 'foo'
 
     expect(
-      await Promise.reject('foo')::catchPlus(predicate, identity)
+      await reject('foo')::catchPlus(predicate, identity)
     ).toBe('foo')
 
     expect(
-      await rejectionOf(Promise.reject('bar')::catchPlus(predicate, identity))
+      await rejectionOf(reject('bar')::catchPlus(predicate, identity))
     ).toBe('bar')
   })
 
@@ -197,15 +200,15 @@ describe('catchPlus', () => {
     const predicate = { foo: 0 }
 
     expect(
-      typeof await Promise.reject({ foo: 0 })::catchPlus(predicate, identity)
+      typeof await reject({ foo: 0 })::catchPlus(predicate, identity)
     ).toBe('object')
 
     expect(
-      typeof await rejectionOf(Promise.reject({ foo: 1 })::catchPlus(predicate, identity))
+      typeof await rejectionOf(reject({ foo: 1 })::catchPlus(predicate, identity))
     ).toBe('object')
 
     expect(
-      typeof await rejectionOf(Promise.reject({ bar: 0 })::catchPlus(predicate, identity))
+      typeof await rejectionOf(reject({ bar: 0 })::catchPlus(predicate, identity))
     ).toBe('object')
   })
 
@@ -278,7 +281,7 @@ describe('join()', () => {
 
   it('rejects if one promise rejects', async () => {
     expect(await rejectionOf(join(
-      Promise.resolve('foo'), Promise.reject('bar'),
+      Promise.resolve('foo'), reject('bar'),
       (foo, bar) => {
         expect(foo).toBe('foo')
         expect(bar).toBe('bar')
@@ -359,7 +362,7 @@ describe('settle()', () => {
     return [
       Promise.resolve(42),
       Math.PI,
-      Promise.reject('fatality')
+      reject('fatality')
     ]::settle().then(([ status1, status2, status3 ]) => {
       expect(status1.isFulfilled()).toBe(true)
       expect(status2.isFulfilled()).toBe(true)
@@ -388,7 +391,7 @@ describe('settle()', () => {
     return {
       a: Promise.resolve(42),
       b: Math.PI,
-      c: Promise.reject('fatality')
+      c: reject('fatality')
     }::settle().then(({
       a: status1,
       b: status2,
@@ -430,7 +433,7 @@ describe('tap(cb)', () => {
 
   it('does not call cb if the promise is rejected', async () => {
     expect(
-      await rejectionOf(Promise.reject('reason')::tap(() => Promise.reject('other reason')))
+      await rejectionOf(reject('reason')::tap(() => reject('other reason')))
     ).toBe('reason')
   })
 
@@ -442,14 +445,14 @@ describe('tap(cb)', () => {
 
   it('rejects if cb rejects', async () => {
     expect(
-      await rejectionOf(Promise.resolve('value')::tap(() => Promise.reject('reason')))
+      await rejectionOf(Promise.resolve('value')::tap(() => reject('reason')))
     ).toBe('reason')
   })
 })
 
 describe('tap(null, cb)', () => {
   it('call cb with the rejected reason', () => new Promise(resolve => {
-    Promise.reject('reason')::tap(null, reason => {
+    reject('reason')::tap(null, reason => {
       expect(reason).toBe('reason')
       resolve()
     }).catch(() => {}) // prevents the unhandled rejection warning
@@ -457,19 +460,19 @@ describe('tap(null, cb)', () => {
 
   it('does not call cb if the promise is resolved', async () => {
     expect(
-      await Promise.resolve('value')::tap(null, () => Promise.reject('other reason'))
+      await Promise.resolve('value')::tap(null, () => reject('other reason'))
     ).toBe('value')
   })
 
   it('forwards the rejected reason', async () => {
     expect(
-      await rejectionOf(Promise.reject('reason')::tap(null, () => 'value'))
+      await rejectionOf(reject('reason')::tap(null, () => 'value'))
     ).toBe('reason')
   })
 
   it('rejects if cb rejects', async () => {
     expect(
-      await rejectionOf(Promise.reject('reason')::tap(null, () => Promise.reject('other reason')))
+      await rejectionOf(reject('reason')::tap(null, () => reject('other reason')))
     ).toBe('other reason')
   })
 })
@@ -497,7 +500,7 @@ describe('timeout()', () => {
     ).toBe('value')
 
     expect(
-      await rejectionOf(Promise.reject('reason')::timeout(10))
+      await rejectionOf(reject('reason')::timeout(10))
     ).toBe('reason')
   })
 
@@ -525,7 +528,7 @@ describe('unpromisify()', () => {
   })
 
   it('forwards the error', done => {
-    const fn = unpromisify.call(() => Promise.reject('foo'))
+    const fn = unpromisify.call(() => reject('foo'))
 
     fn(error => {
       expect(error).toBe('foo')

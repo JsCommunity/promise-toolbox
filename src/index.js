@@ -32,7 +32,7 @@ const _isArrayLike = value => (
 )
 
 const _iteratorSymbol = (
-  typeof Symbol === 'function' && Symbol.iterator ||
+  (typeof Symbol === 'function' && Symbol.iterator) ||
   '@@iterator'
 )
 
@@ -222,7 +222,7 @@ export class Cancel {
 }
 
 const _cancelTokenTag = 'CancelToken'
-const _toStringTagSymbol = typeof Symbol === 'function' && Symbol.toStringTag || '@@toStringTag'
+const _toStringTagSymbol = (typeof Symbol === 'function' && Symbol.toStringTag) || '@@toStringTag'
 
 // https://github.com/zenparsing/es-cancel-token
 // https://tc39.github.io/proposal-cancelable-promises/
