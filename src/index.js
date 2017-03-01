@@ -347,7 +347,7 @@ export const cancellable = (target, name, descriptor) => {
   function cancellableWrapper () {
     const { length } = arguments
     if (length && arguments[0] instanceof CancelToken) {
-      return fn.apply(this, args)
+      return fn.apply(this, arguments)
     }
 
     const { cancel, token } = CancelToken.source()
