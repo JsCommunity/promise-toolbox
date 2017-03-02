@@ -7,12 +7,20 @@ Features:
 - small (< 150 KB with all dependencies, < 5 KB with gzip)
 - nice with ES2015 / ES2016 syntax
 
-## Install
+### Node & [Browserify](http://browserify.org/)/[Webpack](https://webpack.js.org/)
 
-Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
+Installation of the [npm package](https://npmjs.org/package/promise-toobox):
 
 ```
-> npm install --save promise-toolbox
+> npm install --save promise-toobox
+```
+
+### Browser
+
+You can directly use the build provided at [unpkg.com](https://unpkg.com):
+
+```html
+<script src="https://unpkg.com/promise-toobox@0.8/dist/umd.js"></script>
 ```
 
 ## Usage

@@ -38,6 +38,8 @@
     "babel-eslint": "^7.1.1",
     "babel-preset-env": "^1.1.10",
     "babel-preset-stage-0": "^6.22.0",
+    "babili": "^0.0.11",
+    "browserify": "^14.1.0",
     "cross-env": "^3.1.4",
     "dependency-check": "^2.8.0",
     "husky": "^0.13.1",
@@ -47,6 +49,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production babel --source-maps --out-dir=dist/ src/",
+    "postbuild": "browserify -s promiseToolbox dist/index.js | babili > dist/umd.js",
     "commitmsg": "npm test",
     "dev": "cross-env NODE_ENV=development babel --watch --source-maps --out-dir=dist/ src/",
     "dev-test": "jest --bail --watch",
