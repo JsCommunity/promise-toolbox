@@ -9,10 +9,10 @@ Features:
 
 ### Node & [Browserify](http://browserify.org/)/[Webpack](https://webpack.js.org/)
 
-Installation of the [npm package](https://npmjs.org/package/promise-toobox):
+Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
 
 ```
-> npm install --save promise-toobox
+> npm install --save promise-toolbox
 ```
 
 ### Browser
@@ -20,7 +20,7 @@ Installation of the [npm package](https://npmjs.org/package/promise-toobox):
 You can directly use the build provided at [unpkg.com](https://unpkg.com):
 
 ```html
-<script src="https://unpkg.com/promise-toobox@0.8/dist/umd.js"></script>
+<script src="https://unpkg.com/promise-toolbox@0.8/dist/umd.js"></script>
 ```
 
 ## Usage
