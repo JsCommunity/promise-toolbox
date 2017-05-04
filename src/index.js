@@ -222,7 +222,7 @@ export class Cancel {
 }
 
 const _cancelTokenTag = 'CancelToken'
-const _toStringTagSymbol = (typeof Symbol === 'function' && Symbol.toStringTag) || '@@toStringTag'
+const _toStringTagSymbol = (typeof Symbol === 'function' && Symbol.toStringTag !== undefined) || '@@toStringTag'
 
 // https://github.com/zenparsing/es-cancel-token
 // https://tc39.github.io/proposal-cancelable-promises/
@@ -272,14 +272,14 @@ export class CancelToken {
         : new Cancel(message)
 
       const resolve = this._resolve
-      if (resolve) {
+      if (resolve !== null) {
         this._resolve = null
         resolve(reason)
       }
 
       // notify sync listeners (for race)
       const listeners = this._listeners
-      if (listeners) {
+      if (listeners !== null) {
         this._listeners = null
         _forArray(listeners, listener => void listener(reason))
       }
@@ -290,7 +290,7 @@ export class CancelToken {
 
   get promise () {
     let promise = this._promise
-    if (!promise) {
+    if (promise === null) {
       const reason = this._reason
       promise = this._promise = reason
         ? Promise.resolve(reason)
@@ -310,9 +310,9 @@ export class CancelToken {
   }
 
   throwIfRequested () {
-    const cancel = this._reason
-    if (cancel) {
-      throw cancel
+    const reason = this._reason
+    if (reason !== undefined) {
+      throw reason
     }
   }
 
@@ -340,13 +340,13 @@ export class CancelToken {
 //       // do other stuff.
 //     }
 export const cancellable = (target, name, descriptor) => {
-  const fn = descriptor
+  const fn = descriptor !== undefined
     ? descriptor.value
     : target
 
   function cancellableWrapper () {
     const { length } = arguments
-    if (length && CancelToken.isCancelToken(arguments[0])) {
+    if (length !== 0 && CancelToken.isCancelToken(arguments[0])) {
       return fn.apply(this, arguments)
     }
 
@@ -363,7 +363,7 @@ export const cancellable = (target, name, descriptor) => {
     return promise
   }
 
-  if (descriptor) {
+  if (descriptor !== undefined) {
     descriptor.value = cancellableWrapper
     return descriptor
   }
