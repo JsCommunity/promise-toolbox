@@ -536,7 +536,7 @@ export function using () {
     let leftToProcess = nResources
 
     const onSettle = () => {
-      if (!--leftToProcess) {
+      if (--leftToProcess === 0) {
         fn(value)
       }
     }
@@ -550,7 +550,7 @@ export function using () {
 
     _forArray(resources, resource => {
       let d
-      if (resource && typeof (d = resource.d) === 'function') {
+      if (resource != null && typeof (d = resource.d) === 'function') {
         resource.p.then(
           value => _wrapCall(d, value).then(onSettle, onFailure),
           onSettle
@@ -576,7 +576,7 @@ export function using () {
     const onProviderFailure = reason => onProviderFailure_(reason)
 
     const onProviderSettle = () => {
-      if (!--leftToProcess) {
+      if (--leftToProcess === 0) {
         onSettle()
       }
     }
@@ -589,7 +589,7 @@ export function using () {
 
     _forArray(resources, (resource, i) => {
       const p = resource instanceof Resource ? resource.p : resource
-      if (!p) {
+      if (p === null) {
         onProviderFailure(new TypeError('resource has already been disposed of'))
         return
       }
