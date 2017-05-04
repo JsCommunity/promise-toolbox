@@ -31,28 +31,28 @@
     "node": ">=4"
   },
   "dependencies": {
-    "make-error": "^1.2.2"
+    "make-error": "^1.2.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.23.0",
-    "babel-eslint": "^7.1.1",
-    "babel-preset-env": "^1.1.10",
-    "babel-preset-stage-0": "^6.22.0",
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-stage-0": "^6.24.1",
     "babili": "^0.0.12",
-    "browserify": "^14.1.0",
-    "cross-env": "^3.1.4",
+    "browserify": "^14.3.0",
+    "cross-env": "^4.0.0",
     "dependency-check": "^2.8.0",
-    "husky": "^0.13.1",
+    "husky": "^0.13.3",
     "jest": "^19.0.2",
     "rimraf": "^2.6.1",
-    "standard": "^9.0.0"
+    "standard": "^10.0.2"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production babel --source-maps --out-dir=dist/ src/",
-    "postbuild": "browserify -s promiseToolbox dist/index.js | babili > dist/umd.js",
     "commitmsg": "npm test",
     "dev": "cross-env NODE_ENV=development babel --watch --source-maps --out-dir=dist/ src/",
     "dev-test": "jest --bail --watch",
+    "postbuild": "browserify -s promiseToolbox dist/index.js | babili > dist/umd.js",
     "posttest": "standard && dependency-check ./package.json",
     "prebuild": "rimraf dist/",
     "predev": "npm run prebuild",
@@ -60,6 +60,12 @@
     "test": "jest"
   },
   "babel": {
+    "env": {
+      "test": {
+        "ignore": null
+      }
+    },
+    "ignore": "*.spec.js",
     "presets": [
       [
         "env",
@@ -74,6 +80,7 @@
     ]
   },
   "jest": {
+    "testEnvironment": "node",
     "roots": [
       "<rootDir>/src"
     ],

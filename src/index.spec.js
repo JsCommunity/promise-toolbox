@@ -21,6 +21,7 @@ import {
 
 // ===================================================================
 
+const hideLiteralErrorFromLinter = literal => literal
 const identity = value => value
 const noop = () => {}
 const throwArg = value => { throw value }
@@ -256,7 +257,7 @@ describe('fromCallback()', () => {
   })
 
   it('creates a promise which rejects with reason passed to the callback', async () => {
-    expect(await rejectionOf(fromCallback(cb => cb('bar')))).toBe('bar')
+    expect(await rejectionOf(fromCallback(cb => cb(hideLiteralErrorFromLinter('bar'))))).toBe('bar')
   })
 })
 
