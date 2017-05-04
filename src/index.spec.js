@@ -277,7 +277,7 @@ describe('disposer()', () => {
     const d1 = jest.fn()
     const p1 = Promise.resolve('p1')::disposer(d1)
     const d2 = jest.fn()
-    const p2 = Promise.reject('p2')::disposer(d2)
+    const p2 = Promise.reject(hideLiteralErrorFromLinter('p2'))::disposer(d2)
     const p3 = Promise.resolve('p3')
     const handler = jest.fn()
 
@@ -293,7 +293,7 @@ describe('disposer()', () => {
     const d2 = jest.fn()
     const p2 = Promise.resolve('p2')::disposer(d2)
     const p3 = Promise.resolve('p3')
-    const handler = jest.fn(() => Promise.reject('handler'))
+    const handler = jest.fn(() => Promise.reject(hideLiteralErrorFromLinter('handler')))
 
     expect(await rejectionOf(using(p1, p2, p3, handler))).toBe('handler')
     expect(handler.mock.calls).toEqual([ [ 'p1', 'p2', 'p3' ] ])
