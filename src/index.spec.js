@@ -4,6 +4,7 @@ import makeError from 'make-error'
 
 import {
   all,
+  attempt,
   Cancel,
   CancelToken,
   catchPlus,
@@ -511,6 +512,29 @@ describe('timeout()', () => {
         throw 'reason' // eslint-disable-line no-throw-literal
       }))
     ).toBe('reason')
+  })
+})
+
+// -------------------------------------------------------------------
+
+describe('try() / attempt()', () => {
+  it('wraps returned value in promise', () => {
+    return attempt(() => 'foo').then(value => {
+      expect(value).toBe('foo')
+    })
+  })
+
+  it('wraps thrown exception in promise', () => {
+    return rejectionOf(attempt(() => throwArg('foo'))).then(exception => {
+      expect(exception).toBe('foo')
+    })
+  })
+
+  it('calls the callback synchronously', () => {
+    const spy = jest.fn()
+    attempt(spy)
+
+    expect(spy).toHaveBeenCalled()
   })
 })
 

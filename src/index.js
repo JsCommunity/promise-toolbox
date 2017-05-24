@@ -772,6 +772,11 @@ export function timeout (ms, cb) {
 
 // -------------------------------------------------------------------
 
+export const attempt = fn => new Promise(resolve => resolve(fn()))
+export { attempt as try }
+
+// -------------------------------------------------------------------
+
 // Usage: fn::unpromisify()
 export function unpromisify () {
   const fn = this

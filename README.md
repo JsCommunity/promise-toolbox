@@ -234,6 +234,24 @@ readFile(__filename).then(content => console.log(content))
 fsPromise.readFile(__filename).then(content => console.log(content))
 ```
 
+#### try(fn) / attempt(fn)
+
+> Starts a chain of promises.
+
+```js
+import PromiseToolbox from 'promise-toolbox'
+
+const getUserById = id => PromiseToolbox.try(() => {
+  if (typeof id !== 'number') {
+    throw new Error('id must be a number')
+  }
+  return db.getUserById(id)
+})
+```
+
+> Note: similar to `Promise.resolve().then(fn)` but calls `fn()`
+> synchronously.
+
 ### Pseudo-methods
 
 This function can be used as if they were methods, i.e. by passing the
