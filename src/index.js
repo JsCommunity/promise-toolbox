@@ -38,6 +38,17 @@ const _iteratorSymbol = (
 
 const _isIterable = value => value && typeof value[_iteratorSymbol] === 'function'
 
+const _once = fn => {
+  let result
+  return function () {
+    if (fn) {
+      result = fn.apply(this, arguments)
+      fn = null
+    }
+    return result
+  }
+}
+
 const _noop = () => {}
 
 // -------------------------------------------------------------------
@@ -122,6 +133,14 @@ const _wrap = value => isPromise(value)
   : Promise.resolve(value)
 
 const _wrapCall = (fn, args, thisArg) => {
+  try {
+    return _wrap(fn.call(thisArg, args))
+  } catch (error) {
+    return Promise.reject(error)
+  }
+}
+
+const _wrapApply = (fn, args, thisArg) => {
   try {
     return _wrap(fn.apply(thisArg, args))
   } catch (error) {
@@ -482,6 +501,110 @@ export function delay (ms) {
 
 // -------------------------------------------------------------------
 
+function Resource (promise, disposer) {
+  this.d = disposer
+  this.p = promise
+}
+
+// Usage: promise::disposer(disposer)
+export function disposer (disposer) {
+  return new Resource(this, disposer)
+}
+
+// Usage: using(disposers…, handler)
+export function using () {
+  let nResources = arguments.length - 1
+
+  if (nResources < 1) {
+    throw new TypeError('using expects at least 2 arguments')
+  }
+
+  const handler = arguments[nResources]
+
+  let resources = arguments[0]
+  const spread = nResources > 1 || !_isArray(resources)
+  if (spread) {
+    resources = new Array(nResources)
+    for (let i = 0; i < nResources; ++i) {
+      resources[i] = arguments[i]
+    }
+  } else {
+    nResources = resources.length
+  }
+
+  const dispose = _once((fn, value) => {
+    let leftToProcess = nResources
+
+    const onSettle = () => {
+      if (--leftToProcess === 0) {
+        fn(value)
+      }
+    }
+
+    // like Bluebird, on failure to dispose a resource, throw an async error
+    const onFailure = reason => {
+      setTimeout(() => {
+        throw reason
+      }, 0)
+    }
+
+    _forArray(resources, resource => {
+      let d
+      if (resource != null && typeof (d = resource.d) === 'function') {
+        resource.p.then(
+          value => _wrapCall(d, value).then(onSettle, onFailure),
+          onSettle
+        )
+
+        resource.p = resource.d = null
+      } else {
+        --leftToProcess
+      }
+    })
+  })
+
+  return new Promise((resolve, reject) => {
+    const values = new Array(nResources)
+    let leftToProcess = nResources
+
+    let onProviderFailure_ = reason => {
+      onProviderFailure_ = onProviderSettle
+      onSettle = () => dispose(reject, reason)
+
+      onProviderSettle()
+    }
+    const onProviderFailure = reason => onProviderFailure_(reason)
+
+    const onProviderSettle = () => {
+      if (--leftToProcess === 0) {
+        onSettle()
+      }
+    }
+
+    let onSettle = () =>
+      (spread ? _wrapApply : _wrapCall)(handler, values, this).then(
+        value => dispose(resolve, value),
+        reason => dispose(reject, reason)
+      )
+
+    _forArray(resources, (resource, i) => {
+      const p = resource instanceof Resource ? resource.p : resource
+      if (p === null) {
+        onProviderFailure(new TypeError('resource has already been disposed of'))
+        return
+      }
+
+      p.then(value => {
+        values[i] = value
+
+        onProviderSettle()
+      }, onProviderFailure)
+    })
+  })
+}
+
+// -------------------------------------------------------------------
+
 export const makeAsyncIterator = iterator => {
   const asyncIterator = _makeAsyncIterator(iterator)
 
@@ -795,7 +918,7 @@ export function unpromisify () {
       args[i] = arguments[i]
     }
 
-    _wrapCall(fn, args, this).then(
+    _wrapApply(fn, args, this).then(
       result => cb(null, result),
       reason => cb(reason)
     )
