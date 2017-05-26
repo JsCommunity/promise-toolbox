@@ -241,7 +241,7 @@ export class Cancel {
 }
 
 const _cancelTokenTag = 'CancelToken'
-const _toStringTagSymbol = (typeof Symbol === 'function' && Symbol.toStringTag !== undefined) || '@@toStringTag'
+const _toStringTagSymbol = (typeof Symbol === 'function' && Symbol.toStringTag) || '@@toStringTag'
 
 // https://github.com/zenparsing/es-cancel-token
 // https://tc39.github.io/proposal-cancelable-promises/
