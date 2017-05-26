@@ -117,6 +117,26 @@ if (CancelToken.isCancelToken(value)) {
 const token = CancelToken.race([ token1, token2, token3 ])
 ```
 
+#### Forking cancel tokens
+
+> Create a new token which is cancelled as soon as the original token
+> is or as soon as the executor decides.
+
+```js
+// token is cancelled as soon as otherToken is or when the button is
+// clicked.
+const token = otherToken.fork(cancel => {
+  $('#some-button').on('click', () => cancel('button clicked'))
+})
+```
+
+If no executor is passed, `#fork()` works like `.source()` and returns
+an object with a cancel function and a token:
+
+```js
+const { cancel, token } = otherToken.fork()
+```
+
 #### @cancellable decorator
 
 > Make your async functions cancellable.

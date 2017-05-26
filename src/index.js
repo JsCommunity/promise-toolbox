@@ -328,6 +328,21 @@ export class CancelToken {
     return this._reason !== undefined
   }
 
+  fork (executor) {
+    if (executor !== undefined) {
+      return CancelToken.race([
+        this,
+        new CancelToken(executor)
+      ])
+    }
+
+    const { cancel, token } = CancelToken.source()
+    return {
+      cancel,
+      token: CancelToken.race([ this, token ])
+    }
+  }
+
   throwIfRequested () {
     const reason = this._reason
     if (reason !== undefined) {
