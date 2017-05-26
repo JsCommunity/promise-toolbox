@@ -6,6 +6,7 @@ import {
   all,
   attempt,
   Cancel,
+  cancellable,
   CancelToken,
   catchPlus,
   forArray,
@@ -72,6 +73,35 @@ describe('all()', () => {
       new Promise(() => {}),
       reject('bar')
     ]::all())).toBe('bar')
+  })
+})
+
+// -------------------------------------------------------------------
+
+describe('@cancellable', () => {
+  it('forwards params if a cancel token is passed', () => {
+    const token = new CancelToken(noop)
+    const spy = jest.fn(() => Promise.resolve())
+
+    cancellable(spy)(token, 'foo', 'bar')
+    expect(spy.mock.calls).toEqual([
+      [ token, 'foo', 'bar' ]
+    ])
+  })
+
+  it('injects a cancel token and add the cancel method on the returned promise if none is passed', () => {
+    const spy = jest.fn(() => Promise.resolve())
+
+    const promise = cancellable(spy)('foo', 'bar')
+    expect(spy.mock.calls).toEqual([
+      [ {
+        asymmetricMatch: actual => CancelToken.isCancelToken(actual)
+      }, 'foo', 'bar' ]
+    ])
+    const token = spy.mock.calls[0][0]
+    expect(token.requested).toBe(false)
+    promise.cancel()
+    expect(token.requested).toBe(true)
   })
 })
 
