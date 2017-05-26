@@ -86,6 +86,21 @@ describe('CancelToken', () => {
     })
   })
 
+  describe('.race', () => {
+    it('returns a token which resolve synchronously', () => {
+      const { cancel, token } = CancelToken.source()
+
+      const raceToken = CancelToken.race([
+        new CancelToken(noop),
+        token
+      ])
+
+      expect(raceToken.reason).toBeUndefined()
+      cancel()
+      expect(raceToken.reason).toBe(token.reason)
+    })
+  })
+
   describe('.source()', () => {
     it('creates a new token', () => {
       const { cancel, token } = CancelToken.source()
@@ -109,21 +124,6 @@ describe('CancelToken', () => {
     })
   })
 
-  describe('#race', () => {
-    it('returns a token which resolve synchronously', () => {
-      const { cancel, token } = CancelToken.source()
-
-      const raceToken = CancelToken.race([
-        new CancelToken(noop),
-        token
-      ])
-
-      expect(raceToken.reason).toBeUndefined()
-      cancel()
-      expect(raceToken.reason).toBe(token.reason)
-    })
-  })
-
   describe('#reason', () => {
     it('synchronously returns the cancellation reason', () => {
       const { cancel, token } = CancelToken.source()
@@ -144,7 +144,39 @@ describe('CancelToken', () => {
     })
   })
 
-  describe('#throwIfRequested', () => {
+  describe('#fork()', () => {
+    it('creates a token which resolves when the current one does', () => {
+      const { cancel, token } = CancelToken.source()
+      const fork = token.fork(noop)
+
+      expect(fork.requested).toBe(false)
+      cancel()
+      expect(fork.requested).toBe(true)
+    })
+
+    it('creates a token which resolves when the executor calls its param', () => {
+      const token = new CancelToken(noop)
+      let cancel
+      const fork = token.fork(c => {
+        cancel = c
+      })
+
+      expect(fork.requested).toBe(false)
+      cancel()
+      expect(fork.requested).toBe(true)
+    })
+
+    it('returns an object containing the token and a cancel function if no executor is provided', () => {
+      const token = new CancelToken(noop)
+      const { cancel, token: fork } = token.fork()
+
+      expect(fork.requested).toBe(false)
+      cancel()
+      expect(fork.requested).toBe(true)
+    })
+  })
+
+  describe('#throwIfRequested()', () => {
     it('synchronously throws if cancellation has been requested', () => {
       const { cancel, token } = CancelToken.source()
 
