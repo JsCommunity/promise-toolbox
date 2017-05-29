@@ -6,7 +6,7 @@ import {
   all,
   attempt,
   Cancel,
-  cancellable,
+  cancelable,
   CancelToken,
   catchPlus,
   disposer,
@@ -82,12 +82,12 @@ describe('all()', () => {
 
 // -------------------------------------------------------------------
 
-describe('@cancellable', () => {
+describe('@cancelable', () => {
   it('forwards params if a cancel token is passed', () => {
     const token = new CancelToken(noop)
     const spy = jest.fn(() => Promise.resolve())
 
-    cancellable(spy)(token, 'foo', 'bar')
+    cancelable(spy)(token, 'foo', 'bar')
     expect(spy.mock.calls).toEqual([
       [ token, 'foo', 'bar' ]
     ])
@@ -96,7 +96,7 @@ describe('@cancellable', () => {
   it('injects a cancel token and add the cancel method on the returned promise if none is passed', () => {
     const spy = jest.fn(() => Promise.resolve())
 
-    const promise = cancellable(spy)('foo', 'bar')
+    const promise = cancelable(spy)('foo', 'bar')
     expect(spy.mock.calls).toEqual([
       [ {
         asymmetricMatch: actual => CancelToken.isCancelToken(actual)
@@ -159,7 +159,7 @@ describe('CancelToken', () => {
   })
 
   describe('#reason', () => {
-    it('synchronously returns the cancellation reason', () => {
+    it('synchronously returns the cancelation reason', () => {
       const { cancel, token } = CancelToken.source()
 
       expect(token.reason).toBeUndefined()
@@ -169,7 +169,7 @@ describe('CancelToken', () => {
   })
 
   describe('#requested', () => {
-    it('synchronously returns whether cancellation has been requested', () => {
+    it('synchronously returns whether cancelation has been requested', () => {
       const { cancel, token } = CancelToken.source()
 
       expect(token.requested).toBe(false)
@@ -211,7 +211,7 @@ describe('CancelToken', () => {
   })
 
   describe('#throwIfRequested()', () => {
-    it('synchronously throws if cancellation has been requested', () => {
+    it('synchronously throws if cancelation has been requested', () => {
       const { cancel, token } = CancelToken.source()
 
       token.throwIfRequested()

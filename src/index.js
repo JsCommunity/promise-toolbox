@@ -357,7 +357,7 @@ export class CancelToken {
 
 // Usage:
 //
-//     @cancellable
+//     @cancelable
 //     async fn (cancelToken, other, args) {
 //       if (!cancelToken.requested) {
 //         doStuff()
@@ -373,12 +373,12 @@ export class CancelToken {
 //
 //       // do other stuff.
 //     }
-export const cancellable = (target, name, descriptor) => {
+export const cancelable = (target, name, descriptor) => {
   const fn = descriptor !== undefined
     ? descriptor.value
     : target
 
-  function cancellableWrapper () {
+  function cancelableWrapper () {
     const { length } = arguments
     if (length !== 0 && CancelToken.isCancelToken(arguments[0])) {
       return fn.apply(this, arguments)
@@ -398,13 +398,13 @@ export const cancellable = (target, name, descriptor) => {
   }
 
   if (descriptor !== undefined) {
-    descriptor.value = cancellableWrapper
+    descriptor.value = cancelableWrapper
     return descriptor
   }
 
-  return cancellableWrapper
+  return cancelableWrapper
 }
-export { cancellable as cancelable } // alternative US spelling
+export { cancelable as cancellable } // alternative UK spelling
 
 // -------------------------------------------------------------------
 

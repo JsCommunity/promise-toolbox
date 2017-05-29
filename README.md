@@ -39,13 +39,13 @@ global.Promise = require('bluebird')
 > Note that it should only be done at the application level, never in
 > a library!
 
-### Cancellation
+### Cancelation
 
 This library provides an implementation of `CancelToken` from the
 [cancelable promises specification](https://tc39.github.io/proposal-cancelable-promises/).
 
 A cancel token is an object which can be passed to asynchronous
-functions to represent cancellation state.
+functions to represent cancelation state.
 
 ```js
 import { CancelToken } from 'promise-toolbox'
@@ -54,10 +54,10 @@ import { CancelToken } from 'promise-toolbox'
 #### Creation
 
 A cancel token is created by the initiator of the async work and its
-cancellation state may be requested at any time.
+cancelation state may be requested at any time.
 
 ```js
-// Create a token which requests cancellation when a button is clicked.
+// Create a token which requests cancelation when a button is clicked.
 const token = new CancelToken(cancel => {
   $('#some-button').on('click', () => cancel('button clicked'))
 })
@@ -71,27 +71,27 @@ const { cancel, token } = CancelToken.source()
 
 The receiver of the token (the function doing the async work) can:
 
-1. synchronously check whether cancellation has been requested
-2. synchronously throw if cancellation has been requested
-3. register a callback that will be executed if cancellation is requested
+1. synchronously check whether cancelation has been requested
+2. synchronously throw if cancelation has been requested
+3. register a callback that will be executed if cancelation is requested
 4. pass the token to subtasks
 
 ```js
 // 1.
 if (token.reason) {
-  console.log('cancellation has been requested', token.reason.message)
+  console.log('cancelation has been requested', token.reason.message)
 }
 
 // 2.
 try {
   token.throwIfRequested()
 } catch (reason) {
-  console.log('cancellation has been requested', reason.message)
+  console.log('cancelation has been requested', reason.message)
 }
 
 // 3.
 token.promise.then(reason => {
-  console.log('cancellation has been requested', reason.message)
+  console.log('cancelation has been requested', reason.message)
 })
 
 // 4.
@@ -108,22 +108,22 @@ if (CancelToken.isCancelToken(value)) {
 
 #### Combining cancel tokens
 
-> Create a token which is cancelled as soon as one token amongst many
+> Create a token which is canceled as soon as one token amongst many
 > is.
 
 ```js
-// `token` will be cancelled (synchronously) as soon as `token1` or
+// `token` will be canceled (synchronously) as soon as `token1` or
 // `token2` or token3` is, with the same reason.
 const token = CancelToken.race([ token1, token2, token3 ])
 ```
 
 #### Forking cancel tokens
 
-> Create a new token which is cancelled as soon as the original token
+> Create a new token which is canceled as soon as the original token
 > is or as soon as the executor decides.
 
 ```js
-// token is cancelled as soon as otherToken is or when the button is
+// token is canceled as soon as otherToken is or when the button is
 // clicked.
 const token = otherToken.fork(cancel => {
   $('#some-button').on('click', () => cancel('button clicked'))
@@ -137,20 +137,20 @@ an object with a cancel function and a token:
 const { cancel, token } = otherToken.fork()
 ```
 
-#### @cancellable decorator
+#### @cancelable decorator
 
-> Make your async functions cancellable.
+> Make your async functions cancelable.
 
-If the first argument passed to the cancellable function is not a
+If the first argument passed to the cancelable function is not a
 cancel token, a new one is created and injected and the returned
 promise will have a `cancel()` method.
 
 ```js
-import { cancellable, CancelToken } from 'promise-toolbox'
+import { cancelable, CancelToken } from 'promise-toolbox'
 
-const asyncFunction = cancellable(async ($cancelToken, a, b) => {
+const asyncFunction = cancelable(async ($cancelToken, a, b) => {
   $cancelToken.promise.then(() => {
-    // do stuff regarding the cancellation request.
+    // do stuff regarding the cancelation request.
   })
 
   // do other stuff.
@@ -167,11 +167,11 @@ promise2.cancel('reason')
 ```
 
 If the function is a method of a class or an object, you can use
-`cancellable` as a decorator:
+`cancelable` as a decorator:
 
 ```js
 class MyClass {
-  @cancellable
+  @cancelable
   async asyncMethod ($cancelToken, a, b) {
     // ...
   }
