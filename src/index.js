@@ -264,17 +264,17 @@ export class CancelToken {
   }
 
   static race (tokens) {
-    const { cancel, token } = CancelToken.source()
-    _forEach(tokens, token => {
-      const { reason } = token
-      if (reason) {
-        cancel(reason)
-        return false
-      }
+    return new CancelToken(cancel => {
+      _forEach(tokens, token => {
+        const { reason } = token
+        if (reason !== undefined) {
+          cancel(reason)
+          return false
+        }
 
-      (token._listeners || (token._listeners = [])).push(cancel)
+        (token._listeners || (token._listeners = [])).push(cancel)
+      })
     })
-    return token
   }
 
   constructor (executor) {
