@@ -406,11 +406,10 @@ export { cancelable as cancellable } // alternative UK spelling
 
 // -------------------------------------------------------------------
 
-const _isOperationalError = reason => !(
+const _isProgrammerError = reason =>
   reason instanceof ReferenceError ||
   reason instanceof SyntaxError ||
   reason instanceof TypeError
-)
 
 // See: https://github.com/petkaantonov/bluebird/blob/d8907d15f0a1997a5d3c0526cd4da5ba1b135cfa/src/util.js#L7-L30
 const _errorWrapper = { error: null }
@@ -473,7 +472,7 @@ export function catchPlus () {
           return cb(reason)
         }
       }
-    } else if (_isOperationalError(reason)) {
+    } else if (!_isProgrammerError(reason)) {
       return cb(reason)
     }
 
@@ -648,6 +647,22 @@ export const fromCallback = fn => new Promise((resolve, reject) => {
     : resolve(result)
   )
 })
+
+// -------------------------------------------------------------------
+
+const _ignoreErrorsCb = error => {
+  if (_isProgrammerError(error)) {
+    throw error
+  }
+}
+
+export function ignoreErrors () {
+  if (!isPromise(this)) {
+    return this
+  }
+
+  return this.then(null, _ignoreErrorsCb)
+}
 
 // -------------------------------------------------------------------
 

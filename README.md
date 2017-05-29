@@ -453,6 +453,25 @@ complete.
 // bar
 ```
 
+#### promise::ignoreErrors()
+
+> Ignore (operational) errors for this promise.
+
+```js
+import { ignoreErrors } from 'promise-toolbox'
+
+// will not emit an unhandled rejection error if the file does not
+// exist
+readFileAsync('foo.txt').then(content => {
+  console.log(content)
+})::ignoreErrors()
+
+// will emit an unhandled rejection error due to the typo
+readFileAsync('foo.txt').then(content => {
+  console.lgo(content) // typo
+})::ignoreErrors()
+```
+
 #### promise::lastly(cb)
 
 > Execute a handler regardless of the promise fate. Similar to the

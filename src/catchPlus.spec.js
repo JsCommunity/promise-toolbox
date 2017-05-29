@@ -58,11 +58,14 @@ describe('catchPlus', () => {
 
   it('does not catch programmer errors', async () => {
     expect(
-      await rejectionOf(Promise.reject(new TypeError(''))::catchPlus(identity))
-    ).toBeInstanceOf(TypeError)
+      await rejectionOf(Promise.reject(new ReferenceError(''))::catchPlus(identity))
+    ).toBeInstanceOf(ReferenceError)
     expect(
       await rejectionOf(Promise.reject(new SyntaxError(''))::catchPlus(identity))
     ).toBeInstanceOf(SyntaxError)
+    expect(
+      await rejectionOf(Promise.reject(new TypeError(''))::catchPlus(identity))
+    ).toBeInstanceOf(TypeError)
 
     // Unless matches by a predicate.
     expect(
