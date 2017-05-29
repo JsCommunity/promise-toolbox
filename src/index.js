@@ -666,6 +666,82 @@ export function ignoreErrors () {
 
 // -------------------------------------------------------------------
 
+const _makeEventAdder = ($cancelToken, emitter, arrayArg) => {
+  const add =
+    emitter.addEventListener ||
+    emitter.addListener ||
+    emitter.on
+  if (add === undefined) {
+    throw new Error('cannot register event listener')
+  }
+
+  const remove =
+    emitter.removeEventListener ||
+    emitter.removeListener ||
+    emitter.off
+
+  const eventsAndListeners = []
+
+  let clean = _noop
+  if (remove !== undefined) {
+    clean = _once(() => {
+      for (let i = 0, n = eventsAndListeners.length; i < n; i += 2) {
+        remove.call(emitter, eventsAndListeners[i], eventsAndListeners[i + 1])
+      }
+    })
+    $cancelToken.promise.then(clean)
+  }
+
+  return arrayArg
+    ? (event, cb) => {
+      function listener () {
+        clean()
+        const { length } = arguments
+        const args = new Array(length)
+        for (let i = 0; i < length; ++i) {
+          args[i] = arguments[i]
+        }
+        args.event = event
+        cb(args)
+      }
+      eventsAndListeners.push(event, listener)
+      add.call(emitter, event, listener)
+    }
+    : (event, cb) => {
+      const listener = arg => {
+        clean()
+        cb(arg)
+      }
+      eventsAndListeners.push(event, listener)
+      add.call(emitter, event, listener)
+    }
+}
+
+export const fromEvent = cancelable(
+  ($cancelToken, emitter, event, opts = {}) =>
+    new Promise((resolve, reject) => {
+      const add = _makeEventAdder($cancelToken, emitter, opts.array)
+      add(event, resolve)
+      if (!opts.ignoreErrors) {
+        const { error = 'error' } = opts
+        if (error !== event) {
+          add(error, reject)
+        }
+      }
+    })
+)
+
+export const fromEvents = cancelable(
+  ($cancelToken, emitter, successEvents, errorEvents = [ 'error' ]) =>
+    new Promise((resolve, reject) => {
+      const add = _makeEventAdder($cancelToken, emitter, true)
+      _forArray(successEvents, event => add(event, resolve))
+      _forArray(errorEvents, event => add(event, reject))
+    })
+)
+
+// -------------------------------------------------------------------
+
 // Usage: join(p1, ..., pn, cb) or join([p1, ..., pn], cb)
 export function join () {
   const n = arguments.length - 1
