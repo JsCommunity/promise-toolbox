@@ -311,7 +311,7 @@ export class CancelToken {
     let promise = this._promise
     if (promise === null) {
       const reason = this._reason
-      promise = this._promise = reason
+      promise = this._promise = reason !== undefined
         ? Promise.resolve(reason)
         : new Promise(resolve => {
           this._resolve = resolve
@@ -461,7 +461,7 @@ export function catchPlus () {
   }
 
   let predicates
-  if (n) {
+  if (n !== 0) {
     predicates = new Array(n)
     for (let i = 0; i < n; ++i) {
       predicates[i] = arguments[i]
@@ -469,7 +469,7 @@ export function catchPlus () {
   }
 
   return _wrap(this).then(null, reason => {
-    if (predicates) {
+    if (predicates !== undefined) {
       for (let i = 0; i < n; ++i) {
         if (_matchError(predicates[i], reason)) {
           return cb(reason)
