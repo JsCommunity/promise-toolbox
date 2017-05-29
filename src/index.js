@@ -263,7 +263,7 @@ export class CancelToken {
     return { cancel, token }
   }
 
-  static race (tokens) {
+  static race (tokens, _executor) {
     return new CancelToken(cancel => {
       _forEach(tokens, token => {
         const { reason } = token
@@ -274,6 +274,9 @@ export class CancelToken {
 
         (token._listeners || (token._listeners = [])).push(cancel)
       })
+      if (_executor !== undefined) {
+        _executor(cancel)
+      }
     })
   }
 
@@ -330,17 +333,12 @@ export class CancelToken {
 
   fork (executor) {
     if (executor !== undefined) {
-      return CancelToken.race([
-        this,
-        new CancelToken(executor)
-      ])
+      return CancelToken.race([ this ], executor)
     }
 
-    const { cancel, token } = CancelToken.source()
-    return {
-      cancel,
-      token: CancelToken.race([ this, token ])
-    }
+    let cancel
+    const token = CancelToken.race([ this ], c => { cancel = c })
+    return { cancel, token }
   }
 
   throwIfRequested () {
