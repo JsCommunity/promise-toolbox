@@ -294,6 +294,23 @@ const getUserById = id => PromiseToolbox.try(() => {
 > Note: similar to `Promise.resolve().then(fn)` but calls `fn()`
 > synchronously.
 
+#### wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])
+
+> Wrap a call to a function to always return a promise.
+
+```js
+function getUserById (id) {
+  if (typeof id !== 'number') {
+    throw new TypeError('id must be a number')
+  }
+  return db.getUser(id)
+}
+
+wrapCall(getUserById, 'foo').catch(error => {
+  // id must be a number
+})
+```
+
 ### Pseudo-methods
 
 This function can be used as if they were methods, i.e. by passing the

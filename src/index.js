@@ -132,15 +132,15 @@ const _wrap = value => isPromise(value)
   ? value
   : Promise.resolve(value)
 
-const _wrapCall = (fn, args, thisArg) => {
+export const wrapCall = (fn, arg, thisArg) => {
   try {
-    return _wrap(fn.call(thisArg, args))
+    return _wrap(fn.call(thisArg, arg))
   } catch (error) {
     return Promise.reject(error)
   }
 }
 
-const _wrapApply = (fn, args, thisArg) => {
+export const wrapApply = (fn, args, thisArg) => {
   try {
     return _wrap(fn.apply(thisArg, args))
   } catch (error) {
@@ -567,7 +567,7 @@ export function using () {
       let d
       if (resource != null && typeof (d = resource.d) === 'function') {
         resource.p.then(
-          value => _wrapCall(d, value).then(onSettle, onFailure),
+          value => wrapCall(d, value).then(onSettle, onFailure),
           onSettle
         )
 
@@ -597,7 +597,7 @@ export function using () {
     }
 
     let onSettle = () =>
-      (spread ? _wrapApply : _wrapCall)(handler, values, this).then(
+      (spread ? wrapApply : wrapCall)(handler, values, this).then(
         value => dispose(resolve, value),
         reason => dispose(reject, reason)
       )
@@ -933,7 +933,7 @@ export function unpromisify () {
       args[i] = arguments[i]
     }
 
-    _wrapApply(fn, args, this).then(
+    wrapApply(fn, args, this).then(
       result => cb(null, result),
       reason => cb(reason)
     )
