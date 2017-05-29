@@ -65,7 +65,10 @@
         "ignore": null
       }
     },
-    "ignore": "*.spec.js",
+    "ignore": [
+      "fixtures.js",
+      "*.spec.js"
+    ],
     "presets": [
       [
         "env",
