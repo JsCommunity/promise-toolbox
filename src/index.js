@@ -413,7 +413,10 @@ const _isProgrammerError = reason =>
 
 const _matchError = (predicate, error) => {
   if (typeof predicate === 'function') {
-    return predicate.prototype instanceof Error
+    return (
+      predicate === Error ||
+      predicate.prototype instanceof Error
+    )
       ? error instanceof predicate
       : predicate(error)
   }
