@@ -231,6 +231,57 @@ fromCallback(cb => fs.readFile('foo.txt', cb))
   })
 ```
 
+#### fromEvent(emitter, event, [options]) => Promise
+
+> Wait for one event. The first parameter of the emitted event is used
+> to resolve/reject the promise.
+
+```js
+const promise = fromEvent(emitter, 'foo', {
+  // whether the promise resolves to an array of all the event args
+  // instead of simply the first arg
+  array: false,
+
+  // whether the error event can reject the promise
+  ignoreErrors: false,
+
+  // name of the error event
+  error: 'error'
+})
+
+promise.then(
+  value => {
+    console.log('foo event was emitted with value', value)
+  },
+  reason => {
+    console.error('an error has been emitted', reason)
+  }
+)
+```
+
+#### fromEvents(emitter, successEvents, errorEvents) => Promise
+
+> Wait for one of multiple events. The array of all the parameters of
+> the emitted event is used to resolve/reject the promise.
+>
+> The array also has an `event` property indicating which event has
+> been emitted.
+
+```js
+fromEvents(
+  emitter,
+  [ 'foo', 'bar' ],
+  [ 'error1', 'error2' ]
+).then(
+  values => {
+    console.log('event %s have been emitted with values', values.event, values)
+  },
+  reasons => {
+    console.error('error event %s has been emitted with errors', reasons.event, reasons)
+  }
+)
+```
+
 #### isPromise(value)
 
 ```js
