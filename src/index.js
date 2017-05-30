@@ -411,17 +411,6 @@ const _isProgrammerError = reason =>
   reason instanceof SyntaxError ||
   reason instanceof TypeError
 
-// See: https://github.com/petkaantonov/bluebird/blob/d8907d15f0a1997a5d3c0526cd4da5ba1b135cfa/src/util.js#L7-L30
-const _errorWrapper = { error: null }
-const _tryCatch = fn => {
-  try {
-    return fn()
-  } catch (error) {
-    _errorWrapper.error = error
-    return _errorWrapper
-  }
-}
-
 const _matchError = (predicate, error) => {
   if (typeof predicate === 'function') {
     return predicate.prototype instanceof Error
@@ -429,15 +418,16 @@ const _matchError = (predicate, error) => {
       : predicate(error)
   }
 
-  if (typeof predicate === 'object') {
-    return (
-      error != null &&
-      _tryCatch(() => _forOwn(predicate, (value, prop) => {
-        if (error[prop] !== value) {
-          throw null // eslint-disable-line no-throw-literal
-        }
-      })) !== _errorWrapper
-    )
+  if (error != null && typeof predicate === 'object') {
+    for (const key in predicate) {
+      if (
+        hasOwnProperty.call(predicate, key) &&
+        error[key] !== predicate[key]
+      ) {
+        return false
+      }
+    }
+    return true
   }
 }
 
