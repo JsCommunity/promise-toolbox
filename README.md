@@ -7,6 +7,38 @@ Features:
 - small (< 150 KB with all dependencies, < 5 KB with gzip)
 - nice with ES2015 / ES2016 syntax
 
+- Usage
+  + [Cancelation](#cancelation)
+    - [Creation](#creation)
+    - [Consumption](#consumption)
+    - [Is cancel token?](#is-cancel-token)
+    - [Combining cancel tokens](#combining-cancel-tokens)
+    - [Forking cancel tokens](#forking-cancel-tokens)
+    - [@cancelable decorator](#cancelable-decorator)
+  + [Resource management](#resource-management)
+  + [Functions](#functions)
+    - [defer()](#defer)
+    - [fromCallback(cb => fn(arg1, ..., argn, cb))](#fromcallbackcb--fnarg1--argn-cb)
+    - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
+    - [fromEvents(emitter, successEvents, errorEvents) => Promise](#fromeventsemitter-successevents-errorevents--promise)
+    - [isPromise(value)](#ispromisevalue)
+    - [join(p1, ..., pn, cb) / join([p1, ..., pn], cb)](#joinp1--pn-cb--joinp1--pn-cb)
+    - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
+    - [try(fn) / attempt(fn)](#tryfn--attemptfn)
+    - [wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])](#wrapapplyfn-args-thisarg--wrapcallfn-arg-thisarg)
+  + [Pseudo-methods](#pseudo-methods)
+    - [promises::all([ mapper ])](#promisesall-mapper-)
+    - [promise::asCallback(cb)](#promiseascallbackcb)
+    - [promise::catchPlus(predicate, cb)](#promisecatchpluspredicate-cb)
+    - [promise::delay(ms)](#promisedelayms)
+    - [collection::forEach(cb)](#collectionforeachcb)
+    - [promise::ignoreErrors()](#promiseignoreerrors)
+    - [promise::lastly(cb)](#promiselastlycb)
+    - [promise::reflect()](#promisereflect)
+    - [promises::some(count)](#promisessomecount)
+    - [promise::tap(onResolved, onRejected)](#promisetaponresolved-onrejected)
+    - [promise::timeout(ms, [cb])](#promisetimeoutms-cb)
+
 ### Node & [Browserify](http://browserify.org/)/[Webpack](https://webpack.js.org/)
 
 Installation of the [npm package](https://npmjs.org/package/promise-toolbox):
