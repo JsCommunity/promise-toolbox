@@ -3,6 +3,20 @@
 import { Cancel, cancelable, CancelToken } from './'
 import { noop } from './fixtures'
 
+describe('Cancel', () => {
+  it('accept a message', () => {
+    const cancel = new Cancel('foo')
+    expect(cancel.message).toBe('foo')
+  })
+
+  it('#toString()', () => {
+    const cancel = new Cancel('foo')
+    expect(String(cancel)).toBe('Cancel: foo')
+  })
+})
+
+// -------------------------------------------------------------------
+
 describe('@cancelable', () => {
   it('forwards params if a cancel token is passed', () => {
     const token = new CancelToken(noop)

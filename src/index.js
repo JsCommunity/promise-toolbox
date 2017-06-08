@@ -236,7 +236,7 @@ export class Cancel {
   }
 
   toString () {
-    return `Cancel: ${this._message}`
+    return `Cancel: ${this.message}`
   }
 }
 
