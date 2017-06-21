@@ -130,6 +130,41 @@ token.promise.then(reason => {
 subtask(token)
 ```
 
+#### Registering async handlers
+
+> Asynchronous handlers are executed on token cancelation and the
+promise returned by the `cancel` function will wait for all handlers
+to settle.
+
+```js
+function httpRequest (cancelToken, opts) {
+  const req = http.request(opts)
+  req.end()
+  cancelToken.addHandler(() => {
+    req.abort()
+
+    // waits for the socket to really close for the cancelation to be
+    // complete
+    return fromEvent(req, 'close')
+  })
+  return fromEvent(req, 'response')
+}
+
+const { cancel, token } = CancelToken.source()
+
+httpRequest(token, {
+  hostname: 'example.org'
+}).then(response => {
+  // do something with the response of the request
+})
+
+// wraps with Promise.resolve() because cancel only returns a promise
+// if a handler has returned a promise
+Promise.resolve(cancel()).then(() => {
+  // the request has been properly canceled
+})
+```
+
 #### Is cancel token?
 
 ```js
