@@ -41,7 +41,7 @@ const _isIterable = value => value && typeof value[_iteratorSymbol] === 'functio
 const _once = fn => {
   let result
   return function () {
-    if (fn) {
+    if (fn !== null) {
       result = fn.apply(this, arguments)
       fn = null
     }
@@ -272,7 +272,7 @@ export class CancelToken {
           return false
         }
 
-        (token._listeners || (token._listeners = [])).push(cancel)
+        token.addHandler(cancel)
       })
       if (_executor !== undefined) {
         _executor(cancel)
@@ -281,14 +281,12 @@ export class CancelToken {
   }
 
   constructor (executor) {
-    this._listeners = null
+    this._handlers = null
     this._promise = null
     this._reason = undefined
     this._resolve = null
 
-    let cancelOnce = message => {
-      cancelOnce = _noop
-
+    executor(_once(message => {
       const reason = this._reason = message instanceof Cancel
         ? message
         : new Cancel(message)
@@ -299,15 +297,31 @@ export class CancelToken {
         resolve(reason)
       }
 
-      // notify sync listeners (for race)
-      const listeners = this._listeners
-      if (listeners !== null) {
-        this._listeners = null
-        _forArray(listeners, listener => void listener(reason))
+      const handlers = this._handlers
+      if (handlers !== null) {
+        this._handlers = null
+
+        const { promise, resolve } = defer()
+        let wait = 0
+        const onSettle = () => {
+          if (--wait === 0) {
+            return resolve()
+          }
+        }
+        for (let i = 0, n = handlers.length; i < n; ++i) {
+          try {
+            const result = handlers[i](reason)
+            if (isPromise(result)) {
+              ++wait
+              result.then(onSettle, onSettle)
+            }
+          } catch (_) {}
+        }
+        if (wait !== 0) {
+          return promise
+        }
       }
-    }
-    const cancel = message => cancelOnce(message)
-    executor(cancel)
+    }))
   }
 
   get promise () {
@@ -339,6 +353,22 @@ export class CancelToken {
     let cancel
     const token = CancelToken.race([ this ], c => { cancel = c })
     return { cancel, token }
+  }
+
+  // register a handler to execute when the token is canceled
+  //
+  // handlers are all executed in parallel, the promise returned by
+  // the `cancel` function will wait for all handlers to be settled
+  addHandler (handler) {
+    let handlers = this._handlers
+    if (handlers === null) {
+      if (this.requested) {
+        throw new TypeError('cannot add a handler to an already canceled token')
+      }
+
+      handlers = this._handlers = []
+    }
+    handlers.push(handler)
   }
 
   throwIfRequested () {
