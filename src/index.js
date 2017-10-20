@@ -249,8 +249,7 @@ export class CancelToken {
   static isCancelToken (value) {
     return (
       value != null &&
-      typeof value[_toStringTagSymbol] === 'function' &&
-      value[_toStringTagSymbol]() === _cancelTokenTag
+      value[_toStringTagSymbol] === _cancelTokenTag
     )
   }
 
@@ -378,7 +377,7 @@ export class CancelToken {
     }
   }
 
-  [_toStringTagSymbol] () {
+  get [_toStringTagSymbol] () {
     return _cancelTokenTag
   }
 }
