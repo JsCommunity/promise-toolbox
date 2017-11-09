@@ -1,7 +1,9 @@
 /* eslint-env jest */
 
-import { disposer, using } from './'
-import { noop, reject, rejectionOf } from './fixtures'
+const disposer = require('./disposer')
+const using = require('./using')
+const noop = require('./_noop')
+const { reject } = require('./fixtures')
 
 describe('disposer()', () => {
   it('called with flat params', async () => {
@@ -11,8 +13,8 @@ describe('disposer()', () => {
     const handler = jest.fn(() => 'handler')
 
     expect(await using(p1, p2, handler)).toBe('handler')
-    expect(handler.mock.calls).toEqual([ [ 'p1', 'p2' ] ])
-    expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
+    expect(handler.mock.calls).toEqual([['p1', 'p2']])
+    expect(d1.mock.calls).toEqual([['p1']])
   })
 
   it('called with array param', async () => {
@@ -21,9 +23,9 @@ describe('disposer()', () => {
     const p2 = Promise.resolve('p2')
     const handler = jest.fn(() => 'handler')
 
-    expect(await using([ p1, p2 ], handler)).toBe('handler')
-    expect(handler.mock.calls).toEqual([ [ [ 'p1', 'p2' ] ] ])
-    expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
+    expect(await using([p1, p2], handler)).toBe('handler')
+    expect(handler.mock.calls).toEqual([[['p1', 'p2']]])
+    expect(d1.mock.calls).toEqual([['p1']])
   })
 
   it('a resource can only be used once', async () => {
@@ -38,7 +40,7 @@ describe('disposer()', () => {
     const d2 = jest.fn()
     const p2 = Promise.resolve('p2')::disposer(d2)
 
-    expect(await rejectionOf(using(p1, p2, noop))).toBeInstanceOf(TypeError)
+    await expect(using(p1, p2, noop)).rejects.toBeInstanceOf(TypeError)
     expect(handler).not.toHaveBeenCalled()
     expect(d1).not.toHaveBeenCalled()
     expect(d2).toHaveBeenCalledTimes(1)
@@ -52,9 +54,9 @@ describe('disposer()', () => {
     const p3 = Promise.resolve('p3')
     const handler = jest.fn()
 
-    expect(await rejectionOf(using(p1, p2, p3, handler))).toBe('p2')
+    await expect(using(p1, p2, p3, handler)).rejects.toBe('p2')
     expect(handler).not.toHaveBeenCalled()
-    expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
+    expect(d1.mock.calls).toEqual([['p1']])
     expect(d2).not.toHaveBeenCalled()
   })
 
@@ -66,11 +68,11 @@ describe('disposer()', () => {
     const p3 = Promise.resolve('p3')
     const handler = jest.fn(() => reject('handler'))
 
-    expect(await rejectionOf(using(p1, p2, p3, handler))).toBe('handler')
-    expect(handler.mock.calls).toEqual([ [ 'p1', 'p2', 'p3' ] ])
-    expect(d1.mock.calls).toEqual([ [ 'p1' ] ])
-    expect(d2.mock.calls).toEqual([ [ 'p2' ] ])
+    await expect(using(p1, p2, p3, handler)).rejects.toBe('handler')
+    expect(handler.mock.calls).toEqual([['p1', 'p2', 'p3']])
+    expect(d1.mock.calls).toEqual([['p1']])
+    expect(d2.mock.calls).toEqual([['p2']])
   })
 
-  it('error in a disposer')
+  it.skip('error in a disposer', () => {})
 })

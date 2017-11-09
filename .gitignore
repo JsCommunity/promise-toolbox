@@ -1,5 +1,6 @@
+/[^.]*.js
+/*.js.map
 /coverage/
-/dist/
 /node_modules/
 
 npm-debug.log
