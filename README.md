@@ -37,6 +37,7 @@
   - [promise::finally(cb)](#promisefinallycb)
   - [promise::reflect()](#promisereflect)
   - [promises::some(count)](#promisessomecount)
+  - [promise::suppressUnhandledRejections()](#promisesuppressunhandledrejections)
   - [promise::tap(onResolved, onRejected)](#promisetaponresolved-onrejected)
   - [promise::tapCatch(onRejected)](#promisetapcatchonrejected)
   - [promise::timeout(ms, [cb])](#promisetimeoutms-cb-or-rejectionvalue)
@@ -692,6 +693,22 @@ const [first, seconds] = await [
   ping('ns3.example.org'),
   ping('ns4.example.org'),
 ]::some(2)
+```
+
+#### promise::suppressUnhandledRejections()
+
+> Suppress unhandled rejections, needed when error handlers are attached
+> asynchronously after the promise has rejected.
+>
+> Similar to [`Bluebird#suppressUnhandledRejections()`](http://bluebirdjs.com/docs/api/suppressunhandledrejections.html).
+
+```js
+const promise = getUser()::suppressUnhandledRejections()
+$(document).on('ready', () => {
+  promise.catch(error => {
+     console.error('error while getting user', error)
+  })
+})
 ```
 
 #### promise::tap(onResolved, onRejected)
