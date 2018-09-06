@@ -2,42 +2,45 @@
 
 > Essential utils for promises.
 
-Features:
+**Features:**
 
+- compatible with all promise implementations
 - small (< 150 KB with all dependencies, < 5 KB with gzip)
 - nice with ES2015 / ES2016 syntax
 
-- Usage
-  + [Cancelation](#cancelation)
-    - [Creation](#creation)
-    - [Consumption](#consumption)
-    - [Is cancel token?](#is-cancel-token)
-    - [Combining cancel tokens](#combining-cancel-tokens)
-    - [Forking cancel tokens](#forking-cancel-tokens)
-    - [@cancelable decorator](#cancelable-decorator)
-  + [Resource management](#resource-management)
-  + [Functions](#functions)
-    - [defer()](#defer)
-    - [fromCallback(cb => fn(arg1, ..., argn, cb))](#fromcallbackcb--fnarg1--argn-cb)
-    - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
-    - [fromEvents(emitter, successEvents, errorEvents) => Promise](#fromeventsemitter-successevents-errorevents--promise)
-    - [isPromise(value)](#ispromisevalue)
-    - [join(p1, ..., pn, cb) / join([p1, ..., pn], cb)](#joinp1--pn-cb--joinp1--pn-cb)
-    - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
-    - [try(fn) / attempt(fn)](#tryfn--attemptfn)
-    - [wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])](#wrapapplyfn-args-thisarg--wrapcallfn-arg-thisarg)
-  + [Pseudo-methods](#pseudo-methods)
-    - [promises::all([ mapper ])](#promisesall-mapper-)
-    - [promise::asCallback(cb)](#promiseascallbackcb)
-    - [promise::catchPlus(predicate, cb)](#promisecatchpluspredicate-cb)
-    - [promise::delay(ms)](#promisedelayms)
-    - [collection::forEach(cb)](#collectionforeachcb)
-    - [promise::ignoreErrors()](#promiseignoreerrors)
-    - [promise::lastly(cb)](#promiselastlycb)
-    - [promise::reflect()](#promisereflect)
-    - [promises::some(count)](#promisessomecount)
-    - [promise::tap(onResolved, onRejected)](#promisetaponresolved-onrejected)
-    - [promise::timeout(ms, [cb])](#promisetimeoutms-cb)
+**Table of contents:**
+
+- [Cancelation](#cancelation)
+  - [Creation](#creation)
+  - [Consumption](#consumption)
+  - [Is cancel token?](#is-cancel-token)
+  - [@cancelable decorator](#cancelable-decorator)
+- [Resource management](#resource-management)
+- [Functions](#functions)
+  - [asyncFn(generator)](#asyncfngenerator)
+  - [asyncFn.cancelable(generator)](#asyncfncancelablegenerator)
+  - [defer()](#defer)
+  - [fromCallback(cb => fn(arg1, ..., argn, cb))](#fromcallbackcb--fnarg1--argn-cb)
+  - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
+  - [fromEvents(emitter, successEvents, errorEvents) => Promise](#fromeventsemitter-successevents-errorevents--promise)
+  - [isPromise(value)](#ispromisevalue)
+  - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
+  - [try(fn)](#tryfn)
+  - [wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])](#wrapapplyfn-args-thisarg--wrapcallfn-arg-thisarg)
+- [Pseudo-methods](#pseudo-methods)
+  - [promises::all([ mapper ])](#promisesall-mapper-)
+  - [promise::asCallback(cb)](#promiseascallbackcb)
+  - [promise::catch(predicate, cb)](#promisecatchpredicate-cb)
+  - [promise::delay(ms, [value])](#promisedelayms-value)
+  - [collection::forEach(cb)](#collectionforeachcb)
+  - [promise::ignoreErrors()](#promiseignoreerrors)
+  - [promise::finally(cb)](#promisefinallycb)
+  - [promise::reflect()](#promisereflect)
+  - [promises::some(count)](#promisessomecount)
+  - [promise::suppressUnhandledRejections()](#promisesuppressunhandledrejections)
+  - [promise::tap(onResolved, onRejected)](#promisetaponresolved-onrejected)
+  - [promise::tapCatch(onRejected)](#promisetapcatchonrejected)
+  - [promise::timeout(ms, [cb])](#promisetimeoutms-cb-or-rejectionvalue)
 
 ### Node & [Browserify](http://browserify.org/)/[Webpack](https://webpack.js.org/)
 
@@ -57,6 +60,8 @@ You can directly use the build provided at [unpkg.com](https://unpkg.com):
 
 ## Usage
 
+### Promise support
+
 If your environment may not natively support promises, you should use a polyfill such as [native-promise-only](https://github.com/getify/native-promise-only).
 
 On Node, if you want to use a specific promise implementation,
@@ -70,6 +75,41 @@ global.Promise = require('bluebird')
 
 > Note that it should only be done at the application level, never in
 > a library!
+
+### Imports
+
+You can either import all the tools directly:
+
+```js
+import * as PT from 'promise-toolbox'
+
+console.log(PT.isPromise(value))
+```
+
+Or import individual tools from the main module:
+
+```js
+import { isPromise } from 'promise-toolbox'
+
+console.log(isPromise(value))
+```
+
+Each tool is also exported with a `p` prefix to work around reserved keywords
+and to help differentiate with other tools (like `lodash.map`):
+
+```js
+import { pCatch, pMap } from 'promise-toolbox'
+```
+
+If you are bundling your application (Browserify, Rollup, Webpack, etc.), you
+can cherry-pick the tools directly:
+
+```js
+import isPromise from 'promise-toolbox/isPromise'
+import pCatch from 'promise-toolbox/catch'
+```
+
+## API
 
 ### Cancelation
 
@@ -97,6 +137,15 @@ const token = new CancelToken(cancel => {
 
 ```js
 const { cancel, token } = CancelToken.source()
+```
+
+A list of existing tokens can be passed to `source()` to make the created token
+follow their cancelation:
+
+```js
+// `source.token` will be canceled (synchronously) as soon as `token1` or
+// `token2` or token3` is, with the same reason.
+const { cancel, token } = CancelToken.source([token1, token2, token3])
 ```
 
 #### Consumption
@@ -133,8 +182,8 @@ subtask(token)
 #### Registering async handlers
 
 > Asynchronous handlers are executed on token cancelation and the
-promise returned by the `cancel` function will wait for all handlers
-to settle.
+> promise returned by the `cancel` function will wait for all handlers
+> to settle.
 
 ```js
 function httpRequest (cancelToken, opts) {
@@ -153,7 +202,7 @@ function httpRequest (cancelToken, opts) {
 const { cancel, token } = CancelToken.source()
 
 httpRequest(token, {
-  hostname: 'example.org'
+  hostname: 'example.org',
 }).then(response => {
   // do something with the response of the request
 })
@@ -171,37 +220,6 @@ Promise.resolve(cancel()).then(() => {
 if (CancelToken.isCancelToken(value)) {
   console.log('value is a cancel token')
 }
-```
-
-#### Combining cancel tokens
-
-> Create a token which is canceled as soon as one token amongst many
-> is.
-
-```js
-// `token` will be canceled (synchronously) as soon as `token1` or
-// `token2` or token3` is, with the same reason.
-const token = CancelToken.race([ token1, token2, token3 ])
-```
-
-#### Forking cancel tokens
-
-> Create a new token which is canceled as soon as the original token
-> is or as soon as the executor decides.
-
-```js
-// token is canceled as soon as otherToken is or when the button is
-// clicked.
-const token = otherToken.fork(cancel => {
-  $('#some-button').on('click', () => cancel('button clicked'))
-})
-```
-
-If no executor is passed, `#fork()` works like `.source()` and returns
-an object with a cancel function and a token:
-
-```js
-const { cancel, token } = otherToken.fork()
 ```
 
 #### @cancelable decorator
@@ -269,6 +287,51 @@ using(getConnection(), getConnection(), (connection1, connection2) => {
 
 ### Functions
 
+#### asyncFn(generator)
+
+> Create an [async function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) from [a generator function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
+>
+> Similar to [`Bluebird.coroutine`](http://bluebirdjs.com/docs/api/promise.coroutine.html).
+
+```js
+import { asyncFn } from 'promise-toolbox'
+
+const getUserName = asyncFn(function * (db, userId)) {
+  const user = yield db.getRecord(userId)
+  return user.name
+})
+```
+
+#### asyncFn.cancelable(generator)
+
+> Like [`asyncFn(generator)`](#asyncfngenerator) but the created async function supports [cancelation](#cancelation).
+>
+> Similar to [CAF](https://github.com/getify/CAF).
+
+```js
+import { asyncFn, CancelToken } from 'promise-toolbox'
+
+const getUserName = asyncFn.cancelable(function * (cancelToken, db, userId)) {
+  // this yield will throw if the cancelToken is activated
+  const user = yield db.getRecord(userId)
+  return user.name
+})
+
+const source = CancelToken.source()
+
+getUserName(source.token, db, userId).then(
+  name => {
+    console.log('user name is', name)
+  },
+  error => {
+    console.error(error)
+  }
+)
+
+// only wait 5 seconds to fetch the user from the database
+setTimeout(source.cancel, 5e3)
+```
+
 #### defer()
 
 > Discouraged but sometimes necessary way to create a promise.
@@ -292,10 +355,9 @@ resolve(3)
 ```js
 import { fromCallback } from 'promise-toolbox'
 
-fromCallback(cb => fs.readFile('foo.txt', cb))
-  .then(content => {
-    console.log(content)
-  })
+fromCallback(cb => fs.readFile('foo.txt', cb)).then(content => {
+  console.log(content)
+})
 ```
 
 #### fromEvent(emitter, event, [options]) => Promise
@@ -313,7 +375,7 @@ const promise = fromEvent(emitter, 'foo', {
   ignoreErrors: false,
 
   // name of the error event
-  error: 'error'
+  error: 'error',
 })
 
 promise.then(
@@ -335,16 +397,16 @@ promise.then(
 > been emitted.
 
 ```js
-fromEvents(
-  emitter,
-  [ 'foo', 'bar' ],
-  [ 'error1', 'error2' ]
-).then(
+fromEvents(emitter, ['foo', 'bar'], ['error1', 'error2']).then(
   values => {
     console.log('event %s have been emitted with values', values.event, values)
   },
   reasons => {
-    console.error('error event %s has been emitted with errors', reasons.event, reasons)
+    console.error(
+      'error event %s has been emitted with errors',
+      reasons.event,
+      reasons
+    )
   }
 )
 ```
@@ -359,22 +421,9 @@ if (isPromise(foo())) {
 }
 ```
 
-#### join(p1, ..., pn, cb) / join([p1, ..., pn], cb)
-
-> Easiest and most efficient way to wait for a fixed amount of
-> promises.
-
-```js
-import { join } from 'promise-toolbox'
-
-join(getPictures(), getComments(), getTweets(), (pictures, comments, tweets) => {
-  console.log(`in total: ${pictures.length + comments.length + tweets.length}`)
-})
-```
-
 #### promisify(fn, [ context ]) / promisifyAll(obj)
 
-> Creates  async functions taking node-style callbacks, create new ones
+> Creates async functions taking node-style callbacks, create new ones
 > returning promises.
 
 ```js
@@ -394,19 +443,20 @@ readFile(__filename).then(content => console.log(content))
 fsPromise.readFile(__filename).then(content => console.log(content))
 ```
 
-#### try(fn) / attempt(fn)
+#### try(fn)
 
 > Starts a chain of promises.
 
 ```js
 import PromiseToolbox from 'promise-toolbox'
 
-const getUserById = id => PromiseToolbox.try(() => {
-  if (typeof id !== 'number') {
-    throw new Error('id must be a number')
-  }
-  return db.getUserById(id)
-})
+const getUserById = id =>
+  PromiseToolbox.try(() => {
+    if (typeof id !== 'number') {
+      throw new Error('id must be a number')
+    }
+    return db.getUserById(id)
+  })
 ```
 
 > Note: similar to `Promise.resolve().then(fn)` but calls `fn()`
@@ -437,10 +487,7 @@ promise (or promises) as the context.
 This is extremely easy using [ES2016's bind syntax](https://github.com/zenparsing/es-function-bind).
 
 ```js
-const promises = [
-  Promise.resolve('foo'),
-  Promise.resolve('bar')
-]
+const promises = [Promise.resolve('foo'), Promise.resolve('bar')]
 
 promises::all().then(values => {
   console.log(values)
@@ -453,12 +500,9 @@ the promise (or promises) as the first argument of the `.call()`
 method:
 
 ```js
-var promises = [
-  Promise.resolve('foo'),
-  Promise.resolve('bar')
-]
+const promises = [Promise.resolve('foo'), Promise.resolve('bar')]
 
-all.call(promises).then(function (values) {
+all.call(promises).then(function(values) {
   console.log(values)
 })
 // → [ 'foo', 'bar' ]
@@ -508,7 +552,7 @@ function getDataFor (input, callback) {
 }
 ```
 
-#### promise::catchPlus(predicate, cb)
+#### promise::catch(predicate, cb)
 
 > Similar to `Promise#catch()` but:
 >
@@ -518,18 +562,22 @@ function getDataFor (input, callback) {
 >   and should be handled separately.
 
 ```js
-somePromise.then(() => {
-  return a.b.c.d()
-})::catchPlus(TypeError, ReferenceError, reason => {
-  // Will end up here on programmer error
-})::catchPlus(NetworkError, TimeoutError, reason => {
-  // Will end up here on expected everyday network errors
-})::catchPlus(reason => {
-  // Catch any unexpected errors
-})
+somePromise
+  .then(() => {
+    return a.b.c.d()
+  })
+  ::pCatch(TypeError, ReferenceError, reason => {
+    // Will end up here on programmer error
+  })
+  ::pCatch(NetworkError, TimeoutError, reason => {
+    // Will end up here on expected everyday network errors
+  })
+  ::pCatch(reason => {
+    // Catch any unexpected errors
+  })
 ```
 
-#### promise::delay(ms)
+#### promise::delay(ms, [value])
 
 > Delays the resolution of a promise by `ms` milliseconds.
 >
@@ -543,7 +591,7 @@ console.log(await Promise.resolve('500ms passed')::delay(500))
 Also works with a value:
 
 ```js
-console.log(await delay.call('500ms passed', 500))
+console.log(await delay(500, '500ms passed'))
 // → 500 ms passed
 ```
 
@@ -557,10 +605,7 @@ The returned promise will resolve to `undefined` when the iteration is
 complete.
 
 ```js
-[
-  'foo',
-  Promise.resolve('bar'),
-]::forEach(value => {
+['foo', Promise.resolve('bar')]::forEach(value => {
   console.log(value)
 
   // Wait for the promise to be resolve before the next item.
@@ -580,17 +625,21 @@ import { ignoreErrors } from 'promise-toolbox'
 
 // will not emit an unhandled rejection error if the file does not
 // exist
-readFileAsync('foo.txt').then(content => {
-  console.log(content)
-})::ignoreErrors()
+readFileAsync('foo.txt')
+  .then(content => {
+    console.log(content)
+  })
+  ::ignoreErrors()
 
 // will emit an unhandled rejection error due to the typo
-readFileAsync('foo.txt').then(content => {
-  console.lgo(content) // typo
-})::ignoreErrors()
+readFileAsync('foo.txt')
+  .then(content => {
+    console.lgo(content) // typo
+  })
+  ::ignoreErrors()
 ```
 
-#### promise::lastly(cb)
+#### promise::finally(cb)
 
 > Execute a handler regardless of the promise fate. Similar to the
 > `finally` block in synchronous codes.
@@ -599,16 +648,16 @@ readFileAsync('foo.txt').then(content => {
 > forwarded unless the callback rejects.
 
 ```js
-import { lastly } from 'promise-toolbox'
+import { pFinally } from 'promise-toolbox'
 
 function ajaxGetAsync (url) {
   return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest
+    const xhr = new XMLHttpRequest()
     xhr.addEventListener('error', reject)
     xhr.addEventListener('load', resolve)
     xhr.open('GET', url)
     xhr.send(null)
-  })::lastly(() => {
+  })::pFinally(() => {
     $('#ajax-loader-animation').hide()
   })
 }
@@ -638,19 +687,35 @@ if (inspection.isFulfilled()) {
 ```js
 import { some } from 'promise-toolbox'
 
-const [ first, seconds ] = await [
+const [first, seconds] = await [
   ping('ns1.example.org'),
   ping('ns2.example.org'),
   ping('ns3.example.org'),
-  ping('ns4.example.org')
+  ping('ns4.example.org'),
 ]::some(2)
+```
+
+#### promise::suppressUnhandledRejections()
+
+> Suppress unhandled rejections, needed when error handlers are attached
+> asynchronously after the promise has rejected.
+>
+> Similar to [`Bluebird#suppressUnhandledRejections()`](http://bluebirdjs.com/docs/api/suppressunhandledrejections.html).
+
+```js
+const promise = getUser()::suppressUnhandledRejections()
+$(document).on('ready', () => {
+  promise.catch(error => {
+     console.error('error while getting user', error)
+  })
+})
 ```
 
 #### promise::tap(onResolved, onRejected)
 
 > Like `.then()` but the original resolution/rejection is forwarded.
 >
-> Like `::lastly()`, if the callback rejects, it takes over the
+> Like `::finally()`, if the callback rejects, it takes over the
 > original resolution/rejection.
 
 ```js
@@ -668,7 +733,11 @@ const promise2 = Promise.reject(42)::tap(null, reason => {
 })
 ```
 
-#### promise::timeout(ms, [cb])
+#### promise::tapCatch(onRejected)
+
+> Alias to [`promise:tap(null, onRejected)`](#promisetaponresolved-onrejected).
+
+#### promise::timeout(ms, [cb or rejectionValue])
 
 > Call a callback if the promise is still pending after `ms`
 > milliseconds. Its resolution/rejection is forwarded.
@@ -684,6 +753,11 @@ await doLongOperation()::timeout(100, () => {
 })
 
 await doLongOperation()::timeout(100)
+
+await doLongOperation()::timeout(
+  100,
+  new Error('the long operation has failed')
+)
 ```
 
 ## Development
@@ -701,13 +775,13 @@ await doLongOperation()::timeout(100)
 # Continuously run the tests
 > npm run dev-test
 
-# Build for production (automatically called by npm install)
+# Build for production
 > npm run build
 ```
 
 ## Contributions
 
-Contributions are *very* welcomed, either on the documentation or on
+Contributions are _very_ welcomed, either on the documentation or on
 the code.
 
 You may:

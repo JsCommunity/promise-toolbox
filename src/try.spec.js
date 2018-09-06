@@ -1,29 +1,23 @@
 /* eslint-env jest */
 
-import { attempt, try as try_ } from './'
-import { throwArg, rejectionOf } from './fixtures'
+const pTry = require('./try')
+const { throwArg } = require('./fixtures')
 
 describe('try()', () => {
   it('wraps returned value in promise', () => {
-    return try_(() => 'foo').then(value => {
+    return pTry(() => 'foo').then(value => {
       expect(value).toBe('foo')
     })
   })
 
   it('wraps thrown exception in promise', () => {
-    return rejectionOf(try_(() => throwArg('foo'))).then(exception => {
-      expect(exception).toBe('foo')
-    })
+    return expect(pTry(() => throwArg('foo'))).rejects.toBe('foo')
   })
 
   it('calls the callback synchronously', () => {
     const spy = jest.fn()
-    try_(spy)
+    pTry(spy)
 
     expect(spy).toHaveBeenCalled()
-  })
-
-  it('is aliased as attempt', () => {
-    expect(attempt).toBe(try_)
   })
 })

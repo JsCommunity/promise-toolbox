@@ -1,14 +1,16 @@
 /* eslint-env jest */
 
-import { fromCallback } from './'
-import { hideLiteralErrorFromLinter, rejectionOf } from './fixtures'
+const fromCallback = require('./fromCallback')
+const { hideLiteralErrorFromLinter } = require('./fixtures')
 
 describe('fromCallback()', () => {
   it('creates a promise which resolves with value passed to the callback', async () => {
-    expect(await fromCallback(cb => cb(null, 'foo'))).toBe('foo')
+    expect(await fromCallback(cb => cb(undefined, 'foo'))).toBe('foo')
   })
 
   it('creates a promise which rejects with reason passed to the callback', async () => {
-    expect(await rejectionOf(fromCallback(cb => cb(hideLiteralErrorFromLinter('bar'))))).toBe('bar')
+    await expect(
+      fromCallback(cb => cb(hideLiteralErrorFromLinter('bar')))
+    ).rejects.toBe('bar')
   })
 })

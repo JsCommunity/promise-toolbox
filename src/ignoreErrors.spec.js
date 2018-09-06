@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
-import { ignoreErrors } from './'
-import { reject, rejectionOf } from './fixtures'
+const ignoreErrors = require('./ignoreErrors')
+const { reject } = require('./fixtures')
 
 describe('ignoreErrors()', () => {
   it('swallows errors', () => {
@@ -10,13 +10,13 @@ describe('ignoreErrors()', () => {
 
   it('does not swallow programmer errors', async () => {
     expect(
-      await rejectionOf(Promise.reject(new ReferenceError(''))::ignoreErrors())
-    ).toBeInstanceOf(ReferenceError)
+      Promise.reject(new ReferenceError(''))::ignoreErrors()
+    ).rejects.toBeInstanceOf(ReferenceError)
     expect(
-      await rejectionOf(Promise.reject(new SyntaxError(''))::ignoreErrors())
-    ).toBeInstanceOf(SyntaxError)
+      Promise.reject(new SyntaxError(''))::ignoreErrors()
+    ).rejects.toBeInstanceOf(SyntaxError)
     expect(
-      await rejectionOf(Promise.reject(new TypeError(''))::ignoreErrors())
-    ).toBeInstanceOf(TypeError)
+      Promise.reject(new TypeError(''))::ignoreErrors()
+    ).rejects.toBeInstanceOf(TypeError)
   })
 })

@@ -1,21 +1,19 @@
 /* eslint-env jest */
 
-import { wrapApply, wrapCall } from './'
-import { rejectionOf, throwArg } from './fixtures'
+const wrapApply = require('./wrapApply')
+const wrapCall = require('./wrapCall')
+const { throwArg } = require('./fixtures')
 
 describe('wrapApply() & wrapCall()', () => {
   it('calls a function passing args and thisArg', () => {
-    const args = [ 'foo', 'bar', 'baz' ]
+    const args = ['foo', 'bar', 'baz']
     const thisArg = {}
     const spy = jest.fn()
 
     wrapApply(spy, args, thisArg)
     wrapCall(spy, args, thisArg)
 
-    expect(spy.mock.calls).toEqual([
-      args,
-      [ args ]
-    ])
+    expect(spy.mock.calls).toEqual([args, [args]])
     expect(spy.mock.instances[0]).toBe(thisArg)
     expect(spy.mock.instances[1]).toBe(thisArg)
   })
@@ -38,7 +36,7 @@ describe('wrapApply() & wrapCall()', () => {
       }),
       wrapCall(fn).then(result => {
         expect(result).toBe(value)
-      })
+      }),
     ])
   })
 
@@ -47,12 +45,8 @@ describe('wrapApply() & wrapCall()', () => {
     const fn = () => throwArg(value)
 
     return Promise.all([
-      rejectionOf(wrapApply(fn)).then(reason => {
-        expect(reason).toBe(value)
-      }),
-      rejectionOf(wrapCall(fn)).then(reason => {
-        expect(reason).toBe(value)
-      })
+      expect(wrapApply(fn)).rejects.toBe(value),
+      expect(wrapCall(fn)).rejects.toBe(value),
     ])
   })
 })

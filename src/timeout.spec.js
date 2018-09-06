@@ -1,38 +1,32 @@
 /* eslint-env jest */
 
-import { timeout, TimeoutError } from './'
-import { reject, rejectionOf } from './fixtures'
+const noop = require('./_noop')
+const timeout = require('./timeout')
+const TimeoutError = require('./TimeoutError')
+const { reject } = require('./fixtures')
 
 describe('timeout()', () => {
-  const neverSettle = new Promise(() => {})
+  const neverSettle = new Promise(noop)
 
   it('rejects a promise if not settled after a delay', async () => {
-    expect(
-      await rejectionOf(neverSettle::timeout(10))
-    ).toBeInstanceOf(TimeoutError)
+    await expect(neverSettle::timeout(10)).rejects.toBeInstanceOf(TimeoutError)
   })
 
   it('call the callback if not settled after a delay', async () => {
-    expect(
-      await neverSettle::timeout(10, () => 'bar')
-    ).toBe('bar')
+    expect(await neverSettle::timeout(10, () => 'bar')).toBe('bar')
   })
 
   it('forwards the settlement if settled before a delay', async () => {
-    expect(
-      await Promise.resolve('value')::timeout(10)
-    ).toBe('value')
+    expect(await Promise.resolve('value')::timeout(10)).toBe('value')
 
-    expect(
-      await rejectionOf(reject('reason')::timeout(10))
-    ).toBe('reason')
+    await expect(reject('reason')::timeout(10)).rejects.toBe('reason')
   })
 
   it('rejects if cb throws synchronously', async () => {
-    expect(
-      await rejectionOf(neverSettle::timeout(10, () => {
+    await expect(
+      neverSettle::timeout(10, () => {
         throw 'reason' // eslint-disable-line no-throw-literal
-      }))
-    ).toBe('reason')
+      })
+    ).rejects.toBe('reason')
   })
 })
