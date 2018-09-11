@@ -1,6 +1,6 @@
 const resolve = require('./_resolve')
 
-module.exports = fn => {
+module.exports = function pTry (fn) {
   try {
     return resolve(fn())
   } catch (error) {
