@@ -81,12 +81,16 @@ module.exports = function using () {
       )
 
     forArray(resources, (resource, i) => {
-      const p = resource instanceof Resource ? resource.p : resource
-      if (p === undefined) {
-        onProviderFailure(
-          new TypeError('resource has already been disposed of')
-        )
-        return
+      let p
+      if (resource instanceof Resource) {
+        ({ p } = resource)
+        if (p === undefined) {
+          return onProviderFailure(
+            new TypeError('resource has already been disposed of')
+          )
+        }
+      } else {
+        p = Promise.resolve(resource)
       }
 
       p.then(value => {

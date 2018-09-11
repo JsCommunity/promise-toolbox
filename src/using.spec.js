@@ -8,13 +8,14 @@ const { reject } = require('./fixtures')
 describe('disposer()', () => {
   it('called with flat params', async () => {
     const d1 = jest.fn()
-    const p1 = Promise.resolve('p1')::disposer(d1)
-    const p2 = Promise.resolve('p2')
+    const r1 = Promise.resolve('r1')::disposer(d1)
+    const r2 = Promise.resolve('r2')
+    const r3 = 'r3'
     const handler = jest.fn(() => 'handler')
 
-    expect(await using(p1, p2, handler)).toBe('handler')
-    expect(handler.mock.calls).toEqual([['p1', 'p2']])
-    expect(d1.mock.calls).toEqual([['p1']])
+    expect(await using(r1, r2, r3, handler)).toBe('handler')
+    expect(handler.mock.calls).toEqual([['r1', 'r2', 'r3']])
+    expect(d1.mock.calls).toEqual([['r1']])
   })
 
   it('called with array param', async () => {
