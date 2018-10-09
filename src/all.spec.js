@@ -6,7 +6,10 @@ const { reject } = require('./fixtures')
 
 describe('all()', () => {
   it('with array', async () => {
-    expect(await [Promise.resolve('foo'), 'bar']::all()).toEqual(['foo', 'bar'])
+    expect(await [Promise.resolve('foo'), 'bar']::all()).toEqual([
+      'foo',
+      'bar',
+    ])
   })
 
   it('with object', async () => {

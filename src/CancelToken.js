@@ -130,7 +130,9 @@ class CancelToken {
     let handlers = this._handlers
     if (handlers === undefined) {
       if (this.requested) {
-        throw new TypeError('cannot add a handler to an already canceled token')
+        throw new TypeError(
+          'cannot add a handler to an already canceled token'
+        )
       }
 
       handlers = this._handlers = []

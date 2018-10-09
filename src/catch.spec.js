@@ -12,7 +12,9 @@ describe('catch', () => {
 
     expect(await reject('foo')::pCatch(predicate, identity)).toBe('foo')
 
-    await expect(reject('bar')::pCatch(predicate, identity)).rejects.toBe('bar')
+    await expect(reject('bar')::pCatch(predicate, identity)).rejects.toBe(
+      'bar'
+    )
   })
 
   it('catches errors matching a class', async () => {

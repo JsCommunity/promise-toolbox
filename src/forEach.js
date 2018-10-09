@@ -1,3 +1,1 @@
-module.exports = require('./makeAsyncIterator')(
-  require('./_utils').forEach
-)
+module.exports = require('./makeAsyncIterator')(require('./_utils').forEach)
