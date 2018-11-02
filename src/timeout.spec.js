@@ -29,4 +29,16 @@ describe('timeout()', () => {
       })
     ).rejects.toBe('reason')
   })
+
+  it('thrown error has correct stack trace', async () => {
+    let error
+    try {
+      error = new Error()
+      await neverSettle::timeout(10)
+    } catch (timeoutError) {
+      expect(timeoutError.stack.split('\n').slice(3, 10)).toEqual(
+        error.stack.split('\n').slice(2, 9)
+      )
+    }
+  })
 })
