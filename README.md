@@ -743,10 +743,10 @@ const promise2 = Promise.reject(42)::tap(null, reason => {
 > milliseconds. Its resolution/rejection is forwarded.
 >
 > If the callback is omitted, the returned promise is rejected with a
-> `Timeout` error.
+> `TimeoutError`.
 
 ```js
-import { timeout } from 'promise-toolbox'
+import { timeout, TimeoutError } from 'promise-toolbox'
 
 await doLongOperation()::timeout(100, () => {
   return doFallbackOperation()
