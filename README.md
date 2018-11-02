@@ -760,6 +760,9 @@ await doLongOperation()::timeout(
 )
 ```
 
+> Note: `0` is a special value which disable the timeout, useful if the delay is
+> configurable in your app.
+
 ## Development
 
 ```

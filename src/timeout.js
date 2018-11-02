@@ -4,7 +4,13 @@ const TimeoutError = require('./TimeoutError')
 // - promise::timeout(ms)
 // - promise::timeout(ms, rejectionValue)
 // - promise::timeout(ms, cb)
+//
+// 0 is a special value that disable the timeout
 module.exports = function timeout (ms, onReject) {
+  if (ms === 0) {
+    return this
+  }
+
   return new Promise((resolve, reject) => {
     let handle = setTimeout(() => {
       handle = undefined
