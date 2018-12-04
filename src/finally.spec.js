@@ -20,8 +20,4 @@ describe('finally()', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
   })
-
-  it('is aliased as lastly()', () => {
-    expect(lastly).toBe(lastly)
-  })
 })
