@@ -24,6 +24,7 @@
   - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
   - [fromEvents(emitter, successEvents, errorEvents) => Promise](#fromeventsemitter-successevents-errorevents--promise)
   - [isPromise(value)](#ispromisevalue)
+  - [pipe(fns)](#pipefns)
   - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
   - [try(fn)](#tryfn)
   - [wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])](#wrapapplyfn-args-thisarg--wrapcallfn-arg-thisarg)
@@ -419,6 +420,19 @@ import { isPromise } from 'promise-toolbox'
 if (isPromise(foo())) {
   console.log('foo() returns a promise')
 }
+```
+
+####  pipe(fns)
+
+> Create a new function from the composition of async functions.
+
+```js
+import { pipe } from 'promise-toolbox'
+
+const getUserPreferences = pipe(
+  getUser,
+  getPreferences
+)
 ```
 
 #### promisify(fn, [ context ]) / promisifyAll(obj)
