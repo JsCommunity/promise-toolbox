@@ -64,16 +64,13 @@ const isIterable = value =>
   value != null && typeof value[$$iterator] === "function";
 
 const forEach = (exports.forEach = (collection, iteratee) =>
-  isArray(collection)
+  Array.isArray(collection)
     ? forArray(collection, iteratee)
     : isIterable(collection)
     ? forIterable(collection, iteratee)
     : isArrayLike(collection)
     ? forArray(collection, iteratee)
     : forOwn(collection, iteratee));
-
-const { isArray = value => value instanceof Array } = Array;
-exports.isArray = isArray;
 
 const isLength = value =>
   typeof value === "number" &&

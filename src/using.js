@@ -2,7 +2,7 @@ const once = require("./_once");
 const Resource = require("./_Resource");
 const wrapApply = require("./wrapApply");
 const wrapCall = require("./wrapCall");
-const { forArray, isArray } = require("./_utils");
+const { forArray } = require("./_utils");
 
 // Usage: using(disposers…, handler)
 module.exports = function using() {
@@ -15,7 +15,7 @@ module.exports = function using() {
   const handler = arguments[nResources];
 
   let resources;
-  const spread = nResources > 1 || !isArray((resources = arguments[0]));
+  const spread = nResources > 1 || !Array.isArray((resources = arguments[0]));
   if (spread) {
     resources = Array.prototype.slice.call(arguments, 0, nResources);
   } else {
