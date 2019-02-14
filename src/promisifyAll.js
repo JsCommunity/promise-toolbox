@@ -1,8 +1,8 @@
 const promisify = require("./promisify");
-const { endsWith, forIn } = require("./_utils");
+const { forIn } = require("./_utils");
 
 const DEFAULT_MAPPER = (_, name) =>
-  !(endsWith(name, "Sync") || endsWith(name, "Async")) && name;
+  !(name.endsWith("Sync") || name.endsWith("Async")) && name;
 
 // Usage: promisifyAll(obj, [ opts ])
 const promisifyAll = (

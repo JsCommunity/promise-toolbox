@@ -24,11 +24,6 @@ exports.applyThen = (fn, args, onSuccess, onFailure) => {
   onSuccess(returnValue);
 };
 
-exports.endsWith = (str, suffix, pos = str.length) => {
-  pos -= suffix.length;
-  return pos >= 0 && str.indexOf(suffix, pos) === pos;
-};
-
 const forArray = (exports.forArray = (array, iteratee) => {
   const { length } = array;
   for (let i = 0; i < length; ++i) {
