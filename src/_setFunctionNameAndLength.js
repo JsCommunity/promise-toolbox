@@ -12,7 +12,7 @@ module.exports = (() => {
         _defineProperties(fn, {
           length: {
             configurable: true,
-            value: length,
+            value: length > 0 ? length : 0,
           },
           name: {
             configurable: true,

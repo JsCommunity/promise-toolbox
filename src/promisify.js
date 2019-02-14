@@ -18,6 +18,6 @@ const promisify = (fn, context) =>
       })
     },
     fn.name,
-    fn.length !== 0 && fn.length - 1
+    fn.length - 1
   )
 module.exports = promisify
