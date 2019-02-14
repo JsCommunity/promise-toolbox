@@ -39,10 +39,7 @@ module.exports = function pCatch() {
     );
   }
 
-  const predicates = new Array(n);
-  for (let i = 0; i < n; ++i) {
-    predicates[i] = arguments[i];
-  }
+  const predicates = Array.prototype.slice.call(arguments, 0, n);
 
   return this.then(undefined, reason => {
     for (let i = 0; i < n; ++i) {

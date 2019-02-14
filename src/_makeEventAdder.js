@@ -26,11 +26,7 @@ module.exports = ($cancelToken, emitter, arrayArg) => {
     ? (event, cb) => {
         function listener() {
           clean();
-          const { length } = arguments;
-          const args = new Array(length);
-          for (let i = 0; i < length; ++i) {
-            args[i] = arguments[i];
-          }
+          const args = Array.prototype.slice.call(arguments);
           args.event = event;
           cb(args);
         }

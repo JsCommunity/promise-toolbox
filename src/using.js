@@ -14,13 +14,10 @@ module.exports = function using() {
 
   const handler = arguments[nResources];
 
-  let resources = arguments[0];
-  const spread = nResources > 1 || !isArray(resources);
+  let resources;
+  const spread = nResources > 1 || !isArray((resources = arguments[0]));
   if (spread) {
-    resources = new Array(nResources);
-    for (let i = 0; i < nResources; ++i) {
-      resources[i] = arguments[i];
-    }
+    resources = Array.prototype.slice.call(arguments, 0, nResources);
   } else {
     nResources = resources.length;
   }
