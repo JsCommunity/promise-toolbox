@@ -1,1 +1,1 @@
-module.exports = Function.prototype
+module.exports = Function.prototype;

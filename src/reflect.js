@@ -1,5 +1,5 @@
-const FN_FALSE = () => false
-const FN_TRUE = () => true
+const FN_FALSE = () => false;
+const FN_TRUE = () => true;
 
 const onFulfilled = (__proto__ => value => ({
   __proto__: __proto__,
@@ -9,9 +9,9 @@ const onFulfilled = (__proto__ => value => ({
   isPending: FN_FALSE,
   isRejected: FN_FALSE,
   reason: () => {
-    throw new Error('no reason, the promise has resolved')
+    throw new Error("no reason, the promise has resolved");
   },
-})
+});
 
 const onRejected = (__proto__ => reason => ({
   __proto__: __proto__,
@@ -21,9 +21,9 @@ const onRejected = (__proto__ => reason => ({
   isPending: FN_FALSE,
   isRejected: FN_TRUE,
   value: () => {
-    throw new Error('no value, the promise has rejected')
+    throw new Error("no value, the promise has rejected");
   },
-})
+});
 
 // Returns a promise that is always successful when this promise is
 // settled. Its fulfillment value is an object that implements the
@@ -31,6 +31,6 @@ const onRejected = (__proto__ => reason => ({
 // promise.
 //
 // Usage: promise::reflect()
-module.exports = function () {
-  return this.then(onFulfilled, onRejected)
-}
+module.exports = function() {
+  return this.then(onFulfilled, onRejected);
+};

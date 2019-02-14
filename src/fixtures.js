@@ -1,5 +1,5 @@
-exports.hideLiteralErrorFromLinter = literal => literal
-exports.reject = reason => Promise.reject(reason)
+exports.hideLiteralErrorFromLinter = literal => literal;
+exports.reject = reason => Promise.reject(reason);
 exports.throwArg = value => {
-  throw value
-}
+  throw value;
+};

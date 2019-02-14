@@ -1,3 +1,3 @@
-module.exports = function tapCatch (cb) {
-  return this.then(undefined, cb).then(() => this)
-}
+module.exports = function tapCatch(cb) {
+  return this.then(undefined, cb).then(() => this);
+};

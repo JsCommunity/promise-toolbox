@@ -1,3 +1,3 @@
-module.exports = require('./makeAsyncIterator')(
-  require('./_utils').forIterable
-)
+module.exports = require("./makeAsyncIterator")(
+  require("./_utils").forIterable
+);

@@ -1,11 +1,14 @@
-const { isArray, prototype: { slice } } = Array
+const {
+  isArray,
+  prototype: { slice },
+} = Array;
 
-const chain = (promise, fn) => promise.then(fn)
+const chain = (promise, fn) => promise.then(fn);
 
-module.exports = function pPipe (fns) {
+module.exports = function pPipe(fns) {
   if (!isArray(fns)) {
-    fns = slice.call(arguments)
+    fns = slice.call(arguments);
   }
 
-  return arg => fns.reduce(chain, Promise.resolve(arg))
-}
+  return arg => fns.reduce(chain, Promise.resolve(arg));
+};

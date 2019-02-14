@@ -1,10 +1,10 @@
 module.exports = fn => {
-  let result
-  return function () {
+  let result;
+  return function() {
     if (fn !== undefined) {
-      result = fn.apply(this, arguments)
-      fn = undefined
+      result = fn.apply(this, arguments);
+      fn = undefined;
     }
-    return result
-  }
-}
+    return result;
+  };
+};

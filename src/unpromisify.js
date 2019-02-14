@@ -1,29 +1,29 @@
-const setFunctionNameAndLength = require('./_setFunctionNameAndLength')
+const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 
 // Note: synchronous exception are not caught.
 //
 // Usage: fn::unpromisify()
-module.exports = function unpromisify () {
-  const fn = this
+module.exports = function unpromisify() {
+  const fn = this;
   return setFunctionNameAndLength(
-    function () {
-      const n = arguments.length - 1
-      let cb
-      if (n < 0 || typeof (cb = arguments[n]) !== 'function') {
-        throw new Error('missing callback')
+    function() {
+      const n = arguments.length - 1;
+      let cb;
+      if (n < 0 || typeof (cb = arguments[n]) !== "function") {
+        throw new Error("missing callback");
       }
 
-      const args = new Array(n)
+      const args = new Array(n);
       for (let i = 0; i < n; ++i) {
-        args[i] = arguments[i]
+        args[i] = arguments[i];
       }
 
       fn.apply(this, args).then(
         result => cb(undefined, result),
         reason => cb(reason)
-      )
+      );
     },
     fn.name,
     fn.length + 1
-  )
-}
+  );
+};

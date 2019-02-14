@@ -1,17 +1,17 @@
-const cancelable = require('./cancelable')
-const makeEventAdder = require('./_makeEventAdder')
+const cancelable = require("./cancelable");
+const makeEventAdder = require("./_makeEventAdder");
 
 const fromEvent = cancelable(
   ($cancelToken, emitter, event, opts = {}) =>
     new Promise((resolve, reject) => {
-      const add = makeEventAdder($cancelToken, emitter, opts.array)
-      add(event, resolve)
+      const add = makeEventAdder($cancelToken, emitter, opts.array);
+      add(event, resolve);
       if (!opts.ignoreErrors) {
-        const { error = 'error' } = opts
+        const { error = "error" } = opts;
         if (error !== event) {
-          add(error, reject)
+          add(error, reject);
         }
       }
     })
-)
-module.exports = fromEvent
+);
+module.exports = fromEvent;

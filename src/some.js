@@ -1,43 +1,43 @@
-const resolve = require('./_resolve')
-const { forEach } = require('./_utils')
+const resolve = require("./_resolve");
+const { forEach } = require("./_utils");
 
 const _some = (promises, count) =>
   new Promise((resolve, reject) => {
-    let values = []
-    let errors = []
+    let values = [];
+    let errors = [];
 
     const onFulfillment = value => {
       if (!values) {
-        return
+        return;
       }
 
-      values.push(value)
+      values.push(value);
       if (--count === 0) {
-        resolve(values)
-        values = errors = undefined
+        resolve(values);
+        values = errors = undefined;
       }
-    }
+    };
 
-    let acceptableErrors = -count
+    let acceptableErrors = -count;
     const onRejection = reason => {
       if (!values) {
-        return
+        return;
       }
 
-      errors.push(reason)
+      errors.push(reason);
       if (--acceptableErrors === 0) {
-        reject(errors)
-        values = errors = undefined
+        reject(errors);
+        values = errors = undefined;
       }
-    }
+    };
 
     forEach(promises, promise => {
-      ++acceptableErrors
-      resolve(promise).then(onFulfillment, onRejection)
-    })
-  })
+      ++acceptableErrors;
+      resolve(promise).then(onFulfillment, onRejection);
+    });
+  });
 
 // Usage: promises::some(count)
-module.exports = function some (count) {
-  return resolve(this).then(promises => _some(promises, count))
-}
+module.exports = function some(count) {
+  return resolve(this).then(promises => _some(promises, count));
+};

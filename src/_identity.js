@@ -1,1 +1,1 @@
-module.exports = value => value
+module.exports = value => value;

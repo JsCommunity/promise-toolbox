@@ -7,5 +7,5 @@
 const fromCallback = fn =>
   new Promise((resolve, reject) =>
     fn((error, result) => (error != null ? reject(error) : resolve(result)))
-  )
-module.exports = fromCallback
+  );
+module.exports = fromCallback;

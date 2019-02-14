@@ -1,13 +1,13 @@
 /* eslint-env jest */
 
-const map = require('./map')
+const map = require("./map");
 
-describe('map()', () => {
-  it('works with array', async () => {
+describe("map()", () => {
+  it("works with array", async () => {
     expect(
-      await Promise.resolve(['foo', Promise.resolve('bar')])::map(
+      await Promise.resolve(["foo", Promise.resolve("bar")])::map(
         v => `${v} ${v}`
       )
-    ).toEqual(['foo foo', 'bar bar'])
-  })
-})
+    ).toEqual(["foo foo", "bar bar"]);
+  });
+});

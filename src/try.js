@@ -1,9 +1,9 @@
-const resolve = require('./_resolve')
+const resolve = require("./_resolve");
 
-module.exports = function pTry (fn) {
+module.exports = function pTry(fn) {
   try {
-    return resolve(fn())
+    return resolve(fn());
   } catch (error) {
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-}
+};
