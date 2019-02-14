@@ -1,3 +1,4 @@
+const setFunctionNameAndLength = require('./_setFunctionNameAndLength')
 const { isCancelToken, source } = require('./CancelToken')
 
 // Usage:
@@ -21,7 +22,7 @@ const { isCancelToken, source } = require('./CancelToken')
 const cancelable = (target, name, descriptor) => {
   const fn = descriptor !== undefined ? descriptor.value : target
 
-  function cancelableWrapper () {
+  const wrapper = setFunctionNameAndLength(function cancelableWrapper () {
     const { length } = arguments
     if (length !== 0 && isCancelToken(arguments[0])) {
       return fn.apply(this, arguments)
@@ -38,13 +39,13 @@ const cancelable = (target, name, descriptor) => {
     promise.cancel = cancel
 
     return promise
-  }
+  }, fn.name, fn.length - 1)
 
   if (descriptor !== undefined) {
-    descriptor.value = cancelableWrapper
+    descriptor.value = wrapper
     return descriptor
   }
 
-  return cancelableWrapper
+  return wrapper
 }
 module.exports = cancelable
