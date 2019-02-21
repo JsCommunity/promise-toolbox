@@ -1,7 +1,4 @@
-const isProgrammerError = reason =>
-  reason instanceof ReferenceError ||
-  reason instanceof SyntaxError ||
-  reason instanceof TypeError;
+const isProgrammerError = require("./_isProgrammerError");
 
 module.exports = function matchError(predicate, error) {
   if (predicate === undefined) {
