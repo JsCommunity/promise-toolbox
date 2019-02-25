@@ -1,24 +1,8 @@
-const isProgrammerError = require("./_isProgrammerError");
+const matchError = require("./_matchError");
 
-const matchError = (predicate, error) => {
-  if (typeof predicate === "function") {
-    return predicate === Error || predicate.prototype instanceof Error
-      ? error instanceof predicate
-      : predicate(error);
-  }
-
-  if (error != null && typeof predicate === "object") {
-    for (const key in predicate) {
-      if (
-        hasOwnProperty.call(predicate, key) &&
-        error[key] !== predicate[key]
-      ) {
-        return false;
-      }
-    }
-    return true;
-  }
-};
+function handler(predicates, cb, reason) {
+  return matchError(predicates, reason) ? cb(reason) : this;
+}
 
 // Similar to `Promise#catch()` but:
 // - support predicates
@@ -33,20 +17,16 @@ module.exports = function pCatch() {
     return this;
   }
 
-  if (n === 0) {
-    return this.then(undefined, reason =>
-      isProgrammerError(reason) ? this : cb(reason)
-    );
-  }
-
-  const predicates = Array.prototype.slice.call(arguments, 0, n);
-
-  return this.then(undefined, reason => {
-    for (let i = 0; i < n; ++i) {
-      if (matchError(predicates[i], reason)) {
-        return cb(reason);
-      }
-    }
-    return this;
-  });
+  return this.then(
+    undefined,
+    handler.bind(
+      this,
+      n === 0
+        ? undefined
+        : n === 1
+        ? arguments[0]
+        : Array.prototype.slice.call(arguments, 0, n),
+      cb
+    )
+  );
 };

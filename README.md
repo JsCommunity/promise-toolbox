@@ -457,6 +457,47 @@ readFile(__filename).then(content => console.log(content));
 fsPromise.readFile(__filename).then(content => console.log(content));
 ```
 
+#### retry(fn, [options])
+
+> Retries an async function when it fails.
+
+```js
+import { retry } from "promise-toolbox";
+
+(async () => {
+  await retry(
+    async bail => {
+      const response = await fetch("https://pokeapi.co/api/v2/pokemon/3/");
+
+      if (response.status === 500) {
+        // no need to retry in this case
+        throw bail(new Error(response.statusText));
+      }
+
+      if (response.status !== 200) {
+        throw new Error(response.statusText);
+      }
+
+      return response.json();
+    },
+    {
+      // delay before a retry, default to 1000 ms
+      delay: 2000,
+
+      // number of tries including the first one, default to 10
+      tries: 3,
+
+      // predicate when to retry, default on always but programmer errors
+      // (ReferenceError, SyntaxError and TypeError)
+      //
+      // similar to `promise-toolbox/catch`, it can be a constructor, an object,
+      // a function, or an array of the previous
+      when: { message: "my error message" },
+    }
+  );
+})().catch(console.error.bind(console));
+```
+
 #### try(fn)
 
 > Starts a chain of promises.
