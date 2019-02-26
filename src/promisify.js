@@ -12,7 +12,7 @@ const promisify = (fn, context) =>
 
       return new Promise((resolve, reject) => {
         args[length] = (error, result) =>
-          error ? reject(error) : resolve(result);
+          error != null ? reject(error) : resolve(result);
 
         fn.apply(context === undefined ? this : context, args);
       });
