@@ -1,4 +1,6 @@
-# promise-toolbox [![Build Status](https://travis-ci.org/JsCommunity/promise-toolbox.png?branch=master)](https://travis-ci.org/JsCommunity/promise-toolbox)
+# promise-toolbox
+
+[![Package Version](https://badgen.net/npm/v/promise-toolbox)](https://npmjs.org/package/promise-toolbox) [![Build Status](https://travis-ci.org/JsCommunity/promise-toolbox.png?branch=master)](https://travis-ci.org/JsCommunity/promise-toolbox) [![PackagePhobia](https://badgen.net/packagephobia/install/promise-toolbox)](https://packagephobia.now.sh/result?p=promise-toolbox) [![Latest Commit](https://badgen.net/github/last-commit/JsCommunity/promise-toolbox)](https://github.com/JsCommunity/promise-toolbox/commits/master)
 
 > Essential utils for promises.
 
