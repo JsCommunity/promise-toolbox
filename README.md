@@ -486,6 +486,13 @@ import { retry } from "promise-toolbox";
       // delay before a retry, default to 1000 ms
       delay: 2000,
 
+      // this function is called before a retry is schedule (before the delay)
+      //
+      // it receives the error that triggered the retry
+      async onRetry(error) {
+        // …
+      },
+
       // number of tries including the first one, default to 10
       tries: 3,
 

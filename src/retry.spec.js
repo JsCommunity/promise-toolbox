@@ -91,4 +91,27 @@ describe("retry()", () => {
         })
     );
   });
+
+  describe("`onRetry` option", () => {
+    it("is called with the error before retry is scheduled", async () => {
+      let error = new Error();
+      expect(
+        await retry(
+          () => {
+            if (error) {
+              throw error;
+            }
+            return "foo";
+          },
+          {
+            delay: 0,
+            onRetry(e) {
+              expect(e).toBe(error);
+              error = null;
+            },
+          }
+        )
+      ).toBe("foo");
+    });
+  });
 });
