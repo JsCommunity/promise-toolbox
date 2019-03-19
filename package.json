@@ -62,9 +62,9 @@
     "rimraf": "^2.6.2"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production babel --source-maps --out-dir=./ src/",
+    "build": "cross-env NODE_ENV=production babel --out-dir=./ src/",
     "clean": "rimraf '*.js' '*.js.map'",
-    "dev": "cross-env NODE_ENV=development babel --watch --source-maps --out-dir=./ src/",
+    "dev": "cross-env NODE_ENV=development babel --watch --out-dir=./ src/",
     "dev-test": "jest --bail --watch",
     "postbuild": "browserify -s promiseToolbox index.js | babel-minify > umd.js",
     "prebuild": "npm run clean",
