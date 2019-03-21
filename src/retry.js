@@ -9,8 +9,14 @@ function stopRetry(error) {
 
 module.exports = function retry(
   fn,
-  { delay = 1e3, onRetry = noop, tries = 10, when } = {}
+  { delay = 1e3, onRetry = noop, retries, tries, when } = {}
 ) {
+  if (tries === undefined) {
+    tries = retries !== undefined ? retries + 1 : 10;
+  } else if (retries !== undefined) {
+    throw new TypeError("retries and tries options are mutually exclusive");
+  }
+
   const container = { error: undefined };
   const stop = stopRetry.bind(container);
 

@@ -57,6 +57,19 @@ describe("retry()", () => {
     expect(i).toBe(1);
   });
 
+  describe("`tries` and `retries` options", () => {
+    it("are mutually exclusive", () => {
+      expect(() =>
+        retry(() => {}, {
+          tries: 3,
+          retries: 4,
+        })
+      ).toThrow(
+        new RangeError("retries and tries options are mutually exclusive")
+      );
+    });
+  });
+
   describe("`when` option", () => {
     forOwn(
       {
