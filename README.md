@@ -494,7 +494,14 @@ import { retry } from "promise-toolbox";
       },
 
       // number of tries including the first one, default to 10
+      //
+      // cannot be used with `retries`
       tries: 3,
+
+      // number of retries (excluding the initial run), default to undefined
+      //
+      // cannot be used with `tries`
+      retries: 4,
 
       // predicate when to retry, default on always but programmer errors
       // (ReferenceError, SyntaxError and TypeError)
