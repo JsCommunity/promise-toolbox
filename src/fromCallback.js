@@ -1,11 +1,16 @@
+function resolver(fn, args, resolve, reject) {
+  args.push((error, result) =>
+    error != null ? reject(error) : resolve(result)
+  );
+  fn.apply(this, args);
+}
+
 // Usage:
 //
-//     fromCallback(cb => fs.readFile('foo.txt', cb))
+//     fromCallback(fs.readFile, 'foo.txt')
 //       .then(content => {
 //         console.log(content)
 //       })
-const fromCallback = fn =>
-  new Promise((resolve, reject) =>
-    fn((error, result) => (error != null ? reject(error) : resolve(result)))
-  );
-module.exports = fromCallback;
+module.exports = function fromCallback(fn, ...args) {
+  return new Promise(resolver.bind(this, fn, args));
+};

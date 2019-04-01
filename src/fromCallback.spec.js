@@ -13,4 +13,24 @@ describe("fromCallback()", () => {
       fromCallback(cb => cb(hideLiteralErrorFromLinter("bar")))
     ).rejects.toBe("bar");
   });
+
+  it("passes context and arguments", async () => {
+    const context = {};
+    const args = ["bar", "baz"];
+
+    expect(
+      await fromCallback.call(
+        context,
+        function(...args_) {
+          const cb = args_.pop();
+
+          expect(this).toBe(context);
+          expect(args_).toEqual(args);
+
+          cb(null, "foo");
+        },
+        ...args
+      )
+    ).toBe("foo");
+  });
 });

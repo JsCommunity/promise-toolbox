@@ -22,7 +22,7 @@
   - [asyncFn(generator)](#asyncfngenerator)
   - [asyncFn.cancelable(generator)](#asyncfncancelablegenerator)
   - [defer()](#defer)
-  - [fromCallback(cb => fn(arg1, ..., argn, cb))](#fromcallbackcb--fnarg1--argn-cb)
+  - [fromCallback(fn, arg1, ..., argn)](#fromcallbackfn-arg1--argn)
   - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
   - [fromEvents(emitter, successEvents, errorEvents) => Promise](#fromeventsemitter-successevents-errorevents--promise)
   - [isPromise(value)](#ispromisevalue)
@@ -351,15 +351,21 @@ promise.then(value => {
 resolve(3);
 ```
 
-#### fromCallback(cb => fn(arg1, ..., argn, cb))
+#### fromCallback(fn, arg1, ..., argn)
 
 > Easiest and most efficient way to promisify a function call.
 
 ```js
 import { fromCallback } from "promise-toolbox";
 
-fromCallback(cb => fs.readFile("foo.txt", cb)).then(content => {
+// callback is appended to the list of arguments passed to the function
+fromCallback(fs.readFile, "foo.txt").then(content => {
   console.log(content);
+});
+
+// if the callback does not go at the end, you can wrap the call
+fromCallback(cb => foo("bar", cb, "baz")).then(() => {
+  // ...
 });
 ```
 
