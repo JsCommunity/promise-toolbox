@@ -672,6 +672,14 @@ console.log(await delay(500, "500ms passed"));
 // → 500 ms passed
 ```
 
+Like `setTimeout` in Node, it is possible to
+[`unref`](https://nodejs.org/dist/latest-v11.x/docs/api/timers.html#timers_timeout_unref)
+the timer:
+
+```js
+await delay(500).unref();
+```
+
 #### collection::forEach(cb)
 
 > Iterates in order over a collection, or promise of collection, which
