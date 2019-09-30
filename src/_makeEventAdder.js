@@ -23,15 +23,16 @@ module.exports = ($cancelToken, emitter, arrayArg) => {
   }
 
   return arrayArg
-    ? (event, cb) => {
+    ? (eventName, cb) => {
         function listener() {
           clean();
-          const args = Array.prototype.slice.call(arguments);
-          args.event = event;
-          cb(args);
+          const event = Array.prototype.slice.call(arguments);
+          event.args = event;
+          event.event = event.name = eventName;
+          cb(event);
         }
-        eventsAndListeners.push(event, listener);
-        add.call(emitter, event, listener);
+        eventsAndListeners.push(eventName, listener);
+        add.call(emitter, eventName, listener);
       }
     : (event, cb) => {
         const listener = arg => {

@@ -407,14 +407,18 @@ promise.then(
 
 ```js
 fromEvents(emitter, ["foo", "bar"], ["error1", "error2"]).then(
-  values => {
-    console.log("event %s have been emitted with values", values.event, values);
+  event => {
+    console.log(
+      "event %s have been emitted with values",
+      event.name,
+      event.args
+    );
   },
   reasons => {
     console.error(
       "error event %s has been emitted with errors",
-      reasons.event,
-      reasons
+      event.names,
+      event.args
     );
   }
 );
