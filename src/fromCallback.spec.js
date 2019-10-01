@@ -33,4 +33,15 @@ describe("fromCallback()", () => {
       )
     ).toBe("foo");
   });
+
+  it("can call a method by its name", async () => {
+    const obj = {
+      method(cb) {
+        expect(this).toBe(obj);
+        cb(null, "foo");
+      },
+    };
+
+    expect(await fromCallback.call(obj, "method")).toBe("foo");
+  });
 });

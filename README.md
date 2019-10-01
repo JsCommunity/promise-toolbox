@@ -367,6 +367,17 @@ fromCallback(fs.readFile, "foo.txt").then(content => {
 fromCallback(cb => foo("bar", cb, "baz")).then(() => {
   // ...
 });
+
+// you can use `.call` to specify the context of execution
+fromCallback.call(thisArg, fn, ...args).then(() => {
+  // ...
+});
+
+// finally, if you want to call a method, you can pass its name instead of a
+// function
+fromCallback.call(object, "method", ...args).then(() => {
+  // ...
+});
 ```
 
 #### fromEvent(emitter, event, [options]) => Promise

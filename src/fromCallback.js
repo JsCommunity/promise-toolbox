@@ -11,6 +11,13 @@ function resolver(fn, args, resolve, reject) {
 //       .then(content => {
 //         console.log(content)
 //       })
+//
+//     fromCallback.call(obj, 'method', 'foo.txt')
+//       .then(content => {
+//         console.log(content)
+//       })
 module.exports = function fromCallback(fn, ...args) {
-  return new Promise(resolver.bind(this, fn, args));
+  return new Promise(
+    resolver.bind(this, typeof fn === "function" ? fn : this[fn], args)
+  );
 };
