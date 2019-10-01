@@ -16,10 +16,12 @@ exports.applyThen = (fn, args, onSuccess, onFailure) => {
   try {
     returnValue = fn.apply(undefined, args);
     if (isPromise(returnValue)) {
-      return void returnValue.then(onSuccess, onFailure);
+      returnValue.then(onSuccess, onFailure);
+      return;
     }
   } catch (error) {
-    return void onFailure(error);
+    onFailure(error);
+    return;
   }
   onSuccess(returnValue);
 };
