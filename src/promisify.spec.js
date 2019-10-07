@@ -12,6 +12,16 @@ describe("promisify()", () => {
     ).toBe(value);
   });
 
+  it("resolves if `error` is `false`", async () => {
+    const value = {};
+    expect(
+      await promisify(cb => {
+        // eslint-disable-next-line standard/no-callback-literal
+        cb(false, value);
+      })()
+    ).toBe(value);
+  });
+
   it("handle callback errors", async () => {
     const error = new Error();
     await expect(
