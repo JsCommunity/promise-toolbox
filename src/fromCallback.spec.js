@@ -44,4 +44,13 @@ describe("fromCallback()", () => {
 
     expect(await fromCallback.call(obj, "method")).toBe("foo");
   });
+
+  it("resolves if `error` is `false`", async () => {
+    expect(
+      await fromCallback(cb => {
+        // eslint-disable-next-line standard/no-callback-literal
+        cb(false, "foo");
+      })
+    ).toBe("foo");
+  });
 });

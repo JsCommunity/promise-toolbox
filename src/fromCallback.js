@@ -1,6 +1,6 @@
 function resolver(fn, args, resolve, reject) {
   args.push((error, result) =>
-    error != null ? reject(error) : resolve(result)
+    error != null && error !== false ? reject(error) : resolve(result)
   );
   fn.apply(this, args);
 }
