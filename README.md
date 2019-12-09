@@ -29,7 +29,7 @@
   - [isPromise(value)](#ispromisevalue)
   - [nodeify(fn)](#nodeifyfn)
   - [pipe(fns)](#pipefns)
-  - [pipe(value, ...fns)](#pipevaluefns)
+  - [pipe(value, ...fns)](#pipevalue-fns)
   - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
   - [retry(fn, [options])](#retryfn-options)
   - [try(fn)](#tryfn)
