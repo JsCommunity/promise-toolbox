@@ -29,6 +29,7 @@
   - [isPromise(value)](#ispromisevalue)
   - [nodeify(fn)](#nodeifyfn)
   - [pipe(fns)](#pipefns)
+  - [pipe(value, ...fns)](#pipevaluefns)
   - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
   - [retry(fn, [options])](#retryfn-options)
   - [try(fn)](#tryfn)
@@ -474,6 +475,21 @@ const getUserPreferences = pipe(
   getUser,
   getPreferences
 );
+```
+
+#### pipe(value, ...fns)
+
+> Makes value flow through a list of async functions.
+
+```js
+import { pipe } from "promise-toolbox";
+
+const output = await pipe(
+  input, // plain value or promise
+  transform1, // sync or async function
+  transform2,
+  transform3
+)
 ```
 
 #### promisify(fn, [ context ]) / promisifyAll(obj)

@@ -10,5 +10,10 @@ module.exports = function pPipe(fns) {
     fns = slice.call(arguments);
   }
 
+  if (typeof fns[0] !== "function") {
+    fns[0] = Promise.resolve(fns[0]);
+    return fns.reduce(chain);
+  }
+
   return arg => fns.reduce(chain, Promise.resolve(arg));
 };
