@@ -494,7 +494,7 @@ const output = await pipe(
 
 #### promisify(fn, [ context ]) / promisifyAll(obj)
 
-> Creates async functions taking node-style callbacks, create new ones
+> From async functions taking node-style callbacks, create new ones
 > returning promises.
 
 ```js
