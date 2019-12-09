@@ -27,6 +27,7 @@
   - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
   - [fromEvents(emitter, successEvents, errorEvents) => Promise](#fromeventsemitter-successevents-errorevents--promise)
   - [isPromise(value)](#ispromisevalue)
+  - [nodeify(fn)](#nodeifyfn)
   - [pipe(fns)](#pipefns)
   - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
   - [retry(fn, [options])](#retryfn-options)
@@ -445,6 +446,21 @@ import { isPromise } from "promise-toolbox";
 if (isPromise(foo())) {
   console.log("foo() returns a promise");
 }
+```
+
+#### nodeify(fn)
+
+> From async functions return promises, create new ones taking node-style
+> callbacks.
+
+```js
+import { nodeify } = require('promise-toolbox')
+
+const writable = new Writable({
+  write: nodeify(async function (chunk, encoding) {
+    // ...
+  })
+})
 ```
 
 #### pipe(fns)
