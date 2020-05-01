@@ -1,4 +1,5 @@
 const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
+const wrapApply = require('./wrapApply');
 
 const { slice } = Array.prototype;
 
@@ -11,7 +12,7 @@ const nodeify = fn =>
         throw new TypeError("missing callback");
       }
       const args = slice.call(arguments, 0, last);
-      new Promise(resolve => fn.apply(this, args)).then(
+      wrapApply(fn, args).then(
         value => cb(undefined, value),
         cb
       );
