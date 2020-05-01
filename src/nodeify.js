@@ -11,7 +11,7 @@ const nodeify = fn =>
         throw new TypeError("missing callback");
       }
       const args = slice.call(arguments, 0, last);
-      new Promise(resolve => fn.apply(this, args)).then(
+      fn.apply(this, args).then(
         value => cb(undefined, value),
         cb
       );
