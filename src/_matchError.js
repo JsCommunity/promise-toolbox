@@ -5,7 +5,13 @@ module.exports = function matchError(predicate, error) {
     return !isProgrammerError(error);
   }
 
-  if (typeof predicate === "function") {
+  const type = typeof predicate;
+
+  if (type === "boolean") {
+    return predicate;
+  }
+
+  if (type === "function") {
     return predicate === Error || predicate.prototype instanceof Error
       ? error instanceof predicate
       : predicate(error);
@@ -21,7 +27,7 @@ module.exports = function matchError(predicate, error) {
     return false;
   }
 
-  if (error != null && typeof predicate === "object") {
+  if (error != null && type === "object") {
     for (const key in predicate) {
       if (
         hasOwnProperty.call(predicate, key) &&
