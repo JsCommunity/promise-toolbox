@@ -1,100 +1,54 @@
-const once = require("./_once");
-const Resource = require("./_Resource");
+const Disposable = require("./Disposable");
+const evalDisposable = require("./_evalDisposable");
+const ExitStack = require("./_ExitStack");
+const pFinally = require("./_finally");
 const wrapApply = require("./wrapApply");
 const wrapCall = require("./wrapCall");
-const { forArray } = require("./_utils");
 
-// Usage: using(disposers…, handler)
+const onHandlerFulfill = result => {
+  if (result == null || typeof result.next !== "function") {
+    return result;
+  }
+
+  const { dispose, value: stack } = new ExitStack();
+
+  const onEvalDisposable = disposable => loop(stack.enter(disposable));
+  const onFulfill = cursor =>
+    cursor.done
+      ? cursor.value
+      : evalDisposable(cursor.value).then(onEvalDisposable);
+  const loop = value => wrapCall(result.next, value, result).then(onFulfill);
+
+  return pFinally(loop(), dispose);
+};
+
+// Usage:
+//    using(maybeDisposable…, handler)
+//    using(maybeDisposable[], handler)
 module.exports = function using() {
-  let nResources = arguments.length - 1;
+  let nDisposables = arguments.length - 1;
 
-  if (nResources < 1) {
-    throw new TypeError("using expects at least 2 arguments");
+  if (nDisposables < 0) {
+    throw new TypeError("using expects at least 1 arguments");
   }
 
-  const handler = arguments[nResources];
+  const handler = arguments[nDisposables];
 
-  let resources;
-  const spread = nResources > 1 || !Array.isArray((resources = arguments[0]));
+  let disposables;
+  const spread =
+    nDisposables > 1 || !Array.isArray((disposables = arguments[0]));
   if (spread) {
-    resources = Array.prototype.slice.call(arguments, 0, nResources);
+    disposables = Array.prototype.slice.call(arguments, 0, nDisposables);
   } else {
-    nResources = resources.length;
+    nDisposables = disposables.length;
   }
 
-  const dispose = once((fn, value) => {
-    let leftToProcess = nResources;
-
-    const onSettle = () => {
-      if (--leftToProcess === 0) {
-        fn(value);
-      }
-    };
-
-    // like Bluebird, on failure to dispose a resource, throw an async error
-    const onFailure = reason => {
-      setTimeout(() => {
-        throw reason;
-      }, 0);
-    };
-
-    forArray(resources, resource => {
-      let d;
-      if (resource != null && typeof (d = resource.d) === "function") {
-        resource.p.then(
-          value => wrapCall(d, value).then(onSettle, onFailure),
-          onSettle
-        );
-
-        resource.p = resource.d = undefined;
-      } else {
-        --leftToProcess;
-      }
-    });
-  });
-
-  return new Promise((resolve, reject) => {
-    const values = new Array(nResources);
-    let leftToProcess = nResources;
-
-    let onProviderFailure_ = reason => {
-      onProviderFailure_ = onProviderSettle;
-      onSettle = () => dispose(reject, reason);
-
-      onProviderSettle();
-    };
-    const onProviderFailure = reason => onProviderFailure_(reason);
-
-    const onProviderSettle = () => {
-      if (--leftToProcess === 0) {
-        onSettle();
-      }
-    };
-
-    let onSettle = () =>
-      (spread ? wrapApply : wrapCall)(handler, values, this).then(
-        value => dispose(resolve, value),
-        reason => dispose(reject, reason)
-      );
-
-    forArray(resources, (resource, i) => {
-      let p;
-      if (resource instanceof Resource) {
-        ({ p } = resource);
-        if (p === undefined) {
-          return onProviderFailure(
-            new TypeError("resource has already been disposed of")
-          );
-        }
-      } else {
-        p = Promise.resolve(resource);
-      }
-
-      p.then(value => {
-        values[i] = value;
-
-        onProviderSettle();
-      }, onProviderFailure);
-    });
-  });
+  return Disposable.all(disposables).then(({ dispose, value }) =>
+    pFinally(
+      (spread ? wrapApply : wrapCall)(handler, value, this).then(
+        onHandlerFulfill
+      ),
+      dispose
+    )
+  );
 };
