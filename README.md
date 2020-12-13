@@ -19,6 +19,9 @@
   - [Is cancel token?](#is-cancel-token)
   - [@cancelable decorator](#cancelable-decorator)
 - [Resource management](#resource-management)
+  - [Creation](#creation-1)
+  - [Combination](#combination)
+  - [Consumption](#consumption-1)
 - [Functions](#functions)
   - [asyncFn(generator)](#asyncfngenerator)
   - [asyncFn.cancelable(generator)](#asyncfncancelablegenerator)
@@ -274,22 +277,94 @@ class MyClass {
 
 > See [Bluebird documentation](http://bluebirdjs.com/docs/api/resource-management.html) for a good explanation.
 
+#### Creation
+
+A disposable is a simple object, containing a value and a dispose function:
+
 ```js
-import { disposer, using } from 'promise-toolbox'
+const disposable = { value: db, dispose: () => db.close() };
+```
 
-const getConnection = () =>
-  // disposer() is used to associate a disposer to a resource
+As a convenience, you can use the `Disposable` class:
+
+```js
+import { Disposable } from "promise-toolbox";
+
+const disposable = new Disposable(db, () => db.close());
+```
+
+If the process is more complicated, maybe because this disposable depends on
+other disposables, you can use a generator function alongside the
+`Disposable.factory` decorator:
+
+```js
+const getTable = Disposable.factory(async function*() {
+  // simply yield a disposable to use it
+  const db = yield getDb();
+
+  const table = await db.getTable();
+  try {
+    // yield the value to expose it
+    yield table;
+  } finally {
+    // this is where you can dispose of the resource
+    await table.close();
+  }
+});
+```
+
+#### Combination
+
+Independent disposables can be acquired and disposed in parallel, to achieve
+this, you can use `Disposable.all`:
+
+```js
+const combined = await Disposable.all([disposable1, disposable2]);
+```
+
+Similarly to `Promise.all`, the value of such a disposable, is an array whose
+values are the values of the disposables combined.
+
+#### Consumption
+
+To ensure all resources are properly disposed of, disposables must never be
+used manually, but via the `using` function:
+
+```js
+import { using } from "promise-toolbox";
+
+await using(
+  // Don't await the promise here, resource acquisition should be handled by
+  // `using` otherwise, in case of failure, other resources may failed to be
+  // disposed of.
+  getTable(),
+
+  // If the function can throw synchronously, a wrapper function can be passed
+  // directly to `using`.
+  () => getTable(),
+
+  async (table1, table2) => {
+    // do something with table1 and table 2
+    //
+    // both `table1` and `table2` are guaranteed to be deallocated by the time
+    // the promise returned by `using` is settled
+  }
+);
+```
+
+For more complex use cases, just like `Disposable.factory`, a generator
+function can be passed to `using`:
+
+```js
+await using(async function*() {
+  const table1 = yield getTable();
+  const table2 = yield getTable();
+
+  // do something with table1 and table 2
   //
-  // The returned resource can only be used with using()
-  db.connect()::disposer(connection =>
-    connection.close()
-  )
-
-using(getConnection(), getConnection(), (connection1, connection2) => {
-  // So something with connection1 and connection2
-})).then(() => {
-  // Both connections are now closed
-})
+  // both `table1` and `table2` are guaranteed to be deallocated by the time
+  // the promise returned by `using` is settled
+});
 ```
 
 ### Functions
@@ -471,10 +546,7 @@ const writable = new Writable({
 ```js
 import { pipe } from "promise-toolbox";
 
-const getUserPreferences = pipe(
-  getUser,
-  getPreferences
-);
+const getUserPreferences = pipe(getUser, getPreferences);
 ```
 
 #### pipe(value, ...fns)
@@ -489,7 +561,7 @@ const output = await pipe(
   transform1, // sync or async function
   transform2,
   transform3
-)
+);
 ```
 
 #### promisify(fn, [ context ]) / promisifyAll(obj)

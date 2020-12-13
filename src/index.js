@@ -7,7 +7,7 @@ exports.pCancelToken = exports.CancelToken = require("./CancelToken");
 exports.pCatch = exports.catch = require("./catch");
 exports.pDefer = exports.defer = require("./defer");
 exports.pDelay = exports.delay = require("./delay");
-exports.pDisposer = exports.disposer = require("./disposer");
+exports.pDisposable = exports.Disposable = require("./Disposable");
 exports.pFinally = exports.finally = require("./finally");
 exports.pForArray = exports.forArray = require("./forArray");
 exports.pForEach = exports.forEach = require("./forEach");
