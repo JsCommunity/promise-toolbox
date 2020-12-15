@@ -60,8 +60,10 @@ Disposable.factory = genFn =>
 
       const { dispose, value: stack } = new ExitStack();
 
+      const onEvalDisposable = value =>
+        isDisposable(value) ? loop(stack.enter(value)) : value;
       const onFulfill = ({ value }) =>
-        isDisposable(value) ? stack.enter(value).then(loop) : value;
+        evalDisposable(value).then(onEvalDisposable);
       const loop = value => wrapCall(gen.next, value, gen).then(onFulfill);
 
       return loop().then(

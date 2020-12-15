@@ -27,18 +27,21 @@ describe("Disposable", () => {
       let disposed = false;
       const value = {};
 
-      const dep = d();
+      const dep1 = d();
+      const dep2 = d();
       const callArgs = [{}, {}];
       const callThis = {};
       const d1 = await Disposable.factory(function*(...args) {
         expect(args).toEqual(callArgs);
         expect(this).toBe(callThis);
 
-        expect(yield dep).toBe(dep.value);
+        expect(yield dep1).toBe(dep1.value);
+        expect(yield Promise.resolve(dep2)).toBe(dep2.value);
         try {
           yield value;
         } finally {
-          expect(dep.dispose).not.toHaveBeenCalled();
+          // expect(dep2.dispose).not.toHaveBeenCalledTimes(1);
+          expect(dep1.dispose).not.toHaveBeenCalledTimes(1);
           disposed = true;
         }
       }).apply(callThis, callArgs);

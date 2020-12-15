@@ -1,5 +1,4 @@
 const Disposable = require("./Disposable");
-const evalDisposable = require("./_evalDisposable");
 const isDisposable = require("./_isDisposable");
 const pTry = require("./try");
 
@@ -18,12 +17,10 @@ module.exports = class ExitStack {
   }
 
   enter(disposable) {
-    return evalDisposable(disposable).then(disposable => {
-      if (!isDisposable(disposable)) {
-        throw new Error("not a disposable");
-      }
-      this._disposers.push(disposable.dispose);
-      return disposable.value;
-    });
+    if (!isDisposable(disposable)) {
+      throw new TypeError("not a disposable");
+    }
+    this._disposers.push(disposable.dispose);
+    return disposable.value;
   }
 };

@@ -1,4 +1,5 @@
 const Disposable = require("./Disposable");
+const evalDisposable = require("./_evalDisposable");
 const ExitStack = require("./_ExitStack");
 const pFinally = require("./_finally");
 const wrapApply = require("./wrapApply");
@@ -11,8 +12,11 @@ const onHandlerFulfill = result => {
 
   const { dispose, value: stack } = new ExitStack();
 
+  const onEvalDisposable = disposable => loop(stack.enter(disposable));
   const onFulfill = cursor =>
-    cursor.done ? cursor.value : stack.enter(cursor.value).then(loop);
+    cursor.done
+      ? cursor.value
+      : evalDisposable(cursor.value).then(onEvalDisposable);
   const loop = value => wrapCall(result.next, value, result).then(onFulfill);
 
   return pFinally(loop(), dispose);
