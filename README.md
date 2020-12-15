@@ -352,8 +352,8 @@ await using(
 );
 ```
 
-For more complex use cases, just like `Disposable.factory`, a generator
-function can be passed to `using`:
+For more complex use cases, just like `Disposable.factory`, the handler can be
+a generator function:
 
 ```js
 await using(async function*() {
