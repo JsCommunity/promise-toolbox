@@ -52,5 +52,15 @@ describe("Disposable", () => {
       });
       expect(disposed).toBe(true);
     });
+
+    it("supports returning the value if no dispose", async () => {
+      const value = {};
+      const d1 = await Disposable.factory(function*() {
+        return value;
+      })();
+      await using(function*() {
+        expect(yield d1).toBe(value);
+      });
+    });
   });
 });
