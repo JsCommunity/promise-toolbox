@@ -328,26 +328,26 @@ values are the values of the disposables combined.
 #### Consumption
 
 To ensure all resources are properly disposed of, disposables must never be
-used manually, but via the `using` function:
+used manually, but via the `Disposable.use` function:
 
 ```js
-import { using } from "promise-toolbox";
+import { Disposable } from "promise-toolbox";
 
-await using(
+await Disposable.use(
   // Don't await the promise here, resource acquisition should be handled by
-  // `using` otherwise, in case of failure, other resources may failed to be
-  // disposed of.
+  // `Disposable.use` otherwise, in case of failure, other resources may failed
+  // to be disposed of.
   getTable(),
 
   // If the function can throw synchronously, a wrapper function can be passed
-  // directly to `using`.
+  // directly to `Disposable.use`.
   () => getTable(),
 
   async (table1, table2) => {
     // do something with table1 and table 2
     //
     // both `table1` and `table2` are guaranteed to be deallocated by the time
-    // the promise returned by `using` is settled
+    // the promise returned by `Disposable.use` is settled
   }
 );
 ```
@@ -356,14 +356,14 @@ For more complex use cases, just like `Disposable.factory`, the handler can be
 a generator function:
 
 ```js
-await using(async function*() {
+await Disposable.use(async function*() {
   const table1 = yield getTable();
   const table2 = yield getTable();
 
   // do something with table1 and table 2
   //
   // both `table1` and `table2` are guaranteed to be deallocated by the time
-  // the promise returned by `using` is settled
+  // the promise returned by `Disposable.use` is settled
 });
 ```
 
