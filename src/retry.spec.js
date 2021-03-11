@@ -85,7 +85,7 @@ describe("retry()", () => {
                 ++i;
                 throw new Error("foo");
               },
-              { when, tries: 2 }
+              { delay: 0, when, tries: 2 }
             ).catch(Function.prototype);
             expect(i).toBe(2);
           });
@@ -97,7 +97,7 @@ describe("retry()", () => {
                 ++i;
                 throw new Error("bar");
               },
-              { when, tries: 2 }
+              { delay: 0, when, tries: 2 }
             ).catch(Function.prototype);
             expect(i).toBe(1);
           });
