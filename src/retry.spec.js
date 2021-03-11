@@ -67,7 +67,10 @@ describe("retry()", () => {
       const fn = jest.fn(() => Promise.reject(expected));
       let actual;
       retry(fn, {
-        delays: [10, 20].values(), // test iterable support, not array
+        delays: (function*() {
+          yield 10;
+          yield 20;
+        })(),
       }).catch(error => {
         actual = error;
       });
