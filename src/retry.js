@@ -9,38 +9,61 @@ function stopRetry(error) {
 
 module.exports = function retry(
   fn,
-  { delay = 1e3, onRetry = noop, retries, tries, when } = {}
+  { delay, delays, onRetry = noop, retries, tries, when } = {}
 ) {
-  if (tries === undefined) {
-    tries = retries !== undefined ? retries + 1 : 10;
-  } else if (retries !== undefined) {
-    throw new TypeError("retries and tries options are mutually exclusive");
+  let shouldRetry;
+  if (delays !== undefined) {
+    if (delay !== undefined || tries !== undefined || retries !== undefined) {
+      throw new TypeError(
+        "delays is incompatible with delay, tries and retries"
+      );
+    }
+
+    const iterator = delays[Symbol.iterator]();
+    shouldRetry = () => {
+      const { done, value } = iterator.next();
+      if (done) {
+        return false;
+      }
+      delay = value;
+      return true;
+    };
+  } else {
+    if (tries === undefined) {
+      tries = retries !== undefined ? retries + 1 : 10;
+    } else if (retries !== undefined) {
+      throw new TypeError("retries and tries options are mutually exclusive");
+    }
+
+    if (delay === undefined) {
+      delay = 1e3;
+    }
+
+    shouldRetry = () => --tries !== 0;
   }
 
   const container = { error: undefined };
   const stop = stopRetry.bind(container);
 
-  let sleep;
-  if (delay !== 0) {
-    const resolver = resolve => setTimeout(resolve, delay);
-    sleep = () => new Promise(resolver);
-  }
-
   when = matchError.bind(undefined, when);
 
+  const sleepResolver = resolve => setTimeout(resolve, delay);
+  const sleep = () => new Promise(sleepResolver);
   const onError = error => {
     if (error === container) {
       throw container.error;
     }
-    if (--tries === 0 || !when(error)) {
-      throw error;
+    if (when(error) && shouldRetry()) {
+      let promise = Promise.resolve(onRetry(error));
+      if (delay !== 0) {
+        promise = promise.then(sleep);
+      }
+      return promise.then(loop);
     }
-    return Promise.resolve(onRetry(error))
-      .then(sleep)
-      .then(loop);
+    throw error;
   };
-  const resolver = resolve => resolve(fn(stop));
-  const loop = () => new Promise(resolver).catch(onError);
+  const loopResolver = resolve => resolve(fn(stop));
+  const loop = () => new Promise(loopResolver).catch(onError);
 
   return loop();
 };

@@ -610,8 +610,12 @@ import { retry } from "promise-toolbox";
       return response.json();
     },
     {
-      // delay before a retry, default to 1000 ms
-      delay: 2000,
+      // predicate when to retry, default on always but programmer errors
+      // (ReferenceError, SyntaxError and TypeError)
+      //
+      // similar to `promise-toolbox/catch`, it can be a constructor, an object,
+      // a function, or an array of the previous
+      when: { message: "my error message" },
 
       // this function is called before a retry is schedule (before the delay)
       //
@@ -619,6 +623,9 @@ import { retry } from "promise-toolbox";
       async onRetry(error) {
         // …
       },
+
+      // delay before a retry, default to 1000 ms
+      delay: 2000,
 
       // number of tries including the first one, default to 10
       //
@@ -630,12 +637,14 @@ import { retry } from "promise-toolbox";
       // cannot be used with `tries`
       retries: 4,
 
-      // predicate when to retry, default on always but programmer errors
-      // (ReferenceError, SyntaxError and TypeError)
+      // instead of passing `delay`, `tries` and `retries`, you can pass an
+      // iterable of delays to use to retry
       //
-      // similar to `promise-toolbox/catch`, it can be a constructor, an object,
-      // a function, or an array of the previous
-      when: { message: "my error message" },
+      // in this example, it will retry 3 times, first after 1 second, then
+      // after 2 seconds and one last time after 4 seconds
+      //
+      // for more advanced uses, see https://github.com/JsCommunity/iterable-backoff
+      delays: [1e3, 2e3, 4e3],
     }
   );
 })().catch(console.error.bind(console));

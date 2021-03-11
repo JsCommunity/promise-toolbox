@@ -3,6 +3,8 @@
 const retry = require("./retry");
 const { forOwn } = require("./_utils");
 
+const microtasks = () => new Promise(setImmediate);
+
 describe("retry()", () => {
   it("retries until the function succeeds", async () => {
     let i = 0;
@@ -55,6 +57,50 @@ describe("retry()", () => {
       })
     ).rejects.toBe(e);
     expect(i).toBe(1);
+  });
+
+  describe("`delays` option", () => {
+    it("works", async () => {
+      jest.useFakeTimers();
+
+      const expected = new Error();
+      const fn = jest.fn(() => Promise.reject(expected));
+      let actual;
+      retry(fn, {
+        delays: [10, 20].values(), // test iterable support, not array
+      }).catch(error => {
+        actual = error;
+      });
+      await microtasks();
+
+      expect(fn).toHaveBeenCalledTimes(1);
+
+      // ---
+
+      jest.advanceTimersByTime(9);
+      await microtasks();
+
+      expect(fn).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(1);
+      await microtasks();
+
+      expect(fn).toHaveBeenCalledTimes(2);
+
+      // ---
+
+      jest.advanceTimersByTime(19);
+      await microtasks();
+
+      expect(fn).toHaveBeenCalledTimes(2);
+      expect(actual).toBe(undefined);
+
+      jest.advanceTimersByTime(1);
+      await microtasks();
+
+      expect(fn).toHaveBeenCalledTimes(3);
+      expect(actual).toBe(expected);
+    });
   });
 
   describe("`tries` and `retries` options", () => {
