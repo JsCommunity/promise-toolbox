@@ -595,12 +595,12 @@ import { retry } from "promise-toolbox";
 
 (async () => {
   await retry(
-    async bail => {
+    async () => {
       const response = await fetch("https://pokeapi.co/api/v2/pokemon/3/");
 
       if (response.status === 500) {
         // no need to retry in this case
-        throw bail(new Error(response.statusText));
+        throw retry.bail(new Error(response.statusText));
       }
 
       if (response.status !== 200) {

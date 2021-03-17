@@ -1,13 +1,7 @@
 const matchError = require("./_matchError");
 const noop = require("./_noop");
 
-function stopRetry(error) {
-  this.error = error;
-  // eslint-disable-next-line no-throw-literal
-  throw this;
-}
-
-module.exports = function retry(
+function retry(
   fn,
   { delay, delays, onRetry = noop, retries, tries, when } = {}
 ) {
@@ -42,16 +36,13 @@ module.exports = function retry(
     shouldRetry = () => --tries !== 0;
   }
 
-  const container = { error: undefined };
-  const stop = stopRetry.bind(container);
-
   when = matchError.bind(undefined, when);
 
   const sleepResolver = resolve => setTimeout(resolve, delay);
   const sleep = () => new Promise(sleepResolver);
   const onError = error => {
-    if (error === container) {
-      throw container.error;
+    if (error instanceof ErrorContainer) {
+      throw error.error;
     }
     if (when(error) && shouldRetry()) {
       let promise = Promise.resolve(onRetry(error));
@@ -62,8 +53,17 @@ module.exports = function retry(
     }
     throw error;
   };
-  const loopResolver = resolve => resolve(fn(stop));
+  const loopResolver = resolve => resolve(fn());
   const loop = () => new Promise(loopResolver).catch(onError);
 
   return loop();
+}
+module.exports = retry;
+
+function ErrorContainer(error) {
+  this.error = error;
+}
+
+retry.bail = function retryBail(error) {
+  throw new ErrorContainer(error);
 };

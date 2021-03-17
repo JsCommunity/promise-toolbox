@@ -47,13 +47,13 @@ describe("retry()", () => {
     });
   });
 
-  it("does not retry if `stop` callback is called", async () => {
+  it("does not retry if `retry.bail` callback is called", async () => {
     const e = new Error();
     let i = 0;
     await expect(
-      retry(stop => {
+      retry(() => {
         ++i;
-        stop(e);
+        retry.bail(e);
       })
     ).rejects.toBe(e);
     expect(i).toBe(1);
