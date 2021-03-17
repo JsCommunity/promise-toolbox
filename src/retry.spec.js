@@ -192,4 +192,27 @@ describe("retry()", () => {
       ).toBe("foo");
     });
   });
+
+  describe(".wrap()", () => {
+    it("creates a retrying function", async () => {
+      const expectedThis = {};
+      const expectedArgs = [Math.random(), Math.random()];
+      const expectedResult = {};
+
+      const fn = function foo(bar, baz) {
+        expect(this).toBe(expectedThis);
+        expect(Array.from(arguments)).toEqual(expectedArgs);
+
+        return expectedResult;
+      };
+      const retryingFn = retry.wrap(fn, { retries: 0 });
+
+      expect(retryingFn.name).toBe(fn.name);
+      expect(retryingFn.length).toBe(fn.length);
+
+      expect(await retryingFn.apply(expectedThis, expectedArgs)).toBe(
+        expectedResult
+      );
+    });
+  });
 });

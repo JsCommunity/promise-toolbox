@@ -650,6 +650,16 @@ import { retry } from "promise-toolbox";
 })().catch(console.error.bind(console));
 ```
 
+The most efficient way to make a function automatically retry is to wrap it:
+
+```js
+MyClass.prototype.myMethod = retry.wrap(MyClass.prototype.myMethod, {
+  delay: 1e3,
+  retries: 10,
+  when: MyError,
+});
+```
+
 #### try(fn)
 
 > Starts a chain of promises.

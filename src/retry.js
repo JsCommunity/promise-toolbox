@@ -1,5 +1,6 @@
 const matchError = require("./_matchError");
 const noop = require("./_noop");
+const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 
 function retry(
   fn,
@@ -67,4 +68,16 @@ function ErrorContainer(error) {
 
 retry.bail = function retryBail(error) {
   throw new ErrorContainer(error);
+};
+
+retry.wrap = function retryWrap(fn, options) {
+  return setFunctionNameAndLength(
+    function() {
+      const args = [fn, options];
+      args.push.apply(args, arguments);
+      return retry.apply(this, args);
+    },
+    fn.name,
+    fn.length
+  );
 };
