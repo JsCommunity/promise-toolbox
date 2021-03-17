@@ -59,6 +59,22 @@ describe("retry()", () => {
     expect(i).toBe(1);
   });
 
+  it("forwards this and arguments", async () => {
+    expect.assertions(2);
+
+    const expectedThis = {};
+    const expectedArgs = [Math.random(), Math.random()];
+    await retry.call(
+      expectedThis,
+      function(...args) {
+        expect(this).toBe(expectedThis);
+        expect(args).toEqual(expectedArgs);
+      },
+      { retries: 0 },
+      ...expectedArgs
+    );
+  });
+
   describe("`delays` option", () => {
     it("works", async () => {
       jest.useFakeTimers();

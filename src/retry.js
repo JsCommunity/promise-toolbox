@@ -53,7 +53,8 @@ function retry(
     }
     throw error;
   };
-  const loopResolver = resolve => resolve(fn());
+  const args = Array.prototype.slice.call(arguments, 2);
+  const loopResolver = resolve => resolve(fn.apply(this, args));
   const loop = () => new Promise(loopResolver).catch(onError);
 
   return loop();

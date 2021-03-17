@@ -34,7 +34,7 @@
   - [pipe(fns)](#pipefns)
   - [pipe(value, ...fns)](#pipevalue-fns)
   - [promisify(fn, [ context ]) / promisifyAll(obj)](#promisifyfn--context---promisifyallobj)
-  - [retry(fn, [options])](#retryfn-options)
+  - [retry(fn, options, ...arg)](#retryfn-options-arg)
   - [try(fn)](#tryfn)
   - [wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])](#wrapapplyfn-args-thisarg--wrapcallfn-arg-thisarg)
 - [Pseudo-methods](#pseudo-methods)
@@ -586,7 +586,7 @@ readFile(__filename).then(content => console.log(content));
 fsPromise.readFile(__filename).then(content => console.log(content));
 ```
 
-#### retry(fn, [options])
+#### retry(fn, options, ...arg)
 
 > Retries an async function when it fails.
 
