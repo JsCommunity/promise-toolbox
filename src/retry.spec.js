@@ -172,22 +172,33 @@ describe("retry()", () => {
 
   describe("`onRetry` option", () => {
     it("is called with the error before retry is scheduled", async () => {
-      let error = new Error();
+      let expectedError = new Error();
+      const expectedArgs = [Math.random(), Math.random()];
+      const expectedDelay = 0;
+      const expectedFn = () => {
+        if (expectedError) {
+          throw expectedError;
+        }
+        return "foo";
+      };
+      const expectedThis = {};
       expect(
-        await retry(
-          () => {
-            if (error) {
-              throw error;
-            }
-            return "foo";
-          },
+        await retry.call(
+          expectedThis,
+          expectedFn,
           {
-            delay: 0,
+            delay: expectedDelay,
             onRetry(e) {
-              expect(e).toBe(error);
-              error = null;
+              expect(e).toBe(expectedError);
+              expect(this.arguments).toEqual(expectedArgs);
+              expect(this.attemptNumber).toBe(0);
+              expect(this.delay).toBe(expectedDelay);
+              expect(this.this).toBe(expectedThis);
+
+              expectedError = null;
             },
-          }
+          },
+          ...expectedArgs
         )
       ).toBe("foo");
     });

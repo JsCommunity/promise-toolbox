@@ -39,6 +39,7 @@ function retry(
 
   when = matchError.bind(undefined, when);
 
+  let attemptNumber = 0;
   const sleepResolver = resolve => setTimeout(resolve, delay);
   const sleep = () => new Promise(sleepResolver);
   const onError = error => {
@@ -46,7 +47,18 @@ function retry(
       throw error.error;
     }
     if (when(error) && shouldRetry()) {
-      let promise = Promise.resolve(onRetry(error));
+      let promise = Promise.resolve(
+        onRetry.call(
+          {
+            arguments: args,
+            attemptNumber: attemptNumber++,
+            delay,
+            fn,
+            this: this,
+          },
+          error
+        )
+      );
       if (delay !== 0) {
         promise = promise.then(sleep);
       }

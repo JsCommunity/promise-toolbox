@@ -617,11 +617,19 @@ import { retry } from "promise-toolbox";
       // a function, or an array of the previous
       when: { message: "my error message" },
 
-      // this function is called before a retry is schedule (before the delay)
-      //
-      // it receives the error that triggered the retry
+      // this function is called before a retry is scheduled (before the delay)
       async onRetry(error) {
-        // …
+        console.warn("attempt", this.attemptNumber, "failed with error", error);
+        console.warn("next try in", this.delay, "milliseconds");
+
+        // Other information available:
+        // - this.fn: function that failed
+        // - this.arguments: arguments passed to fn
+        // - this.this: context passed to fn
+
+        // This function can throw to prevent any retry.
+
+        // The retry delay will start only after this function has finished.
       },
 
       // delay before a retry, default to 1000 ms
