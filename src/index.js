@@ -25,7 +25,6 @@ exports.pPromisify = exports.promisify = require("./promisify");
 exports.pPromisifyAll = exports.promisifyAll = require("./promisifyAll");
 exports.pReflect = exports.reflect = require("./reflect");
 exports.pRetry = exports.retry = require("./retry");
-exports.pSettle = exports.settle = require("./settle");
 exports.pSome = exports.some = require("./some");
 exports.pSuppressUnhandledRejections = exports.suppressUnhandledRejections = require("./suppressUnhandledRejections");
 exports.pTap = exports.tap = require("./tap");
