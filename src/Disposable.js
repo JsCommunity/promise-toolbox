@@ -109,7 +109,7 @@ Disposable.use = function use() {
   let nDisposables = arguments.length - 1;
 
   if (nDisposables < 0) {
-    throw new TypeError("using expects at least 1 arguments");
+    throw new TypeError("Disposable.use expects at least 1 argument");
   }
 
   const handler = arguments[nDisposables];
