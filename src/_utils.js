@@ -11,21 +11,6 @@ if (
 const isPromise = require("./isPromise");
 const { $$iterator } = require("./_symbols");
 
-exports.applyThen = (fn, args, onSuccess, onFailure) => {
-  let returnValue;
-  try {
-    returnValue = fn.apply(undefined, args);
-    if (isPromise(returnValue)) {
-      returnValue.then(onSuccess, onFailure);
-      return;
-    }
-  } catch (error) {
-    onFailure(error);
-    return;
-  }
-  onSuccess(returnValue);
-};
-
 const forArray = (exports.forArray = (array, iteratee) => {
   const { length } = array;
   for (let i = 0; i < length; ++i) {

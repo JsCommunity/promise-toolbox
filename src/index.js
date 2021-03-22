@@ -20,7 +20,6 @@ exports.pFromEvents = exports.fromEvents = require("./fromEvents");
 exports.pIgnoreErrors = exports.ignoreErrors = require("./ignoreErrors");
 exports.pIsPromise = exports.isPromise = require("./isPromise");
 exports.pMakeAsyncIterator = exports.makeAsyncIterator = require("./makeAsyncIterator");
-exports.pMap = exports.map = require("./map");
 exports.pNodeify = exports.nodeify = require("./nodeify");
 exports.pPipe = exports.pipe = require("./pipe");
 exports.pPromisify = exports.promisify = require("./promisify");
