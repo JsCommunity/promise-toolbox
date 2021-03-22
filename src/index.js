@@ -33,6 +33,5 @@ exports.pTimeout = exports.timeout = require("./timeout");
 exports.pTimeoutError = exports.TimeoutError = require("./TimeoutError");
 exports.pTry = exports.try = require("./try");
 exports.pUnpromisify = exports.unpromisify = require("./unpromisify");
-exports.pUsing = exports.using = require("./using");
 exports.pWrapApply = exports.wrapApply = require("./wrapApply");
 exports.pWrapCall = exports.wrapCall = require("./wrapCall");
