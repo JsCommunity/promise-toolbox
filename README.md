@@ -38,7 +38,6 @@
   - [try(fn)](#tryfn)
   - [wrapApply(fn, args, [thisArg]) / wrapCall(fn, arg, [thisArg])](#wrapapplyfn-args-thisarg--wrapcallfn-arg-thisarg)
 - [Pseudo-methods](#pseudo-methods)
-  - [promises::all([ mapper ])](#promisesall-mapper-)
   - [promise::asCallback(cb)](#promiseascallbackcb)
   - [promise::catch(predicate, cb)](#promisecatchpredicate-cb)
   - [promise::delay(ms, [value])](#promisedelayms-value)
@@ -731,36 +730,6 @@ all.call(promises).then(function(values) {
   console.log(values);
 });
 // → [ 'foo', 'bar' ]
-```
-
-#### promises::all([ mapper ])
-
-> Waits for all promises of a collection to be resolved.
->
-> Contrary to the standard `Promise.all()`, this function works also
-> with objects.
-
-```js
-import { all } from 'promise-toolbox'
-
-[
-  Promise.resolve('foo'),
-  Promise.resolve('bar')
-]::all().then(value => {
-  console.log(value)
-  // → ['foo', 'bar']
-})
-
-{
-  foo: Promise.resolve('foo'),
-  bar: Promise.resolve('bar')
-}::all().then(value => {
-  console.log(value)
-  // → {
-  //   foo: 'foo',
-  //   bar: 'bar'
-  // }
-})
 ```
 
 #### promise::asCallback(cb)

@@ -1,4 +1,3 @@
-exports.pAll = exports.all = require("./all");
 exports.pAsCallback = exports.asCallback = require("./asCallback");
 exports.pAsyncFn = exports.asyncFn = require("./asyncFn");
 exports.pCancel = exports.Cancel = require("./Cancel");
