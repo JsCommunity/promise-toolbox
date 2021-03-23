@@ -284,7 +284,7 @@ A disposable is a simple object, which contains a dispose function and possibily
 const disposable = { value: db, dispose: () => db.close() };
 ```
 
-The dispose function may be asynchronous and returns a function.
+The dispose function may be asynchronous and return a promise.
 
 As a convenience, you can use the `Disposable` class:
 
