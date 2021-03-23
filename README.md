@@ -278,7 +278,7 @@ class MyClass {
 
 #### Creation
 
-A disposable is a simple object, containing a value and a dispose function:
+A disposable is a simple object, which contains a dispose function and possibily a value:
 
 ```js
 const disposable = { value: db, dispose: () => db.close() };
