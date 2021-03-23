@@ -1,9 +1,6 @@
 const isPromise = require("./isPromise");
 
-// Usage: promise::delay(ms, [value])
-module.exports = function delay(ms) {
-  const value = arguments.length === 2 ? arguments[1] : this;
-
+module.exports = function delay(ms, value) {
   if (isPromise(value)) {
     return value.then(
       value =>

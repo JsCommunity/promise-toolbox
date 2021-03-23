@@ -6,7 +6,7 @@ const { reject } = require("./fixtures");
 
 describe("unpromisify()", () => {
   it("forwards the result", done => {
-    const fn = unpromisify.call(() => Promise.resolve("foo"));
+    const fn = unpromisify(() => Promise.resolve("foo"));
 
     fn((error, result) => {
       expect(error).toBe(undefined);
@@ -17,7 +17,7 @@ describe("unpromisify()", () => {
   });
 
   it("forwards the error", done => {
-    const fn = unpromisify.call(() => reject("foo"));
+    const fn = unpromisify(() => reject("foo"));
 
     fn(error => {
       expect(error).toBe("foo");
@@ -27,7 +27,7 @@ describe("unpromisify()", () => {
   });
 
   it("does not catch sync exceptions", () => {
-    const fn = unpromisify.call(() => {
+    const fn = unpromisify(() => {
       throw new Error("foo");
     });
     expect(() => fn(noop)).toThrow("foo");

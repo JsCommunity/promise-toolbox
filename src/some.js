@@ -37,7 +37,6 @@ const _some = (promises, count) =>
     });
   });
 
-// Usage: promises::some(count)
-module.exports = function some(count) {
-  return resolve(this).then(promises => _some(promises, count));
+module.exports = function some(promise, count) {
+  return resolve(promise).then(promises => _some(promises, count));
 };

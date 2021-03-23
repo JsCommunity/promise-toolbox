@@ -5,18 +5,18 @@ const { reject } = require("./fixtures");
 
 describe("ignoreErrors()", () => {
   it("swallows errors", () => {
-    return reject("foo")::ignoreErrors();
+    return ignoreErrors(reject("foo"));
   });
 
   it("does not swallow programmer errors", async () => {
     expect(
-      Promise.reject(new ReferenceError(""))::ignoreErrors()
+      ignoreErrors(Promise.reject(new ReferenceError("")))
     ).rejects.toBeInstanceOf(ReferenceError);
     expect(
-      Promise.reject(new SyntaxError(""))::ignoreErrors()
+      ignoreErrors(Promise.reject(new SyntaxError("")))
     ).rejects.toBeInstanceOf(SyntaxError);
     expect(
-      Promise.reject(new TypeError(""))::ignoreErrors()
+      ignoreErrors(Promise.reject(new TypeError("")))
     ).rejects.toBeInstanceOf(TypeError);
   });
 });

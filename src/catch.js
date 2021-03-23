@@ -9,23 +9,23 @@ function handler(predicates, cb, reason) {
 // - do not catch `ReferenceError`, `SyntaxError` or `TypeError`
 //   unless they match a predicate because they are usually programmer
 //   errors and should be handled separately.
-module.exports = function pCatch() {
+module.exports = function pCatch(promise) {
   let n = arguments.length;
 
   let cb;
-  if (n === 0 || typeof (cb = arguments[--n]) !== "function") {
-    return this;
+  if (n === 1 || typeof (cb = arguments[--n]) !== "function") {
+    return promise;
   }
 
-  return this.then(
+  return promise.then(
     undefined,
     handler.bind(
-      this,
-      n === 0
+      promise,
+      n === 1
         ? undefined
-        : n === 1
-        ? arguments[0]
-        : Array.prototype.slice.call(arguments, 0, n),
+        : n === 2
+        ? arguments[1]
+        : Array.prototype.slice.call(arguments, 1, n),
       cb
     )
   );

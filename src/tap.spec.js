@@ -7,7 +7,7 @@ const { reject } = require("./fixtures");
 describe("tap(cb)", () => {
   it("call cb with the resolved value", () =>
     new Promise(resolve => {
-      Promise.resolve("value")::tap(value => {
+      tap(Promise.resolve("value"), value => {
         expect(value).toBe("value");
         resolve();
       });
@@ -15,19 +15,19 @@ describe("tap(cb)", () => {
 
   it("does not call cb if the promise is rejected", async () => {
     await expect(
-      reject("reason")::tap(() => reject("other reason"))
+      tap(reject("reason"), () => reject("other reason"))
     ).rejects.toBe("reason");
   });
 
   it("forwards the resolved value", async () => {
-    expect(await Promise.resolve("value")::tap(() => "other value")).toBe(
+    expect(await tap(Promise.resolve("value"), () => "other value")).toBe(
       "value"
     );
   });
 
   it("rejects if cb rejects", async () => {
     await expect(
-      Promise.resolve("value")::tap(() => reject("reason"))
+      tap(Promise.resolve("value"), () => reject("reason"))
     ).rejects.toBe("reason");
   });
 });
@@ -35,31 +35,29 @@ describe("tap(cb)", () => {
 describe("tap(undefined, cb)", () => {
   it("call cb with the rejected reason", () =>
     new Promise(resolve => {
-      reject("reason")
-        ::tap(undefined, reason => {
-          expect(reason).toBe("reason");
-          resolve();
-        })
-        .catch(noop); // prevents the unhandled rejection warning
+      tap(reject("reason"), undefined, reason => {
+        expect(reason).toBe("reason");
+        resolve();
+      }).catch(noop); // prevents the unhandled rejection warning
     }));
 
   it("does not call cb if the promise is resolved", async () => {
     expect(
-      await Promise.resolve("value")::tap(undefined, () =>
+      await tap(Promise.resolve("value"), undefined, () =>
         reject("other reason")
       )
     ).toBe("value");
   });
 
   it("forwards the rejected reason", async () => {
-    await expect(reject("reason")::tap(undefined, () => "value")).rejects.toBe(
+    await expect(tap(reject("reason"), undefined, () => "value")).rejects.toBe(
       "reason"
     );
   });
 
   it("rejects if cb rejects", async () => {
     await expect(
-      reject("reason")::tap(undefined, () => reject("other reason"))
+      tap(reject("reason"), undefined, () => reject("other reason"))
     ).rejects.toBe("other reason");
   });
 });

@@ -27,7 +27,7 @@ describe("promisifyAll()", () => {
       fooAsync() {},
       fooSync() {},
     };
-    const r = o::promisifyAll();
+    const r = promisifyAll(o);
 
     expect(r.foo).not.toBeDefined();
     expect(r.fooASync).not.toBeDefined();

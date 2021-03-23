@@ -10,9 +10,9 @@ describe("catch", () => {
   it("catches errors matching a predicate", async () => {
     const predicate = reason => reason === "foo";
 
-    expect(await reject("foo")::pCatch(predicate, identity)).toBe("foo");
+    expect(await pCatch(reject("foo"), predicate, identity)).toBe("foo");
 
-    await expect(reject("bar")::pCatch(predicate, identity)).rejects.toBe(
+    await expect(pCatch(reject("bar"), predicate, identity)).rejects.toBe(
       "bar"
     );
   });
@@ -24,49 +24,49 @@ describe("catch", () => {
     const error = new CustomError1();
 
     // The class itself.
-    expect(await Promise.reject(error)::pCatch(CustomError1, identity)).toBe(
+    expect(await pCatch(Promise.reject(error), CustomError1, identity)).toBe(
       error
     );
 
     // A parent.
-    expect(await Promise.reject(error)::pCatch(Error, identity)).toBe(error);
+    expect(await pCatch(Promise.reject(error), Error, identity)).toBe(error);
 
     // Another class.
     await expect(
-      Promise.reject(error)::pCatch(CustomError2, identity)
+      pCatch(Promise.reject(error), CustomError2, identity)
     ).rejects.toBe(error);
   });
 
   it("catches errors matching an object pattern", async () => {
     const predicate = { foo: 0 };
 
-    expect(await reject({ foo: 0 })::pCatch(predicate, identity)).toEqual({
+    expect(await pCatch(reject({ foo: 0 }), predicate, identity)).toEqual({
       foo: 0,
     });
 
     await expect(
-      reject({ foo: 1 })::pCatch(predicate, identity)
+      pCatch(reject({ foo: 1 }), predicate, identity)
     ).rejects.toEqual({ foo: 1 });
 
     await expect(
-      reject({ bar: 0 })::pCatch(predicate, identity)
+      pCatch(reject({ bar: 0 }), predicate, identity)
     ).rejects.toEqual({ bar: 0 });
   });
 
   it("does not catch programmer errors", async () => {
     await expect(
-      Promise.reject(new ReferenceError(""))::pCatch(identity)
+      pCatch(Promise.reject(new ReferenceError("")), identity)
     ).rejects.toBeInstanceOf(ReferenceError);
     await expect(
-      Promise.reject(new SyntaxError(""))::pCatch(identity)
+      pCatch(Promise.reject(new SyntaxError("")), identity)
     ).rejects.toBeInstanceOf(SyntaxError);
     await expect(
-      Promise.reject(new TypeError(""))::pCatch(identity)
+      pCatch(Promise.reject(new TypeError("")), identity)
     ).rejects.toBeInstanceOf(TypeError);
 
     // Unless matches by a predicate.
     expect(
-      await Promise.reject(new TypeError(""))::pCatch(TypeError, identity)
+      await pCatch(Promise.reject(new TypeError("")), TypeError, identity)
     ).toBeInstanceOf(TypeError);
   });
 });

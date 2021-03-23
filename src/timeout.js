@@ -1,14 +1,14 @@
 const TimeoutError = require("./TimeoutError");
 
 // Usage:
-// - promise::timeout(ms)
-// - promise::timeout(ms, rejectionValue)
-// - promise::timeout(ms, cb)
+// - timeout(promise, ms)
+// - timeout(promise, ms, rejectionValue)
+// - timeout(promise, ms, cb)
 //
 // 0 is a special value that disable the timeout
-module.exports = function timeout(ms, onReject) {
+module.exports = function timeout(promise, ms, onReject) {
   if (ms === 0) {
-    return this;
+    return promise;
   }
 
   if (onReject === undefined) {
@@ -19,8 +19,8 @@ module.exports = function timeout(ms, onReject) {
     let handle = setTimeout(() => {
       handle = undefined;
 
-      if (typeof this.cancel === "function") {
-        this.cancel();
+      if (typeof promise.cancel === "function") {
+        promise.cancel();
       }
 
       if (typeof onReject === "function") {
@@ -34,7 +34,7 @@ module.exports = function timeout(ms, onReject) {
       }
     }, ms);
 
-    this.then(
+    promise.then(
       value => {
         handle !== undefined && clearTimeout(handle);
         resolve(value);

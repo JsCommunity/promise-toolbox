@@ -1,12 +1,12 @@
 const noop = require("./_noop");
 
 // when the rejection is handled later
-module.exports = function suppressUnhandledRejections() {
-  const native = this.suppressUnhandledRejections;
+module.exports = function suppressUnhandledRejections(promise) {
+  const native = promise.suppressUnhandledRejections;
   if (typeof native === "function") {
-    native.call(this);
+    native.call(promise);
   } else {
-    this.then(undefined, noop);
+    promise.then(undefined, noop);
   }
-  return this;
+  return promise;
 };

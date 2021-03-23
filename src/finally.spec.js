@@ -1,13 +1,13 @@
 /* eslint-env jest */
 
-const lastly = require("./finally");
+const pFinally = require("./finally");
 
 describe("finally()", () => {
   it("calls a callback on resolution", async () => {
     const value = {};
     const spy = jest.fn();
 
-    expect(await Promise.resolve(value)::lastly(spy)).toBe(value);
+    expect(await pFinally(Promise.resolve(value), spy)).toBe(value);
 
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -16,7 +16,7 @@ describe("finally()", () => {
     const reason = {};
     const spy = jest.fn();
 
-    await expect(Promise.reject(reason)::lastly(spy)).rejects.toBe(reason);
+    await expect(pFinally(Promise.reject(reason), spy)).rejects.toBe(reason);
 
     expect(spy).toHaveBeenCalledTimes(1);
   });

@@ -1,8 +1,7 @@
-// Usage: promise::asCallback(cb)
-module.exports = function asCallback(cb) {
+module.exports = function asCallback(promise, cb) {
   if (typeof cb === "function") {
-    this.then(value => cb(undefined, value), cb);
+    promise.then(value => cb(undefined, value), cb);
   }
 
-  return this;
+  return promise;
 };

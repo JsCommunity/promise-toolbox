@@ -4,8 +4,8 @@ const { makeAsyncIterator } = require("./_utils");
 const makeAsyncIteratorWrapper = iterator => {
   const asyncIterator = makeAsyncIterator(iterator);
 
-  return function asyncIteratorWrapper(iteratee) {
-    return asyncIterator(this, iteratee).then(noop);
+  return function asyncIteratorWrapper(promise, iteratee) {
+    return asyncIterator(promise, iteratee).then(noop);
   };
 };
 

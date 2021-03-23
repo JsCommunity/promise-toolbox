@@ -3,8 +3,7 @@ const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 // Note: synchronous exception are not caught.
 //
 // Usage: fn::unpromisify()
-module.exports = function unpromisify() {
-  const fn = this;
+module.exports = function unpromisify(fn) {
   return setFunctionNameAndLength(
     function() {
       const n = arguments.length - 1;

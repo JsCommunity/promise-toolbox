@@ -9,22 +9,22 @@ describe("timeout()", () => {
   const neverSettle = new Promise(noop);
 
   it("rejects a promise if not settled after a delay", async () => {
-    await expect(neverSettle::timeout(10)).rejects.toBeInstanceOf(TimeoutError);
+    await expect(timeout(neverSettle, 10)).rejects.toBeInstanceOf(TimeoutError);
   });
 
   it("call the callback if not settled after a delay", async () => {
-    expect(await neverSettle::timeout(10, () => "bar")).toBe("bar");
+    expect(await timeout(neverSettle, 10, () => "bar")).toBe("bar");
   });
 
   it("forwards the settlement if settled before a delay", async () => {
-    expect(await Promise.resolve("value")::timeout(10)).toBe("value");
+    expect(await timeout(Promise.resolve("value"), 10)).toBe("value");
 
-    await expect(reject("reason")::timeout(10)).rejects.toBe("reason");
+    await expect(timeout(reject("reason"), 10)).rejects.toBe("reason");
   });
 
   it("rejects if cb throws synchronously", async () => {
     await expect(
-      neverSettle::timeout(10, () => {
+      timeout(neverSettle, 10, () => {
         throw "reason"; // eslint-disable-line no-throw-literal
       })
     ).rejects.toBe("reason");
@@ -34,7 +34,7 @@ describe("timeout()", () => {
     let error;
     try {
       error = new Error();
-      await neverSettle::timeout(10);
+      await timeout(neverSettle, 10);
     } catch (timeoutError) {
       expect(timeoutError.stack.split("\n").slice(3, 10)).toEqual(
         error.stack.split("\n").slice(2, 9)

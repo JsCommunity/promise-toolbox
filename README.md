@@ -705,34 +705,7 @@ wrapCall(getUserById, "foo").catch(error => {
 
 ### Pseudo-methods
 
-This function can be used as if they were methods, i.e. by passing the
-promise (or promises) as the context.
-
-This is extremely easy using [ES2016's bind syntax](https://github.com/zenparsing/es-function-bind).
-
-```js
-const promises = [Promise.resolve("foo"), Promise.resolve("bar")];
-
-promises::all().then(values => {
-  console.log(values);
-});
-// → [ 'foo', 'bar' ]
-```
-
-If you are still an older version of ECMAScript, fear not: simply pass
-the promise (or promises) as the first argument of the `.call()`
-method:
-
-```js
-const promises = [Promise.resolve("foo"), Promise.resolve("bar")];
-
-all.call(promises).then(function(values) {
-  console.log(values);
-});
-// → [ 'foo', 'bar' ]
-```
-
-#### promise::asCallback(cb)
+#### asCallback(promise, cb)
 
 > Register a node-style callback on this promise.
 
@@ -742,11 +715,11 @@ import { asCallback } from "promise-toolbox";
 // This function can be used either with node-style callbacks or with
 // promises.
 function getDataFor(input, callback) {
-  return dataFromDataBase(input)::asCallback(callback);
+  return asCallback(dataFromDataBase(input), callback);
 }
 ```
 
-#### promise::catch(predicate, cb)
+#### catch(promise, predicate, cb)
 
 > Similar to `Promise#catch()` but:
 >
@@ -756,36 +729,45 @@ function getDataFor(input, callback) {
 >   and should be handled separately.
 
 ```js
-somePromise
-  .then(() => {
-    return a.b.c.d();
-  })
-  ::pCatch(TypeError, ReferenceError, reason => {
-    // Will end up here on programmer error
-  })
-  ::pCatch(NetworkError, TimeoutError, reason => {
-    // Will end up here on expected everyday network errors
-  })
-  ::pCatch(reason => {
+pCatch(
+  pCatch(
+    pCatch(
+      somePromise.then(() => {
+        return a.b.c.d();
+      }),
+      TypeError,
+      ReferenceError,
+      reason => {
+        // Will end up here on programmer error
+      }
+    ),
+    NetworkError,
+    TimeoutError,
+    reason => {
+      // Will end up here on expected everyday network errors
+    }
+  ),
+  reason => {
     // Catch any unexpected errors
-  });
+  }
+);
 ```
 
-#### promise::delay(ms, [value])
+#### delay(ms, value)
 
 > Delays the resolution of a promise by `ms` milliseconds.
 >
 > Note: the rejection is not delayed.
 
 ```js
-console.log(await Promise.resolve("500ms passed")::delay(500));
+console.log(await delay(Promise.resolve("500ms passed"), 500));
 // → 500 ms passed
 ```
 
 Also works with a value:
 
 ```js
-console.log(await delay(500, "500ms passed"));
+console.log(await delay("500ms passed", 500));
 // → 500 ms passed
 ```
 
@@ -797,7 +779,7 @@ the timer:
 await delay(500).unref();
 ```
 
-#### collection::forEach(cb)
+#### forEach(collection, cb)
 
 > Iterates in order over a collection, or promise of collection, which
 > contains a mix of promises and values, waiting for each call of cb
@@ -807,7 +789,7 @@ The returned promise will resolve to `undefined` when the iteration is
 complete.
 
 ```js
-["foo", Promise.resolve("bar")]::forEach(value => {
+forEach(["foo", Promise.resolve("bar")], value => {
   console.log(value);
 
   // Wait for the promise to be resolve before the next item.
@@ -818,7 +800,7 @@ complete.
 // bar
 ```
 
-#### promise::ignoreErrors()
+#### ignoreErrors(promise)
 
 > Ignore (operational) errors for this promise.
 
@@ -827,21 +809,21 @@ import { ignoreErrors } from "promise-toolbox";
 
 // will not emit an unhandled rejection error if the file does not
 // exist
-readFileAsync("foo.txt")
-  .then(content => {
+ignoreErrors(
+  readFileAsync("foo.txt").then(content => {
     console.log(content);
   })
-  ::ignoreErrors();
+);
 
 // will emit an unhandled rejection error due to the typo
-readFileAsync("foo.txt")
-  .then(content => {
+ignoreErrors(
+  readFileAsync("foo.txt").then(content => {
     console.lgo(content); // typo
   })
-  ::ignoreErrors();
+);
 ```
 
-#### promise::finally(cb)
+#### finally(promisecb)
 
 > Execute a handler regardless of the promise fate. Similar to the
 > `finally` block in synchronous codes.
@@ -853,19 +835,22 @@ readFileAsync("foo.txt")
 import { pFinally } from "promise-toolbox";
 
 function ajaxGetAsync(url) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.addEventListener("error", reject);
-    xhr.addEventListener("load", resolve);
-    xhr.open("GET", url);
-    xhr.send(null);
-  })::pFinally(() => {
-    $("#ajax-loader-animation").hide();
-  });
+  return pFinally(
+    new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.addEventListener("error", reject);
+      xhr.addEventListener("load", resolve);
+      xhr.open("GET", url);
+      xhr.send(null);
+    }),
+    () => {
+      $("#ajax-loader-animation").hide();
+    }
+  );
 }
 ```
 
-#### promise::reflect()
+#### reflect(promise)
 
 > Returns a promise which resolves to an objects which reflects the
 > resolution of this promise.
@@ -873,7 +858,7 @@ function ajaxGetAsync(url) {
 ```js
 import { reflect } from "promise-toolbox";
 
-const inspection = await promise::reflect();
+const inspection = await reflect(promise);
 
 if (inspection.isFulfilled()) {
   console.log(inspection.value());
@@ -882,22 +867,25 @@ if (inspection.isFulfilled()) {
 }
 ```
 
-#### promises::some(count)
+#### some(promises, count)
 
 > Waits for `count` promises in a collection to be resolved.
 
 ```js
 import { some } from "promise-toolbox";
 
-const [first, seconds] = await [
-  ping("ns1.example.org"),
-  ping("ns2.example.org"),
-  ping("ns3.example.org"),
-  ping("ns4.example.org"),
-]::some(2);
+const [first, seconds] = await some(
+  [
+    ping("ns1.example.org"),
+    ping("ns2.example.org"),
+    ping("ns3.example.org"),
+    ping("ns4.example.org"),
+  ],
+  2
+);
 ```
 
-#### promise::suppressUnhandledRejections()
+#### suppressUnhandledRejections(promise)
 
 > Suppress unhandled rejections, needed when error handlers are attached
 > asynchronously after the promise has rejected.
@@ -905,7 +893,7 @@ const [first, seconds] = await [
 > Similar to [`Bluebird#suppressUnhandledRejections()`](http://bluebirdjs.com/docs/api/suppressunhandledrejections.html).
 
 ```js
-const promise = getUser()::suppressUnhandledRejections();
+const promise = suppressUnhandledRejections(getUser());
 $(document).on("ready", () => {
   promise.catch(error => {
     console.error("error while getting user", error);
@@ -913,11 +901,11 @@ $(document).on("ready", () => {
 });
 ```
 
-#### promise::tap(onResolved, onRejected)
+#### tap(promise, onResolved, onRejected)
 
 > Like `.then()` but the original resolution/rejection is forwarded.
 >
-> Like `::finally()`, if the callback rejects, it takes over the
+> Like `.finally()`, if the callback rejects, it takes over the
 > original resolution/rejection.
 
 ```js
@@ -925,21 +913,21 @@ import { tap } from "promise-toolbox";
 
 // Contrary to .then(), using ::tap() does not change the resolution
 // value.
-const promise1 = Promise.resolve(42)::tap(value => {
+const promise1 = tap(Promise.resolve(42), value => {
   console.log(value);
 });
 
 // Like .then, the second param is used in case of rejection.
-const promise2 = Promise.reject(42)::tap(null, reason => {
+const promise2 = tap(Promise.reject(42), null, reason => {
   console.error(reason);
 });
 ```
 
-#### promise::tapCatch(onRejected)
+#### tapCatch(promise, onRejected)
 
 > Alias to [`promise:tap(null, onRejected)`](#promisetaponresolved-onrejected).
 
-#### promise::timeout(ms, [cb or rejectionValue])
+#### timeout(promise, ms, [cb or rejectionValue])
 
 > Call a callback if the promise is still pending after `ms`
 > milliseconds. Its resolution/rejection is forwarded.
@@ -950,13 +938,14 @@ const promise2 = Promise.reject(42)::tap(null, reason => {
 ```js
 import { timeout, TimeoutError } from "promise-toolbox";
 
-await doLongOperation()::timeout(100, () => {
+await timeout(doLongOperation(), 100, () => {
   return doFallbackOperation();
 });
 
-await doLongOperation()::timeout(100);
+await timeout(doLongOperation(), 100);
 
-await doLongOperation()::timeout(
+await timeout(
+  doLongOperation(),
   100,
   new Error("the long operation has failed")
 );

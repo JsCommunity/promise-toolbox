@@ -1,6 +1,3 @@
-// Ponyfill for Promise.finally(cb)
-//
-// Usage: promise::finally(cb)
-module.exports = function pFinally(cb) {
-  return this.then(cb, cb).then(() => this);
+module.exports = function pFinally(promise, cb) {
+  return promise.then(cb, cb).then(() => promise);
 };

@@ -8,7 +8,7 @@ describe("forEach()", () => {
 
     const array = [Promise.resolve("foo"), Promise.resolve("bar"), "baz"];
 
-    expect(await array::forEach(spy)).not.toBeDefined();
+    expect(await forEach(array, spy)).not.toBeDefined();
     expect(await spy.mock.calls).toEqual([
       ["foo", 0, array],
       ["bar", 1, array],

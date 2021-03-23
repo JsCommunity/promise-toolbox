@@ -6,6 +6,6 @@ const cb = error => {
   }
 };
 
-module.exports = function ignoreErrors() {
-  return this.then(undefined, cb);
+module.exports = function ignoreErrors(promise) {
+  return promise.then(undefined, cb);
 };

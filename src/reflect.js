@@ -29,8 +29,6 @@ const onRejected = (__proto__ => reason => ({
 // settled. Its fulfillment value is an object that implements the
 // PromiseInspection interface and reflects the resolution this
 // promise.
-//
-// Usage: promise::reflect()
-module.exports = function() {
-  return this.then(onFulfilled, onRejected);
+module.exports = function(promise) {
+  return promise.then(onFulfilled, onRejected);
 };
