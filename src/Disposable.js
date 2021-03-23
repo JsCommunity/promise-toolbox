@@ -15,23 +15,23 @@ function Disposable(value, dispose) {
 }
 module.exports = Disposable;
 
-Disposable.all = function all(disposables) {
+Disposable.all = function all(iterable) {
   let disposers = [];
   const dispose = () => {
     const d = disposers;
     disposers = undefined;
     d.forEach(disposer => disposer());
   };
-  const onFulfill = disposable => {
+  const onFulfill = maybeDisposable => {
     if (disposers === undefined) {
-      return isDisposable(disposable) && disposable.dispose();
+      return isDisposable(maybeDisposable) && maybeDisposable.dispose();
     }
 
-    if (isDisposable(disposable)) {
-      disposers.push(disposable.dispose);
-      return disposable.value;
+    if (isDisposable(maybeDisposable)) {
+      disposers.push(maybeDisposable.dispose);
+      return maybeDisposable.value;
     }
-    return disposable;
+    return maybeDisposable;
   };
   const onReject = error => {
     if (disposers === undefined) {
@@ -42,8 +42,8 @@ Disposable.all = function all(disposables) {
     throw error;
   };
   return Promise.all(
-    Array.from(disposables, disposable =>
-      evalDisposable(disposable).then(onFulfill, onReject)
+    Array.from(iterable, maybeDisposable =>
+      evalDisposable(maybeDisposable).then(onFulfill, onReject)
     )
   ).then(values => new Disposable(values, dispose));
 };
