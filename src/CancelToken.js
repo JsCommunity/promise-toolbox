@@ -80,6 +80,12 @@ function CancelTokenSource(tokens) {
 // https://github.com/zenparsing/es-cancel-token
 // https://tc39.github.io/proposal-cancelable-promises/
 class CancelToken {
+  static from(abortSignal) {
+    const token = new CancelToken(INTERNAL);
+    abortSignal.addEventListener("abort", cancel.bind(token));
+    return token;
+  }
+
   static isCancelToken(value) {
     return value != null && value[$$toStringTag] === cancelTokenTag;
   }

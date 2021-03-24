@@ -272,6 +272,14 @@ class MyClass {
 }
 ```
 
+#### Compatibility with AbortSignal
+
+A cancel token can be created from an abort signal:
+
+```js
+const token = CancelToken.from(abortSignal);
+```
+
 ### Resource management
 
 > See [Bluebird documentation](http://bluebirdjs.com/docs/api/resource-management.html) for a good explanation.
