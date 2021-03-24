@@ -280,6 +280,14 @@ A cancel token can be created from an abort signal:
 const token = CancelToken.from(abortSignal);
 ```
 
+A cancel token is API compatible with an abort signal and can be used as such:
+
+```js
+const { cancel, token } = CancelToken.source();
+
+await fetch(url, { signal: token });
+```
+
 ### Resource management
 
 > See [Bluebird documentation](http://bluebirdjs.com/docs/api/resource-management.html) for a good explanation.

@@ -19,6 +19,11 @@ function cancel(message) {
     resolve(reason);
   }
 
+  const { onabort } = this;
+  if (typeof onabort === "function") {
+    onabort();
+  }
+
   const handlers = this._handlers;
   if (handlers !== undefined) {
     this._handlers = undefined;
@@ -100,6 +105,7 @@ class CancelToken {
     this._promise = undefined;
     this._reason = undefined;
     this._resolve = undefined;
+    this.onabort = undefined;
 
     if (executor !== INTERNAL) {
       executor(cancel.bind(this));
@@ -157,6 +163,28 @@ class CancelToken {
   get [$$toStringTag]() {
     return cancelTokenTag;
   }
+
+  // ----
+  // Minimal AbortSignal compatibility
+  // ----
+
+  get aborted() {
+    return this.requested;
+  }
+
+  addEventListener(event, listener) {
+    if (event !== "abort") {
+      return;
+    }
+
+    if (typeof listener !== "function") {
+      listener = listener.handleEvent.bind(listener);
+    }
+
+    this.addHandler(listener);
+  }
+
+  removeEventListener() {}
 }
 cancel.call((CancelToken.canceled = new CancelToken(INTERNAL)));
 CancelToken.none = new CancelToken(INTERNAL);
