@@ -233,6 +233,18 @@ if (CancelToken.isCancelToken(value)) {
 
 #### @cancelable decorator
 
+> **This is deprecated, instead explicitely pass a cancel token or an abort signal:**
+
+```js
+const asyncFunction = async (a, b, { cancelToken = CancelToken.none } = {}) => {
+  cancelToken.promise.then(() => {
+    // do stuff regarding the cancelation request.
+  });
+
+  // do other stuff.
+};
+```
+
 > Make your async functions cancelable.
 
 If the first argument passed to the cancelable function is not a

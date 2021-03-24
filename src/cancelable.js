@@ -1,24 +1,28 @@
 const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 const { isCancelToken, source } = require("./CancelToken");
 
-// Usage:
-//
-//     @cancelable
-//     async fn (cancelToken, other, args) {
-//       if (!cancelToken.requested) {
-//         doStuff()
-//       }
-//
-//       cancelToken.throwIfRequested()
-//
-//       doSomeMoreStuff()
-//
-//       cancelToken.promise.then(() => {
-//         // Do stuff if canceled.
-//       })
-//
-//       // do other stuff.
-//     }
+/**
+ * Usage:
+ *
+ *     @cancelable
+ *     async fn (cancelToken, other, args) {
+ *       if (!cancelToken.requested) {
+ *         doStuff()
+ *       }
+ *
+ *       cancelToken.throwIfRequested()
+ *
+ *       doSomeMoreStuff()
+ *
+ *       cancelToken.promise.then(() => {
+ *         // Do stuff if canceled.
+ *       })
+ *
+ *       // do other stuff.
+ *     }
+ *
+ * @deprecated explicitely pass a cancel token or an abort signal instead
+ */
 const cancelable = (target, name, descriptor) => {
   const fn = descriptor !== undefined ? descriptor.value : target;
 
