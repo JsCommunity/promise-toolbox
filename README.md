@@ -697,6 +697,17 @@ MyClass.prototype.myMethod = retry.wrap(MyClass.prototype.myMethod, {
 });
 ```
 
+In that case `options` can also be a function which will be used to compute the options from the context and the arguments:
+
+```js
+MyClass.prototype.myMethod = retry.wrap(
+  MyClass.prototype.myMethod,
+  function getOptions(arg1, arg2) {
+    return this._computeRetryOptions(arg1, arg2);
+  }
+);
+```
+
 #### try(fn)
 
 > Starts a chain of promises.

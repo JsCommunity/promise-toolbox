@@ -1,5 +1,6 @@
 /* eslint-env jest */
 
+const noop = require("./_noop");
 const retry = require("./retry");
 const { forOwn } = require("./_utils");
 
@@ -224,6 +225,20 @@ describe("retry()", () => {
       expect(await retryingFn.apply(expectedThis, expectedArgs)).toBe(
         expectedResult
       );
+    });
+
+    it("options can be a function", () => {
+      expect.assertions(2);
+
+      const expectedThis = {};
+      const expectedArgs = [Math.random(), Math.random()];
+
+      retry
+        .wrap(noop, function getOptions() {
+          expect(this).toBe(expectedThis);
+          expect(Array.from(arguments)).toEqual(expectedArgs);
+        })
+        .apply(expectedThis, expectedArgs);
     });
   });
 });

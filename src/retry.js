@@ -83,9 +83,15 @@ retry.bail = function retryBail(error) {
 };
 
 retry.wrap = function retryWrap(fn, options) {
+  const getOptions = typeof options !== "function" ? () => options : options;
   return setFunctionNameAndLength(
     function() {
-      return retry.call(this, fn, options, Array.from(arguments));
+      return retry.call(
+        this,
+        fn,
+        getOptions.apply(this, arguments),
+        Array.from(arguments)
+      );
     },
     fn.name,
     fn.length
