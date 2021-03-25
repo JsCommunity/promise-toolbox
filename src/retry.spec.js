@@ -71,7 +71,7 @@ describe("retry()", () => {
         expect(args).toEqual(expectedArgs);
       },
       { retries: 0 },
-      ...expectedArgs
+      expectedArgs
     );
   });
 
@@ -198,7 +198,7 @@ describe("retry()", () => {
               expectedError = null;
             },
           },
-          ...expectedArgs
+          expectedArgs
         )
       ).toBe("foo");
     });

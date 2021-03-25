@@ -4,7 +4,8 @@ const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 
 function retry(
   fn,
-  { delay, delays, onRetry = noop, retries, tries, when } = {}
+  { delay, delays, onRetry = noop, retries, tries, when } = {},
+  args
 ) {
   let shouldRetry;
   if (delays !== undefined) {
@@ -66,7 +67,6 @@ function retry(
     }
     throw error;
   };
-  const args = Array.prototype.slice.call(arguments, 2);
   const loopResolver = resolve => resolve(fn.apply(this, args));
   const loop = () => new Promise(loopResolver).catch(onError);
 
@@ -85,9 +85,7 @@ retry.bail = function retryBail(error) {
 retry.wrap = function retryWrap(fn, options) {
   return setFunctionNameAndLength(
     function() {
-      const args = [fn, options];
-      args.push.apply(args, arguments);
-      return retry.apply(this, args);
+      return retry.call(this, fn, options, Array.from(arguments));
     },
     fn.name,
     fn.length
