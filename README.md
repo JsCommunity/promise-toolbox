@@ -17,6 +17,7 @@
   - [Consumption](#consumption)
   - [Registering async handlers](#registering-async-handlers)
   - [Is cancel token?](#is-cancel-token)
+  - [Compatibility with AbortSignal](#compatibility-with-abortsignal)
   - [@cancelable decorator](#cancelable-decorator)
 - [Resource management](#resource-management)
   - [Creation](#creation-1)
