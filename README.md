@@ -292,6 +292,8 @@ A cancel token can be created from an abort signal:
 const token = CancelToken.from(abortSignal);
 ```
 
+> If `abortSignal` is already a `CancelToken`, it will be returned directly, making it a breeze to create code accepting both :-)
+
 A cancel token is API compatible with an abort signal and can be used as such:
 
 ```js

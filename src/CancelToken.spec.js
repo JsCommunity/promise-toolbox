@@ -19,6 +19,12 @@ describe("Cancel", () => {
 // -------------------------------------------------------------------
 
 describe("CancelToken", () => {
+  describe(".from()", () => {
+    it("returns arg if already a CancelToken", () => {
+      expect(CancelToken.from(CancelToken.none)).toBe(CancelToken.none);
+    });
+  });
+
   describe(".isCancelToken()", () => {
     it("determines whether the passed value is a CancelToken", () => {
       expect(CancelToken.isCancelToken(null)).toBe(false);

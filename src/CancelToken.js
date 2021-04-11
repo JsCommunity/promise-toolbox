@@ -86,6 +86,10 @@ function CancelTokenSource(tokens) {
 // https://tc39.github.io/proposal-cancelable-promises/
 class CancelToken {
   static from(abortSignal) {
+    if (CancelToken.isCancelToken(abortSignal)) {
+      return abortSignal;
+    }
+
     const token = new CancelToken(INTERNAL);
     abortSignal.addEventListener("abort", cancel.bind(token));
     return token;
