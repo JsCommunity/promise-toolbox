@@ -23,6 +23,20 @@ describe("CancelToken", () => {
     it("returns arg if already a CancelToken", () => {
       expect(CancelToken.from(CancelToken.none)).toBe(CancelToken.none);
     });
+
+    if ("AbortController" in global) {
+      it("creates a CancelToken from an AbortSignal", () => {
+        const controller = new global.AbortController();
+        const token = CancelToken.from(controller.signal);
+
+        expect(token).toBeInstanceOf(CancelToken);
+        expect(token.requested).toBe(false);
+
+        controller.abort();
+
+        expect(token.requested).toBe(true);
+      });
+    }
   });
 
   describe(".isCancelToken()", () => {
