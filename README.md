@@ -188,6 +188,8 @@ token.promise.then(reason => {
 subtask(token);
 ```
 
+See [`asyncFn.cancelable`](#asyncfncancelablegenerator) for an easy way to create async functions with built-in cancelation support.
+
 #### Registering async handlers
 
 > Asynchronous handlers are executed on token cancelation and the
@@ -443,6 +445,35 @@ getUserName(source.token, db, userId).then(
 
 // only wait 5 seconds to fetch the user from the database
 setTimeout(source.cancel, 5e3)
+```
+
+```js
+const cancelableAsyncFunction = asyncFn.cancelable(function*(
+  cancelToken,
+  ...args
+) {
+  // await otherAsyncFunction() but will throw if cancelToken is activated
+  yield otherAsyncFunction();
+
+  // if aborting on cancelation is unwanted (eg because the called function
+  // already handles cancelation), wrap the promise in an array
+  yield [otherAsyncFunction(cancelToken)];
+
+  // cancelation, just like any rejection, can be catch
+  try {
+    yield otherAsyncFunction();
+  } catch (error) {
+    if (CancelToken.isCancelToken(error)) {
+      // do some clean-up here
+      // the rest of the function has been added as an async handler of the
+      // CancelToken which will make `cancel` waits for it
+    }
+
+    throw error;
+  }
+
+  return result;
+});
 ```
 
 #### defer()
