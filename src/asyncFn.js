@@ -1,3 +1,4 @@
+const identity = require("./_identity");
 const isPromise = require("./isPromise");
 const toPromise = require("./_resolve");
 
@@ -73,8 +74,9 @@ Object.setPrototypeOf(
     : Promise.resolve(value);
 };
 
-asyncFn.cancelable = generator =>
-  function(cancelToken) {
+asyncFn.cancelable = (generator, getCancelToken = identity) =>
+  function() {
+    const cancelToken = getCancelToken.apply(this, arguments);
     if (cancelToken.requested) {
       return Promise.reject(cancelToken.reason);
     }

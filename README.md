@@ -25,7 +25,7 @@
   - [Consumption](#consumption-1)
 - [Functions](#functions)
   - [asyncFn(generator)](#asyncfngenerator)
-  - [asyncFn.cancelable(generator)](#asyncfncancelablegenerator)
+  - [asyncFn.cancelable(generator, [getCancelToken])](#asyncfncancelablegenerator-getcanceltoken)
   - [defer()](#defer)
   - [fromCallback(fn, arg1, ..., argn)](#fromcallbackfn-arg1--argn)
   - [fromEvent(emitter, event, [options]) => Promise](#fromeventemitter-event-options--promise)
@@ -418,7 +418,7 @@ const getUserName = asyncFn(function * (db, userId)) {
 })
 ```
 
-#### asyncFn.cancelable(generator)
+#### asyncFn.cancelable(generator, [getCancelToken])
 
 > Like [`asyncFn(generator)`](#asyncfngenerator) but the created async function supports [cancelation](#cancelation).
 >
@@ -475,6 +475,17 @@ const cancelableAsyncFunction = asyncFn.cancelable(function*(
 
   return result;
 });
+```
+
+If the cancel token is not the first param of the decorated function, a getter should be passed to `asyncFn.cancelable`, it's called with the same context and arguments as the decorated function and returns the cancel token:
+
+```js
+const cancelableAsyncFunction = asyncFn.cancelable(
+  function*(arg1, arg2, options) {
+    // function logic
+  },
+  (_arg1, _arg2, { cancelToken = CancelToken.none } = {}) => cancelToken;
+);
 ```
 
 #### defer()
