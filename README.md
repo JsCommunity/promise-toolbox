@@ -314,7 +314,7 @@ await fetch(url, { signal: token });
 A disposable is a simple object, which contains a dispose method and possibily a value:
 
 ```js
-const disposable = { value: db, dispose: () => db.close() };
+const disposable = { dispose: () => db.close(), value: db };
 ```
 
 The dispose method may be asynchronous and return a promise.

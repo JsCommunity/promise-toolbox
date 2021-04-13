@@ -12,7 +12,7 @@ module.exports = class ExitStack {
         ? resolve(disposable.dispose()).then(dispose)
         : Promise.resolve();
     };
-    return { value: this, dispose };
+    return { dispose, value: this };
   }
 
   enter(disposable) {

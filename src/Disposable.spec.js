@@ -3,11 +3,11 @@
 const Disposable = require("./Disposable");
 const { reject } = require("./fixtures");
 
-const d = () => ({ value: Math.random(), dispose: jest.fn() });
+const d = () => ({ dispose: jest.fn(), value: Math.random() });
 
 describe("Disposable", () => {
   it("cannot be used after being disposed of", async () => {
-    const { value, dispose } = d();
+    const { dispose, value } = d();
     const disposable = new Disposable(dispose, value);
 
     expect(disposable.value).toBe(value);
