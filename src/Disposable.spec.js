@@ -84,54 +84,52 @@ describe("Disposable", () => {
   });
   describe(".use()", () => {
     it("called with flat params", async () => {
-      const d1 = jest.fn();
-      const r1 = Promise.resolve(new Disposable(d1, "r1"));
+      const d1 = d();
+      const r1 = Promise.resolve(d1);
       const r2 = Promise.resolve("r2");
       const r3 = "r3";
       const handler = jest.fn(() => "handler");
 
       expect(await Disposable.use(r1, r2, r3, handler)).toBe("handler");
-      expect(handler.mock.calls).toEqual([["r1", "r2", "r3"]]);
-      expect(d1).toHaveBeenCalledTimes(1);
+      expect(handler.mock.calls).toEqual([[d1.value, "r2", "r3"]]);
+      expect(d1.dispose).toHaveBeenCalledTimes(1);
     });
 
     it("called with array param", async () => {
-      const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable(d1, "p1"));
+      const d1 = d();
+      const p1 = Promise.resolve(d1);
       const p2 = Promise.resolve("p2");
       const handler = jest.fn(() => "handler");
 
       expect(await Disposable.use([p1, p2], handler)).toBe("handler");
-      expect(handler.mock.calls).toEqual([[["p1", "p2"]]]);
-      expect(d1).toHaveBeenCalledTimes(1);
+      expect(handler.mock.calls).toEqual([[[d1.value, "p2"]]]);
+      expect(d1.dispose).toHaveBeenCalledTimes(1);
     });
 
     it("error in a provider", async () => {
-      const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable(d1, "p1"));
-      const d2 = jest.fn();
+      const d1 = d();
+      const p1 = Promise.resolve(d1);
       const p2 = reject("p2");
       const p3 = Promise.resolve("p3");
       const handler = jest.fn();
 
       await expect(Disposable.use(p1, p2, p3, handler)).rejects.toBe("p2");
       expect(handler).not.toHaveBeenCalled();
-      expect(d1).toHaveBeenCalledTimes(1);
-      expect(d2).not.toHaveBeenCalled();
+      expect(d1.dispose).toHaveBeenCalledTimes(1);
     });
 
     it("error in handler", async () => {
-      const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable(d1, "p1"));
-      const d2 = jest.fn();
-      const p2 = Promise.resolve(new Disposable(d2, "p2"));
+      const d1 = d();
+      const p1 = Promise.resolve(d1);
+      const d2 = d();
+      const p2 = Promise.resolve(d2);
       const p3 = Promise.resolve("p3");
       const handler = jest.fn(() => reject("handler"));
 
       await expect(Disposable.use(p1, p2, p3, handler)).rejects.toBe("handler");
-      expect(handler.mock.calls).toEqual([["p1", "p2", "p3"]]);
-      expect(d1).toHaveBeenCalledTimes(1);
-      expect(d2).toHaveBeenCalledTimes(1);
+      expect(handler.mock.calls).toEqual([[d1.value, d2.value, "p3"]]);
+      expect(d1.dispose).toHaveBeenCalledTimes(1);
+      expect(d2.dispose).toHaveBeenCalledTimes(1);
     });
 
     it.skip("error in a disposer", () => {});
