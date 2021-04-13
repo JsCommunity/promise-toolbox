@@ -1,4 +1,3 @@
-const Disposable = require("./Disposable");
 const isDisposable = require("./_isDisposable");
 const resolve = require("./_resolve");
 
@@ -13,7 +12,7 @@ module.exports = class ExitStack {
         ? resolve(disposable.dispose()).then(dispose)
         : Promise.resolve();
     };
-    return new Disposable(this, dispose);
+    return { value: this, dispose };
   }
 
   enter(disposable) {
