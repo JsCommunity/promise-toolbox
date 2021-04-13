@@ -5,13 +5,31 @@ const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 const wrapApply = require("./wrapApply");
 const wrapCall = require("./wrapCall");
 
-function Disposable(value, dispose) {
-  if (typeof dispose !== "function") {
-    throw new Error("dispose must be a function");
+class Disposable {
+  constructor(value, dispose) {
+    if (typeof dispose !== "function") {
+      throw new Error("dispose must be a function");
+    }
+
+    this._dispose = dispose;
+    this._value = value;
   }
 
-  this.dispose = dispose;
-  this.value = value;
+  get value() {
+    if (this._dispose === undefined) {
+      throw new TypeError("this disposable has already been disposed");
+    }
+    return this._value;
+  }
+
+  dispose() {
+    if (this._dispose === undefined) {
+      throw new TypeError("this disposable has already been disposed");
+    }
+    const d = this._dispose;
+    this._dispose = this._value = undefined;
+    return d();
+  }
 }
 module.exports = Disposable;
 

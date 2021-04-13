@@ -1,12 +1,30 @@
 /* eslint-env jest */
 
 const Disposable = require("./Disposable");
-const noop = require("./_noop");
 const { reject } = require("./fixtures");
 
 const d = v => ({ value: Math.random(), dispose: jest.fn() });
 
 describe("Disposable", () => {
+  it("cannot be used after being disposed of", async () => {
+    const { value, dispose } = d();
+    const disposable = new Disposable(value, dispose);
+
+    expect(disposable.value).toBe(value);
+    expect(dispose).toHaveBeenCalledTimes(0);
+
+    disposable.dispose();
+
+    expect(dispose).toHaveBeenCalledTimes(1);
+
+    expect(() => disposable.value).toThrow(
+      "this disposable has already been disposed"
+    );
+    expect(() => disposable.dispose()).toThrow(
+      "this disposable has already been disposed"
+    );
+  });
+
   describe(".all()", () => {
     it("combine multiple disposables", async () => {
       const d1 = d();
@@ -86,27 +104,6 @@ describe("Disposable", () => {
       expect(await Disposable.use([p1, p2], handler)).toBe("handler");
       expect(handler.mock.calls).toEqual([[["p1", "p2"]]]);
       expect(d1).toHaveBeenCalledTimes(1);
-    });
-
-    // not supported in the new API because we avoid mutating disposables
-    it.skip("a resource can only be used once", async () => {
-      const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable("p1", d1));
-      const handler = jest.fn();
-
-      await Disposable.use(p1, handler);
-      handler.mockClear();
-      d1.mockClear();
-
-      const d2 = jest.fn();
-      const p2 = Promise.resolve(new Disposable("p2", d2));
-
-      await expect(Disposable.use(p1, p2, noop)).rejects.toBeInstanceOf(
-        TypeError
-      );
-      expect(handler).not.toHaveBeenCalled();
-      expect(d1).not.toHaveBeenCalled();
-      expect(d2).toHaveBeenCalledTimes(1);
     });
 
     it("error in a provider", async () => {
