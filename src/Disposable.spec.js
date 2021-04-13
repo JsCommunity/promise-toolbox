@@ -8,7 +8,7 @@ const d = v => ({ value: Math.random(), dispose: jest.fn() });
 describe("Disposable", () => {
   it("cannot be used after being disposed of", async () => {
     const { value, dispose } = d();
-    const disposable = new Disposable(value, dispose);
+    const disposable = new Disposable(dispose, value);
 
     expect(disposable.value).toBe(value);
     expect(dispose).toHaveBeenCalledTimes(0);
@@ -85,7 +85,7 @@ describe("Disposable", () => {
   describe(".use()", () => {
     it("called with flat params", async () => {
       const d1 = jest.fn();
-      const r1 = Promise.resolve(new Disposable("r1", d1));
+      const r1 = Promise.resolve(new Disposable(d1, "r1"));
       const r2 = Promise.resolve("r2");
       const r3 = "r3";
       const handler = jest.fn(() => "handler");
@@ -97,7 +97,7 @@ describe("Disposable", () => {
 
     it("called with array param", async () => {
       const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable("p1", d1));
+      const p1 = Promise.resolve(new Disposable(d1, "p1"));
       const p2 = Promise.resolve("p2");
       const handler = jest.fn(() => "handler");
 
@@ -108,7 +108,7 @@ describe("Disposable", () => {
 
     it("error in a provider", async () => {
       const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable("p1", d1));
+      const p1 = Promise.resolve(new Disposable(d1, "p1"));
       const d2 = jest.fn();
       const p2 = reject("p2");
       const p3 = Promise.resolve("p3");
@@ -122,9 +122,9 @@ describe("Disposable", () => {
 
     it("error in handler", async () => {
       const d1 = jest.fn();
-      const p1 = Promise.resolve(new Disposable("p1", d1));
+      const p1 = Promise.resolve(new Disposable(d1, "p1"));
       const d2 = jest.fn();
-      const p2 = Promise.resolve(new Disposable("p2", d2));
+      const p2 = Promise.resolve(new Disposable(d2, "p2"));
       const p3 = Promise.resolve("p3");
       const handler = jest.fn(() => reject("handler"));
 

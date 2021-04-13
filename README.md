@@ -324,7 +324,7 @@ As a convenience, you can use the `Disposable` class:
 ```js
 import { Disposable } from "promise-toolbox";
 
-const disposable = new Disposable(db, () => db.close());
+const disposable = new Disposable(() => db.close(), db);
 ```
 
 If the process is more complicated, maybe because this disposable depends on

@@ -6,7 +6,7 @@ const wrapApply = require("./wrapApply");
 const wrapCall = require("./wrapCall");
 
 class Disposable {
-  constructor(value, dispose) {
+  constructor(dispose, value) {
     if (typeof dispose !== "function") {
       throw new Error("dispose must be a function");
     }
@@ -63,7 +63,7 @@ Disposable.all = function all(iterable) {
     Array.from(iterable, maybeDisposable =>
       evalDisposable(maybeDisposable).then(onFulfill, onReject)
     )
-  ).then(values => new Disposable(values, dispose));
+  ).then(values => new Disposable(dispose, values));
 };
 
 // Requires this circular dependency as late as possible to avoid problems with jest
@@ -88,8 +88,9 @@ Disposable.factory = genFn =>
 
       return loop().then(
         value =>
-          new Disposable(value, () =>
-            wrapCall(gen.return, undefined, gen).then(dispose)
+          new Disposable(
+            () => wrapCall(gen.return, undefined, gen).then(dispose),
+            value
           ),
         error => {
           const forwardError = () => {
