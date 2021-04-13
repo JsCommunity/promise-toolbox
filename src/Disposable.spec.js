@@ -4,7 +4,7 @@ const Disposable = require("./Disposable");
 const noop = require("./_noop");
 const { reject } = require("./fixtures");
 
-const d = v => new Disposable(Math.random(), jest.fn());
+const d = v => ({ value: Math.random(), dispose: jest.fn() });
 
 describe("Disposable", () => {
   describe(".all()", () => {
@@ -139,7 +139,6 @@ describe("Disposable", () => {
 
     it.skip("error in a disposer", () => {});
 
-    const d = v => new Disposable(Math.random(), jest.fn());
     it("accepts a generator", async () => {
       const d1 = d();
       const d2 = d();
