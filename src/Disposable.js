@@ -123,12 +123,12 @@ Disposable.use = function use() {
     nDisposables = disposables.length;
   }
 
-  return Disposable.all(disposables).then(({ dispose, value }) =>
+  return Disposable.all(disposables).then(dAll =>
     pFinally(
-      (spread ? wrapApply : wrapCall)(handler, value, this).then(
+      (spread ? wrapApply : wrapCall)(handler, dAll.value, this).then(
         onHandlerFulfill
       ),
-      dispose
+      () => dAll.dispose()
     )
   );
 };
