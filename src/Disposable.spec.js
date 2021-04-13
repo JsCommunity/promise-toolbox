@@ -3,7 +3,7 @@
 const Disposable = require("./Disposable");
 const { reject } = require("./fixtures");
 
-const d = v => ({ value: Math.random(), dispose: jest.fn() });
+const d = () => ({ value: Math.random(), dispose: jest.fn() });
 
 describe("Disposable", () => {
   it("cannot be used after being disposed of", async () => {
