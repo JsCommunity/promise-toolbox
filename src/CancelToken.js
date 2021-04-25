@@ -177,16 +177,18 @@ class CancelToken {
     return this.requested;
   }
 
-  addEventListener(event, listener) {
-    if (event !== "abort") {
+  addEventListener(type, listener) {
+    if (type !== "abort") {
       return;
     }
 
-    if (typeof listener !== "function") {
-      listener = listener.handleEvent.bind(listener);
-    }
+    const event = { type: "abort" };
+    const handler =
+      typeof listener === "function"
+        ? () => listener(event)
+        : () => listener.handleEvent(event);
 
-    this.addHandler(listener);
+    this.addHandler(handler);
   }
 
   removeEventListener() {}
