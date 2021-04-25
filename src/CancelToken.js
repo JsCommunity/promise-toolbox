@@ -1,6 +1,7 @@
 const defer = require("./defer");
 const Cancel = require("./Cancel");
 const isPromise = require("./isPromise");
+const noop = require("./_noop");
 const { $$toStringTag } = require("./_symbols");
 
 const cancelTokenTag = "CancelToken";
@@ -191,6 +192,15 @@ class CancelToken {
   removeEventListener() {}
 }
 cancel.call((CancelToken.canceled = new CancelToken(INTERNAL)));
+
 CancelToken.none = new CancelToken(INTERNAL);
+
+// Never add handlers to this special token
+//
+// It would create a memory leak because this token never get canceled, and
+// therefore the handlers will never get removed.
+CancelToken.none.addHandler = function addHandler(handler) {
+  return noop;
+};
 
 module.exports = CancelToken;
