@@ -202,5 +202,13 @@ CancelToken.none = new CancelToken(INTERNAL);
 CancelToken.none.addHandler = function addHandler(handler) {
   return noop;
 };
+CancelToken.none._promise = {
+  catch() {
+    return this;
+  },
+  then() {
+    return this;
+  },
+};
 
 module.exports = CancelToken;
