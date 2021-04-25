@@ -187,11 +187,24 @@ class CancelToken {
       typeof listener === "function"
         ? () => listener(event)
         : () => listener.handleEvent(event);
+    handler.listener = listener;
 
     this.addHandler(handler);
   }
 
-  removeEventListener() {}
+  removeEventListener(type, listener) {
+    if (type !== "abort") {
+      return;
+    }
+
+    const handlers = this._handlers;
+    if (handlers !== undefined) {
+      const i = handlers.findIndex(handler => handler.listener === listener);
+      if (i !== -1) {
+        handlers.splice(i, 1);
+      }
+    }
+  }
 }
 cancel.call((CancelToken.canceled = new CancelToken(INTERNAL)));
 
