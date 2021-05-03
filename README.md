@@ -387,7 +387,7 @@ await Disposable.use(
 ```
 
 For more complex use cases, just like `Disposable.factory`, the handler can be
-a generator function:
+a generator function when no disposables are passed:
 
 ```js
 await Disposable.use(async function*() {

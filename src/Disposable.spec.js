@@ -161,5 +161,10 @@ describe("Disposable", () => {
       expect(d3.dispose).toHaveBeenCalledTimes(1);
       expect(d4.dispose).toHaveBeenCalledTimes(1);
     });
+
+    it("does not swallow a returned generator", async () => {
+      const gen = (function*() {})();
+      expect(await Disposable.use(d(), () => gen)).toBe(gen);
+    });
   });
 });

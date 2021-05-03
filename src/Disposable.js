@@ -105,10 +105,6 @@ Disposable.factory = genFn =>
   );
 
 const onHandlerFulfill = result => {
-  if (result == null || typeof result.next !== "function") {
-    return result;
-  }
-
   const { dispose, value: stack } = new ExitStack();
 
   const onEvalDisposable = disposable => loop(stack.enter(disposable));
@@ -133,9 +129,14 @@ Disposable.use = function use() {
 
   const handler = arguments[nDisposables];
 
+  if (nDisposables === 0) {
+    return new Promise(resolve => resolve(handler.call(this))).then(
+      onHandlerFulfill
+    );
+  }
+
   let disposables;
-  const spread =
-    nDisposables > 1 || !Array.isArray((disposables = arguments[0]));
+  const spread = !Array.isArray((disposables = arguments[0]));
   if (spread) {
     disposables = Array.prototype.slice.call(arguments, 0, nDisposables);
   } else {
@@ -143,11 +144,8 @@ Disposable.use = function use() {
   }
 
   return Disposable.all(disposables).then(dAll =>
-    pFinally(
-      (spread ? wrapApply : wrapCall)(handler, dAll.value, this).then(
-        onHandlerFulfill
-      ),
-      () => dAll.dispose()
+    pFinally((spread ? wrapApply : wrapCall)(handler, dAll.value, this), () =>
+      dAll.dispose()
     )
   );
 };
