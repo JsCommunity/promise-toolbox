@@ -26,23 +26,6 @@ Object.keys(pkg.devDependencies || {}).forEach((name) => {
 module.exports = {
   comments: !__PROD__,
   ignore: __PROD__ ? [/\.spec\.js$/] : undefined,
-  overrides: !__TEST__
-    ? undefined
-    : [
-        {
-          test: /\.spec\.js$/,
-          presets: [
-            [
-              "@babel/preset-env",
-              {
-                debug: !__TEST__,
-                loose: true,
-                targets: { node: true },
-              },
-            ],
-          ],
-        },
-      ],
   plugins: Object.keys(plugins).map((plugin) => [plugin, plugins[plugin]]),
   presets: Object.keys(presets).map((preset) => [preset, presets[preset]]),
   targets: (() => {
