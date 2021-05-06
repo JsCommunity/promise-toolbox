@@ -25,7 +25,7 @@ const presets = {
   },
 };
 
-Object.keys(pkg.devDependencies || {}).forEach(name => {
+Object.keys(pkg.devDependencies || {}).forEach((name) => {
   if (!(name in presets) && /@babel\/plugin-.+/.test(name)) {
     plugins[name] = {};
   } else if (!(name in presets) && /@babel\/preset-.+/.test(name)) {
@@ -35,7 +35,7 @@ Object.keys(pkg.devDependencies || {}).forEach(name => {
 
 module.exports = {
   comments: !__PROD__,
-  ignore: __TEST__ ? undefined : [/\.spec\.js$/],
+  ignore: __PROD__ ? [/\.spec\.js$/] : undefined,
   overrides: !__TEST__
     ? undefined
     : [
@@ -53,6 +53,6 @@ module.exports = {
           ],
         },
       ],
-  plugins: Object.keys(plugins).map(plugin => [plugin, plugins[plugin]]),
-  presets: Object.keys(presets).map(preset => [preset, presets[preset]]),
+  plugins: Object.keys(plugins).map((plugin) => [plugin, plugins[plugin]]),
+  presets: Object.keys(presets).map((preset) => [preset, presets[preset]]),
 };

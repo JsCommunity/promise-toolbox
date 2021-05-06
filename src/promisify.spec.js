@@ -6,7 +6,7 @@ describe("promisify()", () => {
   it("handle callback results", async () => {
     const value = {};
     expect(
-      await promisify(function(cb) {
+      await promisify(function (cb) {
         cb(null, value);
       })()
     ).toBe(value);
@@ -15,8 +15,8 @@ describe("promisify()", () => {
   it("resolves if `error` is `false`", async () => {
     const value = {};
     expect(
-      await promisify(cb => {
-        // eslint-disable-next-line standard/no-callback-literal
+      await promisify((cb) => {
+        // eslint-disable-next-line node/no-callback-literal
         cb(false, value);
       })()
     ).toBe(value);
@@ -25,7 +25,7 @@ describe("promisify()", () => {
   it("handle callback errors", async () => {
     const error = new Error();
     await expect(
-      promisify(function(cb) {
+      promisify(function (cb) {
         cb(error);
       })()
     ).rejects.toThrowError(error);
@@ -34,7 +34,7 @@ describe("promisify()", () => {
   it("handle thrown values", async () => {
     const error = new Error();
     await expect(
-      promisify(function() {
+      promisify(function () {
         throw error;
       })()
     ).rejects.toThrowError(error);
@@ -43,7 +43,7 @@ describe("promisify()", () => {
   it("forwards context and arguments", () => {
     const thisArg = {};
     const args = [{}, {}];
-    promisify(function() {
+    promisify(function () {
       expect(this).toBe(thisArg);
       expect([].slice.call(arguments, 0, -1)).toEqual(args);
     }).apply(thisArg, args);
@@ -55,9 +55,9 @@ describe("promisify()", () => {
   });
 
   it("returns a function with one less param", () => {
-    expect(promisify(function(a, b) {}).length).toBe(1);
+    expect(promisify(function (a, b) {}).length).toBe(1);
 
     // special case if fn has no param
-    expect(promisify(function() {}).length).toBe(0);
+    expect(promisify(function () {}).length).toBe(0);
   });
 });

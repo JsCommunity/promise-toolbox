@@ -5,12 +5,12 @@ const { hideLiteralErrorFromLinter } = require("./fixtures");
 
 describe("fromCallback()", () => {
   it("creates a promise which resolves with value passed to the callback", async () => {
-    expect(await fromCallback(cb => cb(undefined, "foo"))).toBe("foo");
+    expect(await fromCallback((cb) => cb(undefined, "foo"))).toBe("foo");
   });
 
   it("creates a promise which rejects with reason passed to the callback", async () => {
     await expect(
-      fromCallback(cb => cb(hideLiteralErrorFromLinter("bar")))
+      fromCallback((cb) => cb(hideLiteralErrorFromLinter("bar")))
     ).rejects.toBe("bar");
   });
 
@@ -21,7 +21,7 @@ describe("fromCallback()", () => {
     expect(
       await fromCallback.call(
         context,
-        function(...args_) {
+        function (...args_) {
           const cb = args_.pop();
 
           expect(this).toBe(context);
@@ -47,8 +47,8 @@ describe("fromCallback()", () => {
 
   it("resolves if `error` is `false`", async () => {
     expect(
-      await fromCallback(cb => {
-        // eslint-disable-next-line standard/no-callback-literal
+      await fromCallback((cb) => {
+        // eslint-disable-next-line node/no-callback-literal
         cb(false, "foo");
       })
     ).toBe("foo");
