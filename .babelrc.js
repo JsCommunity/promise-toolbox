@@ -12,16 +12,6 @@ const presets = {
   "@babel/preset-env": {
     debug: !__TEST__,
     loose: true,
-    targets: (() => {
-      let node = (pkg.engines || {}).node;
-      if (node !== undefined) {
-        const trimChars = "^=>~";
-        while (trimChars.includes(node[0])) {
-          node = node.slice(1);
-        }
-      }
-      return { browsers: pkg.browserslist, node };
-    })(),
   },
 };
 
@@ -55,4 +45,14 @@ module.exports = {
       ],
   plugins: Object.keys(plugins).map((plugin) => [plugin, plugins[plugin]]),
   presets: Object.keys(presets).map((preset) => [preset, presets[preset]]),
+  targets: (() => {
+    let node = (pkg.engines || {}).node;
+    if (node !== undefined) {
+      const trimChars = "^=>~";
+      while (trimChars.includes(node[0])) {
+        node = node.slice(1);
+      }
+    }
+    return { browsers: pkg.browserslist, node };
+  })(),
 };
