@@ -20,7 +20,7 @@ describe("@cancelable", () => {
     expect(spy.mock.calls).toEqual([
       [
         {
-          asymmetricMatch: actual => CancelToken.isCancelToken(actual),
+          asymmetricMatch: (actual) => CancelToken.isCancelToken(actual),
         },
         "foo",
         "bar",

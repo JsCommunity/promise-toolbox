@@ -1,7 +1,7 @@
 const FN_FALSE = () => false;
 const FN_TRUE = () => true;
 
-const onFulfilled = (__proto__ => value => ({
+const onFulfilled = ((__proto__) => (value) => ({
   __proto__: __proto__,
   value: () => value,
 }))({
@@ -13,7 +13,7 @@ const onFulfilled = (__proto__ => value => ({
   },
 });
 
-const onRejected = (__proto__ => reason => ({
+const onRejected = ((__proto__) => (reason) => ({
   __proto__: __proto__,
   reason: () => reason,
 }))({
@@ -31,6 +31,6 @@ const onRejected = (__proto__ => reason => ({
 // promise.
 //
 // Usage: promise::reflect()
-module.exports = function() {
+module.exports = function () {
   return this.then(onFulfilled, onRejected);
 };

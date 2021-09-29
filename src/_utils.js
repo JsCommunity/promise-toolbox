@@ -42,7 +42,7 @@ const forOwn = (exports.forOwn = (object, iteratee) => {
   }
 });
 
-const isIterable = value =>
+const isIterable = (value) =>
   value != null && typeof value[$$iterator] === "function";
 
 const forEach = (exports.forEach = (collection, iteratee) =>
@@ -54,19 +54,21 @@ const forEach = (exports.forEach = (collection, iteratee) =>
     ? forArray(collection, iteratee)
     : forOwn(collection, iteratee));
 
-const isLength = value =>
+const isLength = (value) =>
   typeof value === "number" &&
   value >= 0 &&
   value < Infinity &&
   Math.floor(value) === value;
 
-const isArrayLike = (exports.isArrayLike = value =>
+const isArrayLike = (exports.isArrayLike = (value) =>
   typeof value !== "function" && value != null && isLength(value.length));
 
-exports.makeAsyncIterator = iterator => {
+exports.makeAsyncIterator = (iterator) => {
   const asyncIterator = (collection, iteratee) => {
     if (isPromise(collection)) {
-      return collection.then(collection => asyncIterator(collection, iteratee));
+      return collection.then((collection) =>
+        asyncIterator(collection, iteratee)
+      );
     }
 
     let mainPromise = Promise.resolve();
@@ -74,7 +76,7 @@ exports.makeAsyncIterator = iterator => {
     iterator(collection, (value, key) => {
       mainPromise = isPromise(value)
         ? mainPromise.then(() =>
-            value.then(value => iteratee(value, key, collection))
+            value.then((value) => iteratee(value, key, collection))
           )
         : mainPromise.then(() => iteratee(value, key, collection));
     });

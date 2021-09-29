@@ -8,7 +8,7 @@ const { reject } = require("./fixtures");
 
 describe("catch", () => {
   it("catches errors matching a predicate", async () => {
-    const predicate = reason => reason === "foo";
+    const predicate = (reason) => reason === "foo";
 
     expect(await reject("foo")::pCatch(predicate, identity)).toBe("foo");
 

@@ -15,5 +15,5 @@ module.exports = function pPipe(fns) {
     return fns.reduce(chain);
   }
 
-  return arg => fns.reduce(chain, Promise.resolve(arg));
+  return (arg) => fns.reduce(chain, Promise.resolve(arg));
 };

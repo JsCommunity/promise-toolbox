@@ -35,7 +35,7 @@ module.exports = ($cancelToken, emitter, arrayArg) => {
         add.call(emitter, eventName, listener);
       }
     : (event, cb) => {
-        const listener = arg => {
+        const listener = (arg) => {
           clean();
           cb(arg);
         };

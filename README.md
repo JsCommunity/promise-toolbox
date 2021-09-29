@@ -140,7 +140,7 @@ cancelation state may be requested at any time.
 
 ```js
 // Create a token which requests cancelation when a button is clicked.
-const token = new CancelToken(cancel => {
+const token = new CancelToken((cancel) => {
   $("#some-button").on("click", () => cancel("button clicked"));
 });
 ```
@@ -181,7 +181,7 @@ try {
 }
 
 // 3.
-token.promise.then(reason => {
+token.promise.then((reason) => {
   console.log("cancelation has been requested", reason.message);
 });
 
@@ -215,7 +215,7 @@ const { cancel, token } = CancelToken.source();
 
 httpRequest(token, {
   hostname: "example.org",
-}).then(response => {
+}).then((response) => {
   // do something with the response of the request
 });
 
@@ -332,7 +332,7 @@ other disposables, you can use a generator function alongside the
 `Disposable.factory` decorator:
 
 ```js
-const getTable = Disposable.factory(async function*() {
+const getTable = Disposable.factory(async function* () {
   // simply yield a disposable to use it
   const db = yield getDb();
 
@@ -390,7 +390,7 @@ For more complex use cases, just like `Disposable.factory`, the handler can be
 a generator function when no disposables are passed:
 
 ```js
-await Disposable.use(async function*() {
+await Disposable.use(async function* () {
   const table1 = yield getTable();
   const table2 = yield getTable();
 
@@ -449,7 +449,7 @@ setTimeout(source.cancel, 5e3)
 ```
 
 ```js
-const cancelableAsyncFunction = asyncFn.cancelable(function*(
+const cancelableAsyncFunction = asyncFn.cancelable(function* (
   cancelToken,
   ...args
 ) {
@@ -497,7 +497,7 @@ import { defer } from "promise-toolbox";
 
 const { promise, resolve } = defer();
 
-promise.then(value => {
+promise.then((value) => {
   console.log(value);
 });
 
@@ -512,12 +512,12 @@ resolve(3);
 import { fromCallback } from "promise-toolbox";
 
 // callback is appended to the list of arguments passed to the function
-fromCallback(fs.readFile, "foo.txt").then(content => {
+fromCallback(fs.readFile, "foo.txt").then((content) => {
   console.log(content);
 });
 
 // if the callback does not go at the end, you can wrap the call
-fromCallback(cb => foo("bar", cb, "baz")).then(() => {
+fromCallback((cb) => foo("bar", cb, "baz")).then(() => {
   // ...
 });
 
@@ -552,10 +552,10 @@ const promise = fromEvent(emitter, "foo", {
 });
 
 promise.then(
-  value => {
+  (value) => {
     console.log("foo event was emitted with value", value);
   },
-  reason => {
+  (reason) => {
     console.error("an error has been emitted", reason);
   }
 );
@@ -571,14 +571,14 @@ promise.then(
 
 ```js
 fromEvents(emitter, ["foo", "bar"], ["error1", "error2"]).then(
-  event => {
+  (event) => {
     console.log(
       "event %s have been emitted with values",
       event.name,
       event.args
     );
   },
-  reasons => {
+  (reasons) => {
     console.error(
       "error event %s has been emitted with errors",
       event.names,
@@ -655,9 +655,9 @@ const readFile = promisify(fs.readFile);
 // Or all functions (own or inherited) exposed on a object.
 const fsPromise = promisifyAll(fs);
 
-readFile(__filename).then(content => console.log(content));
+readFile(__filename).then((content) => console.log(content));
 
-fsPromise.readFile(__filename).then(content => console.log(content));
+fsPromise.readFile(__filename).then((content) => console.log(content));
 ```
 
 #### retry(fn, options, [args])
@@ -760,7 +760,7 @@ MyClass.prototype.myMethod = retry.wrap(
 ```js
 import PromiseToolbox from "promise-toolbox";
 
-const getUserById = id =>
+const getUserById = (id) =>
   PromiseToolbox.try(() => {
     if (typeof id !== "number") {
       throw new Error("id must be a number");
@@ -784,7 +784,7 @@ function getUserById(id) {
   return db.getUser(id);
 }
 
-wrapCall(getUserById, "foo").catch(error => {
+wrapCall(getUserById, "foo").catch((error) => {
   // id must be a number
 });
 ```
@@ -799,7 +799,7 @@ This is extremely easy using [ES2016's bind syntax](https://github.com/zenparsin
 ```js
 const promises = [Promise.resolve("foo"), Promise.resolve("bar")];
 
-promises::all().then(values => {
+promises::all().then((values) => {
   console.log(values);
 });
 // → [ 'foo', 'bar' ]
@@ -812,7 +812,7 @@ method:
 ```js
 const promises = [Promise.resolve("foo"), Promise.resolve("bar")];
 
-all.call(promises).then(function(values) {
+all.call(promises).then(function (values) {
   console.log(values);
 });
 // → [ 'foo', 'bar' ]
@@ -846,13 +846,13 @@ somePromise
   .then(() => {
     return a.b.c.d();
   })
-  ::pCatch(TypeError, ReferenceError, reason => {
+  ::pCatch(TypeError, ReferenceError, (reason) => {
     // Will end up here on programmer error
   })
-  ::pCatch(NetworkError, TimeoutError, reason => {
+  ::pCatch(NetworkError, TimeoutError, (reason) => {
     // Will end up here on expected everyday network errors
   })
-  ::pCatch(reason => {
+  ::pCatch((reason) => {
     // Catch any unexpected errors
   });
 ```
@@ -893,11 +893,11 @@ The returned promise will resolve to `undefined` when the iteration is
 complete.
 
 ```js
-["foo", Promise.resolve("bar")]::forEach(value => {
+["foo", Promise.resolve("bar")]::forEach((value) => {
   console.log(value);
 
   // Wait for the promise to be resolve before the next item.
-  return new Promise(resolve => setTimeout(resolve, 10));
+  return new Promise((resolve) => setTimeout(resolve, 10));
 });
 // →
 // foo
@@ -914,14 +914,14 @@ import { ignoreErrors } from "promise-toolbox";
 // will not emit an unhandled rejection error if the file does not
 // exist
 readFileAsync("foo.txt")
-  .then(content => {
+  .then((content) => {
     console.log(content);
   })
   ::ignoreErrors();
 
 // will emit an unhandled rejection error due to the typo
 readFileAsync("foo.txt")
-  .then(content => {
+  .then((content) => {
     console.lgo(content); // typo
   })
   ::ignoreErrors();
@@ -993,7 +993,7 @@ const [first, seconds] = await [
 ```js
 const promise = getUser()::suppressUnhandledRejections();
 $(document).on("ready", () => {
-  promise.catch(error => {
+  promise.catch((error) => {
     console.error("error while getting user", error);
   });
 });
@@ -1011,12 +1011,12 @@ import { tap } from "promise-toolbox";
 
 // Contrary to .then(), using ::tap() does not change the resolution
 // value.
-const promise1 = Promise.resolve(42)::tap(value => {
+const promise1 = Promise.resolve(42)::tap((value) => {
   console.log(value);
 });
 
 // Like .then, the second param is used in case of rejection.
-const promise2 = Promise.reject(42)::tap(null, reason => {
+const promise2 = Promise.reject(42)::tap(null, (reason) => {
   console.error(reason);
 });
 ```

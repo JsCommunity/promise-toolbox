@@ -72,7 +72,7 @@ function CancelTokenSource(tokens) {
     return;
   }
 
-  tokens.forEach(token => {
+  tokens.forEach((token) => {
     const { reason } = token;
     if (reason !== undefined) {
       cancel_(reason);
@@ -124,7 +124,7 @@ class CancelToken {
       promise = this._promise =
         reason !== undefined
           ? Promise.resolve(reason)
-          : new Promise(resolve => {
+          : new Promise((resolve) => {
               this._resolve = resolve;
             });
     }
@@ -199,7 +199,7 @@ class CancelToken {
 
     const handlers = this._handlers;
     if (handlers !== undefined) {
-      const i = handlers.findIndex(handler => handler.listener === listener);
+      const i = handlers.findIndex((handler) => handler.listener === listener);
       if (i !== -1) {
         handlers.splice(i, 1);
       }

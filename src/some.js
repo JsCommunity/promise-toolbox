@@ -6,7 +6,7 @@ const _some = (promises, count) =>
     let values = [];
     let errors = [];
 
-    const onFulfillment = value => {
+    const onFulfillment = (value) => {
       if (!values) {
         return;
       }
@@ -19,7 +19,7 @@ const _some = (promises, count) =>
     };
 
     let acceptableErrors = -count;
-    const onRejection = reason => {
+    const onRejection = (reason) => {
       if (!values) {
         return;
       }
@@ -31,7 +31,7 @@ const _some = (promises, count) =>
       }
     };
 
-    forEach(promises, promise => {
+    forEach(promises, (promise) => {
       ++acceptableErrors;
       resolve(promise).then(onFulfillment, onRejection);
     });
@@ -39,5 +39,5 @@ const _some = (promises, count) =>
 
 // Usage: promises::some(count)
 module.exports = function some(count) {
-  return resolve(this).then(promises => _some(promises, count));
+  return resolve(this).then((promises) => _some(promises, count));
 };

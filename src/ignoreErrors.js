@@ -1,6 +1,6 @@
 const isProgrammerError = require("./_isProgrammerError");
 
-const cb = error => {
+const cb = (error) => {
   if (isProgrammerError(error)) {
     throw error;
   }

@@ -6,8 +6,8 @@ const { reject } = require("./fixtures");
 
 describe("tap(cb)", () => {
   it("call cb with the resolved value", () =>
-    new Promise(resolve => {
-      Promise.resolve("value")::tap(value => {
+    new Promise((resolve) => {
+      Promise.resolve("value")::tap((value) => {
         expect(value).toBe("value");
         resolve();
       });
@@ -34,9 +34,9 @@ describe("tap(cb)", () => {
 
 describe("tap(undefined, cb)", () => {
   it("call cb with the rejected reason", () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       reject("reason")
-        ::tap(undefined, reason => {
+        ::tap(undefined, (reason) => {
           expect(reason).toBe("reason");
           resolve();
         })

@@ -1,1 +1,1 @@
-module.exports = v => v != null && typeof v.dispose === "function";
+module.exports = (v) => v != null && typeof v.dispose === "function";

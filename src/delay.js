@@ -6,15 +6,15 @@ module.exports = function delay(ms) {
 
   if (isPromise(value)) {
     return value.then(
-      value =>
-        new Promise(resolve => {
+      (value) =>
+        new Promise((resolve) => {
           setTimeout(resolve, ms, value);
         })
     );
   }
 
   let handle;
-  const p = new Promise(resolve => {
+  const p = new Promise((resolve) => {
     handle = setTimeout(resolve, ms, value);
   });
   p.unref = () => {

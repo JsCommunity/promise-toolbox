@@ -18,7 +18,8 @@ exports.pFromEvent = exports.fromEvent = require("./fromEvent");
 exports.pFromEvents = exports.fromEvents = require("./fromEvents");
 exports.pIgnoreErrors = exports.ignoreErrors = require("./ignoreErrors");
 exports.pIsPromise = exports.isPromise = require("./isPromise");
-exports.pMakeAsyncIterator = exports.makeAsyncIterator = require("./makeAsyncIterator");
+exports.pMakeAsyncIterator =
+  exports.makeAsyncIterator = require("./makeAsyncIterator");
 exports.pNodeify = exports.nodeify = require("./nodeify");
 exports.pPipe = exports.pipe = require("./pipe");
 exports.pPromisify = exports.promisify = require("./promisify");
@@ -26,7 +27,8 @@ exports.pPromisifyAll = exports.promisifyAll = require("./promisifyAll");
 exports.pReflect = exports.reflect = require("./reflect");
 exports.pRetry = exports.retry = require("./retry");
 exports.pSome = exports.some = require("./some");
-exports.pSuppressUnhandledRejections = exports.suppressUnhandledRejections = require("./suppressUnhandledRejections");
+exports.pSuppressUnhandledRejections =
+  exports.suppressUnhandledRejections = require("./suppressUnhandledRejections");
 exports.pTap = exports.tap = require("./tap");
 exports.pTapCatch = exports.tapCatch = require("./tapCatch");
 exports.pTimeout = exports.timeout = require("./timeout");

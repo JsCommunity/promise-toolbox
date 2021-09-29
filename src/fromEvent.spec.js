@@ -24,7 +24,7 @@ describe("fromEvent()", () => {
     const promise = fromEvent(emitter, "foo");
     emitter.emit("foo", arg1, arg2);
 
-    return promise.then(value => {
+    return promise.then((value) => {
       expect(value).toBe(arg1);
     });
   });
@@ -38,7 +38,7 @@ describe("fromEvent()", () => {
       });
       emitter.emit("foo", arg1, arg2);
 
-      return promise.then(value => {
+      return promise.then((value) => {
         expect(value.event).toBe("foo");
         expect(value.slice()).toEqual([arg1, arg2]);
       });
@@ -94,7 +94,7 @@ describe("fromEvent()", () => {
       emitter.emit("error", error);
       emitter.emit("foo", arg1);
 
-      return promise.then(value => {
+      return promise.then((value) => {
         expect(value).toBe(arg1);
       });
     });

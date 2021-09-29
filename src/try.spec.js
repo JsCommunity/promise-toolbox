@@ -5,7 +5,7 @@ const { throwArg } = require("./fixtures");
 
 describe("try()", () => {
   it("wraps returned value in promise", () => {
-    return pTry(() => "foo").then(value => {
+    return pTry(() => "foo").then((value) => {
       expect(value).toBe("foo");
     });
   });

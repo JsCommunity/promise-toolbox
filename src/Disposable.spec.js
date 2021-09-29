@@ -30,7 +30,7 @@ describe("Disposable", () => {
       const d1 = d();
       const d2 = d();
 
-      await Disposable.use(function*() {
+      await Disposable.use(function* () {
         expect(yield Disposable.all([d1, d2])).toEqual([d1.value, d2.value]);
         expect(d1.dispose).not.toHaveBeenCalled();
         expect(d2.dispose).not.toHaveBeenCalled();
@@ -50,7 +50,7 @@ describe("Disposable", () => {
       const dep2 = d();
       const callArgs = [{}, {}];
       const callThis = {};
-      const d1 = await Disposable.factory(function*(...args) {
+      const d1 = await Disposable.factory(function* (...args) {
         expect(args).toEqual(callArgs);
         expect(this).toBe(callThis);
 
@@ -65,7 +65,7 @@ describe("Disposable", () => {
         }
       }).apply(callThis, callArgs);
 
-      await Disposable.use(function*() {
+      await Disposable.use(function* () {
         expect(yield d1).toBe(value);
         expect(disposed).toBe(false);
       });
@@ -74,10 +74,10 @@ describe("Disposable", () => {
 
     it("supports returning the value if no dispose", async () => {
       const value = {};
-      const d1 = await Disposable.factory(function*() {
+      const d1 = await Disposable.factory(function* () {
         return value;
       })();
-      await Disposable.use(function*() {
+      await Disposable.use(function* () {
         expect(yield d1).toBe(value);
       });
     });
@@ -141,7 +141,7 @@ describe("Disposable", () => {
       const d4 = d();
 
       expect(
-        await Disposable.use(function*() {
+        await Disposable.use(function* () {
           expect(yield d1).toBe(d1.value);
           expect(yield Promise.resolve(d2)).toBe(d2.value);
           expect(yield () => d3).toBe(d3.value);
@@ -163,7 +163,7 @@ describe("Disposable", () => {
     });
 
     it("does not swallow a returned generator", async () => {
-      const gen = (function*() {})();
+      const gen = (function* () {})();
       expect(await Disposable.use(d(), () => gen)).toBe(gen);
     });
   });

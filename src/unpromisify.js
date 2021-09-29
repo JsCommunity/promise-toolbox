@@ -6,7 +6,7 @@ const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 module.exports = function unpromisify() {
   const fn = this;
   return setFunctionNameAndLength(
-    function() {
+    function () {
       const n = arguments.length - 1;
       let cb;
       if (n < 0 || typeof (cb = arguments[n]) !== "function") {
@@ -19,8 +19,8 @@ module.exports = function unpromisify() {
       }
 
       fn.apply(this, args).then(
-        result => cb(undefined, result),
-        reason => cb(reason)
+        (result) => cb(undefined, result),
+        (reason) => cb(reason)
       );
     },
     fn.name,

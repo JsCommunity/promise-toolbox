@@ -35,11 +35,11 @@ module.exports = function timeout(ms, onReject) {
     }, ms);
 
     this.then(
-      value => {
+      (value) => {
         handle !== undefined && clearTimeout(handle);
         resolve(value);
       },
-      reason => {
+      (reason) => {
         handle !== undefined && clearTimeout(handle);
         reject(reason);
       }

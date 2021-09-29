@@ -35,7 +35,7 @@ describe("retry()", () => {
       )
     ).rejects.toBe(e);
   });
-  [ReferenceError, TypeError].forEach(ErrorType => {
+  [ReferenceError, TypeError].forEach((ErrorType) => {
     it(`does not retry if a ${ErrorType.name} is thrown`, async () => {
       let i = 0;
       await expect(
@@ -67,7 +67,7 @@ describe("retry()", () => {
     const expectedArgs = [Math.random(), Math.random()];
     await retry.call(
       expectedThis,
-      function(...args) {
+      function (...args) {
         expect(this).toBe(expectedThis);
         expect(args).toEqual(expectedArgs);
       },
@@ -84,11 +84,11 @@ describe("retry()", () => {
       const fn = jest.fn(() => Promise.reject(expected));
       let actual;
       retry(fn, {
-        delays: (function*() {
+        delays: (function* () {
           yield 10;
           yield 20;
         })(),
-      }).catch(error => {
+      }).catch((error) => {
         actual = error;
       });
       await microtasks();
@@ -139,7 +139,7 @@ describe("retry()", () => {
   describe("`when` option", () => {
     forOwn(
       {
-        "with function predicate": _ => _.message === "foo",
+        "with function predicate": (_) => _.message === "foo",
         "with object predicate": { message: "foo" },
       },
       (when, title) =>

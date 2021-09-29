@@ -1,6 +1,6 @@
-module.exports = fn => {
+module.exports = (fn) => {
   let result;
-  return function() {
+  return function () {
     if (fn !== undefined) {
       result = fn.apply(this, arguments);
       fn = undefined;

@@ -3,7 +3,7 @@
 const nodeify = require("./nodeify");
 
 describe("nodeify()", () => {
-  it("handles resolved promises", done => {
+  it("handles resolved promises", (done) => {
     nodeify(() => Promise.resolve("foo"))((err, res) => {
       expect(err).toBe(undefined);
       expect(res).toBe("foo");
@@ -11,7 +11,7 @@ describe("nodeify()", () => {
     });
   });
 
-  it("handles rejected promises", done => {
+  it("handles rejected promises", (done) => {
     const err = new Error();
     nodeify(() => Promise.reject(err))((err, res) => {
       expect(err).toBe(err);
@@ -20,7 +20,7 @@ describe("nodeify()", () => {
     });
   });
 
-  it("handles sync calls values", done => {
+  it("handles sync calls values", (done) => {
     nodeify(() => "foo")((err, res) => {
       expect(err).toBe(undefined);
       expect(res).toBe("foo");
@@ -28,7 +28,7 @@ describe("nodeify()", () => {
     });
   });
 
-  it("handles thrown errors", done => {
+  it("handles thrown errors", (done) => {
     const error = new Error();
     nodeify(() => {
       throw error;
@@ -45,6 +45,6 @@ describe("nodeify()", () => {
   });
 
   it("returns a function with one more param", () => {
-    expect(nodeify(function(a, b) {}).length).toBe(3);
+    expect(nodeify(function (a, b) {}).length).toBe(3);
   });
 });

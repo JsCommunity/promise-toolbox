@@ -32,8 +32,8 @@ function AsyncFn(iterator, resolve, reject) {
 AsyncFn.prototype.finally = noop;
 AsyncFn.prototype.toPromise = toPromise;
 
-const asyncFn = generator =>
-  function() {
+const asyncFn = (generator) =>
+  function () {
     return new Promise((resolve, reject) =>
       new AsyncFn(generator.apply(this, arguments), resolve, reject).next()
     );
@@ -45,9 +45,9 @@ function CancelabledAsyncFn(cancelToken) {
   this._cancelToken = cancelToken;
   this._onCancel = noop;
 
-  this.finally = cancelToken.addHandler(reason => {
+  this.finally = cancelToken.addHandler((reason) => {
     this._onCancel(reason);
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.finally = resolve;
     });
   });
@@ -55,7 +55,7 @@ function CancelabledAsyncFn(cancelToken) {
 Object.setPrototypeOf(
   CancelabledAsyncFn.prototype,
   Object.getPrototypeOf(AsyncFn.prototype)
-).toPromise = function(value) {
+).toPromise = function (value) {
   if (Array.isArray(value)) {
     return toPromise(value[0]);
   }
@@ -75,7 +75,7 @@ Object.setPrototypeOf(
 };
 
 asyncFn.cancelable = (generator, getCancelToken = identity) =>
-  function() {
+  function () {
     const cancelToken = getCancelToken.apply(this, arguments);
     if (cancelToken.requested) {
       return Promise.reject(cancelToken.reason);

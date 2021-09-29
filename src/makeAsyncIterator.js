@@ -1,7 +1,7 @@
 const noop = require("./_noop");
 const { makeAsyncIterator } = require("./_utils");
 
-const makeAsyncIteratorWrapper = iterator => {
+const makeAsyncIteratorWrapper = (iterator) => {
   const asyncIterator = makeAsyncIterator(iterator);
 
   return function asyncIteratorWrapper(iteratee) {

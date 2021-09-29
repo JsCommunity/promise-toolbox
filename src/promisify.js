@@ -3,7 +3,7 @@ const setFunctionNameAndLength = require("./_setFunctionNameAndLength");
 // Usage: promisify(fn, [ context ])
 const promisify = (fn, context) =>
   setFunctionNameAndLength(
-    function() {
+    function () {
       const { length } = arguments;
       const args = new Array(length + 1);
       for (let i = 0; i < length; ++i) {

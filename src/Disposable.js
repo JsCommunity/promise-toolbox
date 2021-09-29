@@ -38,9 +38,9 @@ Disposable.all = function all(iterable) {
   const dispose = () => {
     const d = disposables;
     disposables = undefined;
-    d.forEach(disposable => disposable.dispose());
+    d.forEach((disposable) => disposable.dispose());
   };
-  const onFulfill = maybeDisposable => {
+  const onFulfill = (maybeDisposable) => {
     if (disposables === undefined) {
       return isDisposable(maybeDisposable) && maybeDisposable.dispose();
     }
@@ -51,7 +51,7 @@ Disposable.all = function all(iterable) {
     }
     return maybeDisposable;
   };
-  const onReject = error => {
+  const onReject = (error) => {
     if (disposables === undefined) {
       return;
     }
@@ -60,10 +60,10 @@ Disposable.all = function all(iterable) {
     throw error;
   };
   return Promise.all(
-    Array.from(iterable, maybeDisposable =>
+    Array.from(iterable, (maybeDisposable) =>
       evalDisposable(maybeDisposable).then(onFulfill, onReject)
     )
-  ).then(values => new Disposable(dispose, values));
+  ).then((values) => new Disposable(dispose, values));
 };
 
 // Requires this circular dependency as late as possible to avoid problems with jest
@@ -73,26 +73,26 @@ const ExitStack = require("./_ExitStack");
 //
 // - https://github.com/tc39/proposal-explicit-resource-management
 // - https://book.pythontips.com/en/latest/context_managers.html
-Disposable.factory = genFn =>
+Disposable.factory = (genFn) =>
   setFunctionNameAndLength(
-    function() {
+    function () {
       const gen = genFn.apply(this, arguments);
 
       const { dispose, value: stack } = new ExitStack();
 
-      const onEvalDisposable = value =>
+      const onEvalDisposable = (value) =>
         isDisposable(value) ? loop(stack.enter(value)) : value;
       const onFulfill = ({ value }) =>
         evalDisposable(value).then(onEvalDisposable);
-      const loop = value => wrapCall(gen.next, value, gen).then(onFulfill);
+      const loop = (value) => wrapCall(gen.next, value, gen).then(onFulfill);
 
       return loop().then(
-        value =>
+        (value) =>
           new Disposable(
             () => wrapCall(gen.return, undefined, gen).then(dispose),
             value
           ),
-        error => {
+        (error) => {
           const forwardError = () => {
             throw error;
           };
@@ -104,15 +104,15 @@ Disposable.factory = genFn =>
     genFn.length
   );
 
-const onHandlerFulfill = result => {
+const onHandlerFulfill = (result) => {
   const { dispose, value: stack } = new ExitStack();
 
-  const onEvalDisposable = disposable => loop(stack.enter(disposable));
-  const onFulfill = cursor =>
+  const onEvalDisposable = (disposable) => loop(stack.enter(disposable));
+  const onFulfill = (cursor) =>
     cursor.done
       ? cursor.value
       : evalDisposable(cursor.value).then(onEvalDisposable);
-  const loop = value => wrapCall(result.next, value, result).then(onFulfill);
+  const loop = (value) => wrapCall(result.next, value, result).then(onFulfill);
 
   return pFinally(loop(), dispose);
 };
@@ -130,7 +130,7 @@ Disposable.use = function use() {
   const handler = arguments[nDisposables];
 
   if (nDisposables === 0) {
-    return new Promise(resolve => resolve(handler.call(this))).then(
+    return new Promise((resolve) => resolve(handler.call(this))).then(
       onHandlerFulfill
     );
   }
@@ -143,7 +143,7 @@ Disposable.use = function use() {
     nDisposables = disposables.length;
   }
 
-  return Disposable.all(disposables).then(dAll =>
+  return Disposable.all(disposables).then((dAll) =>
     pFinally((spread ? wrapApply : wrapCall)(handler, dAll.value, this), () =>
       dAll.dispose()
     )

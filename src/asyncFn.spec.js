@@ -7,7 +7,7 @@ describe("asyncFn", () => {
   it("forwards this and args", async () => {
     const thisArg = {};
     const args = ["foo", "bar"];
-    const f = asyncFn(function*() {
+    const f = asyncFn(function* () {
       expect(this).toBe(thisArg);
       expect(Array.from(arguments)).toEqual(args);
       return (yield Promise.resolve(1)) + 2;
@@ -16,14 +16,14 @@ describe("asyncFn", () => {
   });
 
   it("makes promise resolution available via yield", async () => {
-    const f = asyncFn(function*() {
+    const f = asyncFn(function* () {
       return (yield Promise.resolve(1)) + 2;
     });
     expect(await f()).toBe(3);
   });
 
   it("makes promise rejection available via yield", async () => {
-    const f = asyncFn(function*(value) {
+    const f = asyncFn(function* (value) {
       try {
         yield Promise.reject(value);
       } catch (error) {
@@ -42,7 +42,7 @@ describe("asyncFn.cancelable", () => {
     const expectedThis = {};
     const expectedArgs = [token, Math.random(), Math.random()];
     const expectedResult = {};
-    const fn = asyncFn.cancelable(function*() {
+    const fn = asyncFn.cancelable(function* () {
       expect(this).toBe(expectedThis);
       expect(Array.from(arguments)).toEqual(expectedArgs);
 
@@ -75,7 +75,7 @@ describe("asyncFn.cancelable", () => {
         expect(yield [Promise.resolve(expectedValue)]).toBe(expectedValue);
       }
 
-      yield [new Promise(resolve => setImmediate(resolve))];
+      yield [new Promise((resolve) => setImmediate(resolve))];
       expect(canceled).toBe(false);
 
       return expectedResult;
@@ -83,7 +83,7 @@ describe("asyncFn.cancelable", () => {
 
     expect(await fn.apply(expectedThis, expectedArgs)).toBe(expectedResult);
 
-    await new Promise(resolve => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
     expect(canceled).toBe(true);
   });
 });

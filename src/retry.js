@@ -41,9 +41,9 @@ function retry(
   when = matchError.bind(undefined, when);
 
   let attemptNumber = 0;
-  const sleepResolver = resolve => setTimeout(resolve, delay);
+  const sleepResolver = (resolve) => setTimeout(resolve, delay);
   const sleep = () => new Promise(sleepResolver);
-  const onError = error => {
+  const onError = (error) => {
     if (error instanceof ErrorContainer) {
       throw error.error;
     }
@@ -67,7 +67,7 @@ function retry(
     }
     throw error;
   };
-  const loopResolver = resolve => resolve(fn.apply(this, args));
+  const loopResolver = (resolve) => resolve(fn.apply(this, args));
   const loop = () => new Promise(loopResolver).catch(onError);
 
   return loop();
@@ -85,7 +85,7 @@ retry.bail = function retryBail(error) {
 retry.wrap = function retryWrap(fn, options) {
   const getOptions = typeof options !== "function" ? () => options : options;
   return setFunctionNameAndLength(
-    function() {
+    function () {
       return retry.call(
         this,
         fn,

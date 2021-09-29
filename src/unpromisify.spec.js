@@ -5,7 +5,7 @@ const unpromisify = require("./unpromisify");
 const { reject } = require("./fixtures");
 
 describe("unpromisify()", () => {
-  it("forwards the result", done => {
+  it("forwards the result", (done) => {
     const fn = unpromisify.call(() => Promise.resolve("foo"));
 
     fn((error, result) => {
@@ -16,10 +16,10 @@ describe("unpromisify()", () => {
     });
   });
 
-  it("forwards the error", done => {
+  it("forwards the error", (done) => {
     const fn = unpromisify.call(() => reject("foo"));
 
-    fn(error => {
+    fn((error) => {
       expect(error).toBe("foo");
 
       done();

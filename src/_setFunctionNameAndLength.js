@@ -2,7 +2,7 @@ module.exports = (() => {
   const _defineProperties = Object.defineProperties;
 
   try {
-    const f = _defineProperties(function() {}, {
+    const f = _defineProperties(function () {}, {
       length: { value: 2 },
       name: { value: "foo" },
     });

@@ -31,10 +31,10 @@ describe("wrapApply() & wrapCall()", () => {
     const fn = () => value;
 
     return Promise.all([
-      wrapApply(fn).then(result => {
+      wrapApply(fn).then((result) => {
         expect(result).toBe(value);
       }),
-      wrapCall(fn).then(result => {
+      wrapCall(fn).then((result) => {
         expect(result).toBe(value);
       }),
     ]);
