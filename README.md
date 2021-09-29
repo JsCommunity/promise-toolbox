@@ -401,6 +401,26 @@ await Disposable.use(async function* () {
 });
 ```
 
+To enable an entire function to use disposables, you can use `Disposable.wrap`:
+
+```js
+// context (`this`) and all arguments are forwarded from the call
+const disposableUser = Disposable.wrap(async function* (arg1, arg2) {
+  const table = yield getDisposable(arg1, arg2);
+
+  // do something with table
+});
+
+// similar to
+function disposableUser(arg1, arg2) {
+  return Disposable.use(async function* (arg1, arg2) {
+    const table = yield getDisposable(arg1, arg2);
+
+    // do something with table
+  });
+}
+```
+
 ### Functions
 
 #### asyncFn(generator)

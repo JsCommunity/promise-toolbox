@@ -167,4 +167,24 @@ describe("Disposable", () => {
       expect(await Disposable.use(d(), () => gen)).toBe(gen);
     });
   });
+
+  describe(".wrap()", () => {
+    it("creates a disposable user from a generator function", async () => {
+      const d1 = d();
+
+      const callArgs = [{}, {}];
+      const callThis = {};
+
+      expect(
+        await Disposable.wrap(function* (...args) {
+          expect(args).toEqual(callArgs);
+          expect(this).toBe(callThis);
+
+          expect(yield d1).toBe(d1.value);
+
+          return "handler";
+        }).apply(callThis, callArgs)
+      ).toBe("handler");
+    });
+  });
 });

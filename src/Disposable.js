@@ -149,3 +149,8 @@ Disposable.use = function use() {
     )
   );
 };
+
+Disposable.wrap = (generator) =>
+  function () {
+    return Disposable.use(() => generator.apply(this, arguments));
+  };
