@@ -151,6 +151,10 @@ Disposable.use = function use() {
 };
 
 Disposable.wrap = (generator) =>
-  function () {
-    return Disposable.use(() => generator.apply(this, arguments));
-  };
+  setFunctionNameAndLength(
+    function () {
+      return Disposable.use(() => generator.apply(this, arguments));
+    },
+    generator.name,
+    generator.length
+  );

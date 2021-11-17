@@ -175,16 +175,20 @@ describe("Disposable", () => {
       const callArgs = [{}, {}];
       const callThis = {};
 
-      expect(
-        await Disposable.wrap(function* (...args) {
-          expect(args).toEqual(callArgs);
-          expect(this).toBe(callThis);
+      const generator = function* foo(a, b) {
+        expect(Array.from(arguments)).toEqual(callArgs);
+        expect(this).toBe(callThis);
 
-          expect(yield d1).toBe(d1.value);
+        expect(yield d1).toBe(d1.value);
 
-          return "handler";
-        }).apply(callThis, callArgs)
-      ).toBe("handler");
+        return "handler";
+      };
+      const wrapped = Disposable.wrap(generator);
+
+      expect(wrapped.name).toBe(generator.name);
+      expect(wrapped.length).toBe(generator.length);
+
+      expect(await wrapped.apply(callThis, callArgs)).toBe("handler");
     });
   });
 });
