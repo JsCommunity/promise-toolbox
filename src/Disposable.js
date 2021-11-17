@@ -150,11 +150,12 @@ Disposable.use = function use() {
   );
 };
 
-Disposable.wrap = (generator) =>
-  setFunctionNameAndLength(
+Disposable.wrap = function wrap(generator) {
+  return setFunctionNameAndLength(
     function () {
       return Disposable.use(() => generator.apply(this, arguments));
     },
     generator.name,
     generator.length
   );
+};
