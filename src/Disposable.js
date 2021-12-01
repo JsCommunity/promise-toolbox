@@ -17,14 +17,14 @@ class Disposable {
 
   get value() {
     if (this._dispose === undefined) {
-      throw new TypeError("this disposable has already been disposed");
+      throw new TypeError("cannot get value of already disposed disposable");
     }
     return this._value;
   }
 
   dispose() {
     if (this._dispose === undefined) {
-      throw new TypeError("this disposable has already been disposed");
+      throw new TypeError("cannot dispose already disposed disposable");
     }
     const d = this._dispose;
     this._dispose = this._value = undefined;

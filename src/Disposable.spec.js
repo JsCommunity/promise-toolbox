@@ -18,10 +18,10 @@ describe("Disposable", () => {
     expect(dispose).toHaveBeenCalledTimes(1);
 
     expect(() => disposable.value).toThrow(
-      "this disposable has already been disposed"
+      "cannot get value of already disposed disposable"
     );
     expect(() => disposable.dispose()).toThrow(
-      "this disposable has already been disposed"
+      "cannot dispose already disposed disposable"
     );
   });
 
