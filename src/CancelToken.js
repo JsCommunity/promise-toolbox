@@ -51,6 +51,10 @@ function cancel(message) {
   }
 }
 
+function cancelFromSignal(signal) {
+  cancel.call(this, signal.reason);
+}
+
 function removeHandler(handler) {
   const handlers = this._handlers;
   if (handlers !== undefined) {
@@ -92,7 +96,10 @@ class CancelToken {
     }
 
     const token = new CancelToken(INTERNAL);
-    abortSignal.addEventListener("abort", cancel.bind(token));
+    abortSignal.addEventListener(
+      "abort",
+      cancelFromSignal.bind(token, abortSignal)
+    );
     return token;
   }
 
