@@ -112,6 +112,12 @@ class CancelToken {
     return new CancelTokenSource(tokens);
   }
 
+  static timeout(delay) {
+    return new CancelToken((cancel) => {
+      setTimeout(cancel, delay, "TimeoutError");
+    });
+  }
+
   constructor(executor) {
     this._handlers = undefined;
     this._promise = undefined;
