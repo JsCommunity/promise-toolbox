@@ -1,4 +1,5 @@
 const matchError = require("./_matchError");
+const wrapApply = require("./wrapApply");
 
 function handler(predicates, cb, reason) {
   return matchError(predicates, reason) ? cb(reason) : this;
@@ -17,16 +18,22 @@ module.exports = function pCatch() {
     return this;
   }
 
-  return this.then(
-    undefined,
-    handler.bind(
-      this,
-      n === 0
-        ? undefined
-        : n === 1
-        ? arguments[0]
-        : Array.prototype.slice.call(arguments, 0, n),
-      cb
-    )
+  const onRejected = handler.bind(
+    this,
+    n === 0
+      ? undefined
+      : n === 1
+      ? arguments[0]
+      : Array.prototype.slice.call(arguments, 0, n),
+    cb
   );
+
+  if (typeof this === "function") {
+    const fn = this;
+    return function() {
+      return wrapApply(fn, this, arguments).catch(onRejected);
+    };
+  }
+
+  return this.then(undefined, onRejected);
 };

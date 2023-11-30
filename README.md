@@ -421,6 +421,16 @@ function disposableUser(arg1, arg2) {
 }
 ```
 
+- compatibility with async functions?
+- composition?
+
+```js
+const openDatabase = disposable(async function($dispose, path) {
+  await ensureDir(path)
+
+}
+```
+
 ### Functions
 
 #### asyncFn(generator)
